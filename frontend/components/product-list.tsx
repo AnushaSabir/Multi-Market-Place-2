@@ -40,6 +40,37 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   const [tempQty, setTempQty] = useState<string>("")
   const { toast } = useToast()
 
+  // Pagination State
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+
+  const loadMoreProducts = async () => {
+    setIsLoadingMore(true)
+    try {
+      const nextPage = page + 1
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const res = await fetch(`${API_URL}/api/products?page=${nextPage}&limit=50`)
+
+      if (!res.ok) throw new Error("Failed to load more products")
+
+      const data = await res.json()
+
+      if (data.data.length === 0) {
+        setHasMore(false)
+        toast({ title: "No more products", description: "You have reached the end of the list." })
+      } else {
+        setProducts(prev => [...prev, ...data.data])
+        setPage(nextPage)
+      }
+    } catch (error: any) {
+      console.error("Load More Error:", error);
+      toast({ title: "Error", description: error.message || "Could not load more products", variant: "destructive" })
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }
+
   const filteredProducts = products.filter(
     (p) =>
       p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -298,13 +329,13 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               className="pl-9"
-              placeholder="Search by title, SKU or EAN..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="outline" size="sm" className="hidden sm:flex">
               <Filter className="mr-2 h-4 w-4" />
               Filter
             </Button>
@@ -331,140 +362,162 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
             </Button>
           </div>
         </div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12">
-                <Checkbox
-                  checked={selected.length > 0 && selected.length === filteredProducts.length}
-                  onCheckedChange={(checked) => setSelected(checked ? filteredProducts.map((p) => p.id) : [])}
-                />
-              </TableHead>
-              <TableHead>Title / Product Details</TableHead>
-              <TableHead>SKU / EAN</TableHead>
-              <TableHead>Price / Quantity</TableHead>
-              <TableHead>Marketplaces</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredProducts.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>
-                  <Checkbox checked={selected.includes(product.id)} onCheckedChange={() => toggleSelect(product.id)} />
-                </TableCell>
-                <TableCell>
-                  <div className="font-medium">{product.title}</div>
-                  <div className="text-xs text-muted-foreground">ID: {product.id}</div>
-                </TableCell>
-                <TableCell>
-                  <div className="text-sm font-mono">{product.sku}</div>
-                  <div className="text-xs text-muted-foreground">{product.ean}</div>
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-1">
-                    {editingPrice === product.id ? (
-                      <div className="flex items-center gap-1">
-                        <Input
-                          type="number"
-                          value={tempPrice}
-                          onChange={(e) => setTempPrice(e.target.value)}
-                          className="h-7 w-20 text-sm"
-                          step="0.01"
-                          autoFocus
-                        />
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-6 w-6"
-                          onClick={() => savePriceEdit(product.id)}
-                        >
-                          <Check className="h-3 w-3 text-green-600" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelPriceEdit}>
-                          <X className="h-3 w-3 text-red-600" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div
-                        className="font-medium cursor-pointer hover:text-primary transition-colors"
-                        onClick={() => handlePriceEdit(product.id, product.price)}
-                      >
-                        {new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(product.price)}
-                      </div>
-                    )}
-                    {editingQty === product.id ? (
-                      <div className="flex items-center gap-1">
-                        <Input
-                          type="number"
-                          value={tempQty}
-                          onChange={(e) => setTempQty(e.target.value)}
-                          className="h-7 w-16 text-sm"
-                          autoFocus
-                        />
-                        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => saveQtyEdit(product.id)}>
-                          <Check className="h-3 w-3 text-green-600" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelQtyEdit}>
-                          <X className="h-3 w-3 text-red-600" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div
-                        className={`text-xs cursor-pointer hover:text-primary transition-colors ${product.quantity < 10 ? "text-red-600 font-bold" : "text-muted-foreground"}`}
-                        onClick={() => handleQtyEdit(product.id, product.quantity)}
-                      >
-                        Stock: {product.quantity}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    {product.shipping_type && (
-                      <Badge variant="secondary" className="capitalize text-[10px] px-1.5 h-5">
-                        {product.shipping_type}
-                      </Badge>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={product.status === "synced" ? "outline" : "secondary"}>
-                    {product.status || "Imported"}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/products/${product.id}`} className="flex items-center" prefetch={true}>
-                          <Eye className="mr-2 h-4 w-4" /> Details
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(product.id)}>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-            {filteredProducts.length === 0 && (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-10 text-muted-foreground">
-                  No products found in database.
-                </TableCell>
+                <TableHead className="w-12">
+                  <Checkbox
+                    checked={selected.length > 0 && selected.length === filteredProducts.length}
+                    onCheckedChange={(checked) => setSelected(checked ? filteredProducts.map((p) => p.id) : [])}
+                  />
+                </TableHead>
+                <TableHead className="min-w-[200px]">Product</TableHead>
+                <TableHead className="hidden md:table-cell">SKU / EAN</TableHead>
+                <TableHead>Price / Qty</TableHead>
+                <TableHead className="hidden lg:table-cell">Marketplaces</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredProducts.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell>
+                    <Checkbox checked={selected.includes(product.id)} onCheckedChange={() => toggleSelect(product.id)} />
+                  </TableCell>
+                  <TableCell>
+                    <div className="font-medium truncate max-w-[200px]" title={product.title}>{product.title}</div>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <div className="text-sm font-mono">{product.sku}</div>
+                    <div className="text-xs text-muted-foreground">{product.ean}</div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      {editingPrice === product.id ? (
+                        <div className="flex items-center gap-1">
+                          <Input
+                            type="number"
+                            value={tempPrice}
+                            onChange={(e) => setTempPrice(e.target.value)}
+                            className="h-7 w-20 text-sm"
+                            step="0.01"
+                            autoFocus
+                          />
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-6 w-6"
+                            onClick={() => savePriceEdit(product.id)}
+                          >
+                            <Check className="h-3 w-3 text-green-600" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelPriceEdit}>
+                            <X className="h-3 w-3 text-red-600" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div
+                          className="font-medium cursor-pointer hover:text-primary transition-colors"
+                          onClick={() => handlePriceEdit(product.id, product.price)}
+                        >
+                          {new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(product.price)}
+                        </div>
+                      )}
+                      {editingQty === product.id ? (
+                        <div className="flex items-center gap-1">
+                          <Input
+                            type="number"
+                            value={tempQty}
+                            onChange={(e) => setTempQty(e.target.value)}
+                            className="h-7 w-16 text-sm"
+                            autoFocus
+                          />
+                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => saveQtyEdit(product.id)}>
+                            <Check className="h-3 w-3 text-green-600" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelQtyEdit}>
+                            <X className="h-3 w-3 text-red-600" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div
+                          className={`text-xs cursor-pointer hover:text-primary transition-colors ${product.quantity < 10 ? "text-red-600 font-bold" : "text-muted-foreground"}`}
+                          onClick={() => handleQtyEdit(product.id, product.quantity)}
+                        >
+                          Stock: {product.quantity}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    <div className="flex gap-1">
+                      {product.shipping_type && (
+                        <Badge variant="secondary" className="capitalize text-[10px] px-1.5 h-5">
+                          {product.shipping_type}
+                        </Badge>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={product.status === "synced" ? "outline" : "secondary"}>
+                      {product.status || "Imported"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/products/${product.id}`} className="flex items-center" prefetch={true}>
+                            <Eye className="mr-2 h-4 w-4" /> Details
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(product.id)}>Delete</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {filteredProducts.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-10 text-muted-foreground">
+                    No products found in database.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </Card>
-    </div>
+
+      {
+        hasMore && (
+          <div className="flex justify-center pt-4">
+            <Button
+              onClick={loadMoreProducts}
+              disabled={isLoadingMore}
+              variant="outline"
+              className="w-full max-w-xs"
+            >
+              {isLoadingMore ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> Loading...
+                </>
+              ) : (
+                "Load More Products"
+              )}
+            </Button>
+          </div>
+        )
+      }
+    </div >
   )
 }

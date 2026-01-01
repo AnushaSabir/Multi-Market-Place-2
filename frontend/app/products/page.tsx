@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server"
 import { ProductList } from "@/components/product-list"
 import { Suspense } from "react"
 
+export const dynamic = "force-dynamic"
+
 export default async function ProductsPage() {
   const supabase = await createClient()
 
@@ -10,6 +12,7 @@ export default async function ProductsPage() {
     .from("products")
     .select("*")
     .order("created_at", { ascending: false })
+    .range(0, 49)
 
   if (error) {
     console.error("[v0] Error fetching products:", error)
