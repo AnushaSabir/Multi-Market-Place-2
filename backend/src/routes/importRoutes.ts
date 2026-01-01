@@ -4,8 +4,9 @@ import { FileImporter } from '../services/importers/fileImporter';
 import { BaseImporter } from '../services/importers/baseImporter';
 import fs from 'fs';
 
+import os from 'os';
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: os.tmpdir() });
 
 // POST /api/import/file
 router.post('/file', upload.single('file'), async (req, res) => {
