@@ -5,7 +5,20 @@ import { Card } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Filter, MoreHorizontal, Sparkles, RefreshCw, Eye, Check, X, Trash2 } from "lucide-react"
+import {
+  MoreHorizontal,
+  Search,
+  Filter,
+  RefreshCw,
+  Plus,
+  Trash2,
+  Download,
+  Check,
+  X,
+  Eye,
+  Sparkles,
+  Zap
+} from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +27,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
@@ -28,6 +56,10 @@ interface Product {
   quantity: number
   status: string
   shipping_type?: string
+  marketplace_products?: {
+    marketplace: string
+    external_id: string
+  }[]
 }
 
 export function ProductList({ initialProducts }: { initialProducts: Product[] }) {
@@ -45,12 +77,23 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   const [hasMore, setHasMore] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
+  // Filter State
+  const [showOptimizedOnly, setShowOptimizedOnly] = useState(false)
+
+  // Publish State
+  const [publishDialogOpen, setPublishDialogOpen] = useState(false)
+  const [selectedProductForPublish, setSelectedProductForPublish] = useState<string | null>(null)
+  const [selectedMarketplace, setSelectedMarketplace] = useState<string>("")
+  const [isPublishing, setIsPublishing] = useState(false)
+
   const loadMoreProducts = async () => {
     setIsLoadingMore(true)
     try {
       const nextPage = page + 1
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-      const res = await fetch(`${API_URL}/api/products?page=${nextPage}&limit=50`)
+      const res = await fetch(`${API_URL}/api/products?page=${nextPage}&limit=50`, {
+        headers: { 'x-api-key': 'Epic_Tech_2026' }
+      })
 
       if (!res.ok) throw new Error("Failed to load more products")
 
@@ -73,8 +116,10 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
 
   const filteredProducts = products.filter(
     (p) =>
-      p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.sku?.toLowerCase().includes(searchQuery.toLowerCase()),
+      (p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.sku?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.ean?.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      (!showOptimizedOnly || p.status === 'optimized')
   )
 
   const toggleSelect = (id: string) => {
@@ -205,8 +250,81 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
       toast({ title: "Deleted", description: `${selected.length} products removed.` });
       setSelected([]);
 
-    } catch (e: any) {
-      toast({ title: "Error", description: e.message || "Could not delete products", variant: "destructive" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Could not delete products", variant: "destructive" });
+    }
+  }
+
+  const handleOptimize = async (id: string) => {
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+      toast({ title: "Optimizing...", description: "AI is rewriting product content..." })
+
+      const res = await fetch(`${API_URL}/api/ai/optimize/${id}`, {
+        method: "POST",
+        headers: { 'x-api-key': 'Epic_Tech_2026' }
+      })
+
+      if (!res.ok) throw new Error("Optimization failed")
+
+      const result = await res.json()
+
+      setProducts(products.map(p => p.id === id ? { ...p, ...result.data, status: 'optimized' } : p))
+      toast({ title: "Success", description: "Product optimized by AI!", className: "bg-green-600 text-white" })
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Optimization failed", variant: "destructive" })
+    }
+  }
+
+  const openPublishDialog = (id: string | null = null) => {
+    setSelectedProductForPublish(id) // If null, means we are publishing SELECTED items
+    setPublishDialogOpen(true)
+  }
+
+  const handlePublish = async () => {
+    if (!selectedMarketplace) return
+
+    // Determine which IDs to publish (Single or Bulk)
+    const idsToPublish = selectedProductForPublish ? [selectedProductForPublish] : selected
+
+    if (idsToPublish.length === 0) return
+
+    setIsPublishing(true)
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+    let successCount = 0
+    let failCount = 0
+
+    try {
+      for (const id of idsToPublish) {
+        try {
+          const res = await fetch(`${API_URL}/api/products/${id}/publish`, {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': 'Epic_Tech_2026'
+            },
+            body: JSON.stringify({ marketplace: selectedMarketplace })
+          })
+
+          if (!res.ok) throw new Error("Failed")
+          successCount++
+        } catch (e) {
+          failCount++
+        }
+      }
+
+      toast({
+        title: "Publish Complete",
+        description: `Success: ${successCount}, Failed: ${failCount}`,
+        className: successCount > 0 ? "bg-green-600 text-white" : "bg-red-600 text-white"
+      })
+
+      setPublishDialogOpen(false)
+      setSelected([]) // Clear selection
+    } catch (error: any) {
+      toast({ title: "Error", description: "Batch publish encountered an error", variant: "destructive" })
+    } finally {
+      setIsPublishing(false)
     }
   }
 
@@ -335,25 +453,38 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
             />
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant={showOptimizedOnly ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowOptimizedOnly(!showOptimizedOnly)}
+              className={showOptimizedOnly ? "bg-purple-600 hover:bg-purple-700" : ""}
+            >
+              <Sparkles className="mr-2 h-4 w-4" />
+              {showOptimizedOnly ? "Show All" : "Show Optimized Only"}
+            </Button>
             <Button variant="outline" size="sm" className="hidden sm:flex">
               <Filter className="mr-2 h-4 w-4" />
               Filter
             </Button>
             {selected.length > 0 && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-muted-foreground">{selected.length} selected</span>
-                <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete Selected
-                </Button>
-                <Button size="sm" variant="secondary" onClick={handleBulkAIOptimization}>
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Optimize Selected
-                </Button>
-                <Button size="sm" onClick={handleBulkSync}>
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Sync Selected
-                </Button>
+              <div className="w-full flex items-center justify-between gap-2 p-2 bg-muted/20 rounded-lg border border-muted-foreground/20">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-muted-foreground bg-white px-2 py-1 rounded border shadow-sm">{selected.length} Selected</span>
+                  <Button size="sm" variant="default" className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm" onClick={() => openPublishDialog(null)}>
+                    <Download className="mr-2 h-4 w-4" /> Publish
+                  </Button>
+                  <Button size="sm" variant="destructive" className="shadow-sm" onClick={handleBulkDelete}>
+                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                  </Button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant="secondary" className="bg-white hover:bg-gray-100 border text-purple-700 border-purple-200" onClick={handleBulkAIOptimization}>
+                    <Sparkles className="mr-2 h-4 w-4" /> Optimize
+                  </Button>
+                  <Button size="sm" variant="outline" className="bg-white" onClick={() => { toast({ title: "Sync", description: "Sync coming soon" }) }}>
+                    <RefreshCw className="mr-2 h-4 w-4" /> Sync
+                  </Button>
+                </div>
               </div>
             )}
             <Button size="sm" variant="destructive" onClick={handleDeleteAll}>
@@ -451,13 +582,27 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell">
-                    <div className="flex gap-1">
-                      {product.shipping_type && (
-                        <Badge variant="secondary" className="capitalize text-[10px] px-1.5 h-5">
-                          {product.shipping_type}
-                        </Badge>
-                      )}
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex gap-1">
+                        {product.status === 'optimized' && (
+                          <Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-100 flex items-center gap-1 w-fit">
+                            <Sparkles className="h-3 w-3" /> AI
+                          </Badge>
+                        )}
+                        {product.shipping_type && (
+                          <Badge variant="secondary" className="capitalize text-[10px] px-1.5 h-5 w-fit">
+                            {product.shipping_type}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex gap-1 flex-wrap">
+                        {product.marketplace_products?.map((mp, idx) => (
+                          <Badge key={idx} variant="outline" className="text-[10px] h-5 border-blue-200 bg-blue-50 text-blue-700">
+                            {mp.marketplace}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -479,6 +624,13 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                             <Eye className="mr-2 h-4 w-4" /> Details
                           </Link>
                         </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleOptimize(product.id)} className="text-purple-600 font-medium cursor-pointer">
+                          <Zap className="mr-2 h-4 w-4" /> Optimize with AI
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => openPublishDialog(product.id)} className="cursor-pointer">
+                          <Download className="mr-2 h-4 w-4" /> Publish to Market
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(product.id)}>Delete</DropdownMenuItem>
                       </DropdownMenuContent>
@@ -496,7 +648,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
             </TableBody>
           </Table>
         </div>
-      </Card>
+      </Card >
 
       {
         hasMore && (
@@ -518,6 +670,41 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
           </div>
         )
       }
+
+      <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Publish {selectedProductForPublish ? "Product" : `${selected.length} Products`} to Marketplace</DialogTitle>
+            <DialogDescription>
+              Select the marketplace you want to upload {selectedProductForPublish ? "this product" : "these products"} to.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Select onValueChange={setSelectedMarketplace} value={selectedMarketplace}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Marketplace" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ebay">eBay</SelectItem>
+                <SelectItem value="otto">Otto</SelectItem>
+                <SelectItem value="kaufland">Kaufland</SelectItem>
+                <SelectItem value="shopify">Shopify</SelectItem>
+              </SelectContent>
+            </Select>
+            {!selectedProductForPublish && (
+              <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+                ⚠️ Bulk publishing may take some time. Please do not close this window.
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPublishDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handlePublish} disabled={isPublishing || !selectedMarketplace}>
+              {isPublishing ? "Publishing..." : `Publish ${selectedProductForPublish ? "1" : selected.length} Products`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div >
   )
 }
