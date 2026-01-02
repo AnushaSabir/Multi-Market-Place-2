@@ -51,10 +51,15 @@ router.get('/stats', async (req, res) => {
             counts[row.marketplace] = (counts[row.marketplace] || 0) + 1;
         });
 
-        // Mocking "AI Optimized" and "Sync Errors" for now as we don't have dedicated columns yet
+        // Real "AI Optimized" count
+        const { count: optimizedCount, error: optError } = await supabase
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'optimized');
+
         const stats = {
             total: totalCount || 0,
-            aiOptimized: Math.floor((totalCount || 0) * 0.6), // Mock: 60% optimized
+            aiOptimized: optimizedCount || 0, // REAL count now
             synced: marketplaceData.length,
             marketplaces: {
                 otto: counts['otto'] || 0,
@@ -73,7 +78,8 @@ router.get('/stats', async (req, res) => {
 // GET /api/products/:id
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
-    const { data, error } = await supabase
+    console.log(`[GET] Fetching product with ID: ${id}`);
+    const { data: userData, error } = await supabase
         .from('products')
         .select(`
             *,
@@ -89,8 +95,11 @@ router.get('/:id', async (req, res) => {
         .eq('id', id)
         .single();
 
-    if (error) return res.status(404).json({ error: 'Product not found' });
-    res.json(data);
+    if (error) {
+        console.error(`[GET] Product fetch error for ID ${id}:`, error.message);
+        return res.status(404).json({ error: 'Product not found', details: error.message });
+    }
+    res.json({ data: userData }); // Wrap in { data: ... } to match frontend expectation
 });
 
 export default router;

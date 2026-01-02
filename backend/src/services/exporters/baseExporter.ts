@@ -14,7 +14,7 @@ export abstract class BaseExporter {
     protected abstract createListingOnApi(accessToken: string, product: any): Promise<ExportResult>;
 
     // Specific API implementation to update price/stock or details
-    protected abstract updateListingOnApi(accessToken: string, externalId: string, updates: { price?: number; quantity?: number; title?: string; description?: string }): Promise<ExportResult>;
+    protected abstract updateListingOnApi(accessToken: string, externalId: string, updates: { price?: number; quantity?: number; title?: string; description?: string; sku?: string; weight?: number; images?: string[]; shipping_type?: string }): Promise<ExportResult>;
 
     async publishProduct(productId: string): Promise<ExportResult> {
         try {

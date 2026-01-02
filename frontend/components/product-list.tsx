@@ -503,9 +503,8 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                     onCheckedChange={(checked) => setSelected(checked ? filteredProducts.map((p) => p.id) : [])}
                   />
                 </TableHead>
-                <TableHead className="min-w-[200px]">Product</TableHead>
-                <TableHead className="hidden md:table-cell">SKU / EAN</TableHead>
-                <TableHead>Price / Qty</TableHead>
+                <TableHead className="min-w-[300px]">Product Details</TableHead>
+                <TableHead>Stock / Price</TableHead>
                 <TableHead className="hidden lg:table-cell">Marketplaces</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -513,19 +512,34 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
             </TableHeader>
             <TableBody>
               {filteredProducts.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>
+                <TableRow key={product.id} className="hover:bg-muted/50">
+                  <TableCell className="align-top py-4">
                     <Checkbox checked={selected.includes(product.id)} onCheckedChange={() => toggleSelect(product.id)} />
                   </TableCell>
-                  <TableCell>
-                    <div className="font-medium truncate max-w-[200px]" title={product.title}>{product.title}</div>
+                  <TableCell className="align-top py-4">
+                    <div className="flex gap-3">
+                      {/* Placeholder Image if we had images */}
+                      <div className="h-16 w-16 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground border">
+                        Tags/Img
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <div className="font-bold text-base text-primary leading-tight" title={product.title}>
+                          {product.title}
+                        </div>
+                        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground mt-1">
+                          <span className="flex items-center gap-1 bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100">
+                            <span className="font-semibold">SKU:</span> {product.sku || "N/A"}
+                          </span>
+                          <span className="flex items-center gap-1 bg-green-50 text-green-700 px-1.5 py-0.5 rounded border border-green-100">
+                            <span className="font-semibold">EAN:</span> {product.ean || "N/A"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    <div className="text-sm font-mono">{product.sku}</div>
-                    <div className="text-xs text-muted-foreground">{product.ean}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
+                  <TableCell className="align-top py-4">
+                    <div className="space-y-2">
+                      {/* Price Edit Block */}
                       {editingPrice === product.id ? (
                         <div className="flex items-center gap-1">
                           <Input
@@ -536,57 +550,35 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                             step="0.01"
                             autoFocus
                           />
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-6 w-6"
-                            onClick={() => savePriceEdit(product.id)}
-                          >
-                            <Check className="h-3 w-3 text-green-600" />
-                          </Button>
-                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelPriceEdit}>
-                            <X className="h-3 w-3 text-red-600" />
-                          </Button>
+                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => savePriceEdit(product.id)}><Check className="h-3 w-3 text-green-600" /></Button>
+                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelPriceEdit}><X className="h-3 w-3 text-red-600" /></Button>
                         </div>
                       ) : (
-                        <div
-                          className="font-medium cursor-pointer hover:text-primary transition-colors"
-                          onClick={() => handlePriceEdit(product.id, product.price)}
-                        >
+                        <div className="font-bold text-sm cursor-pointer hover:underline" onClick={() => handlePriceEdit(product.id, product.price)}>
                           {new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(product.price)}
                         </div>
                       )}
+
+                      {/* Stock Edit Block */}
                       {editingQty === product.id ? (
                         <div className="flex items-center gap-1">
-                          <Input
-                            type="number"
-                            value={tempQty}
-                            onChange={(e) => setTempQty(e.target.value)}
-                            className="h-7 w-16 text-sm"
-                            autoFocus
-                          />
-                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => saveQtyEdit(product.id)}>
-                            <Check className="h-3 w-3 text-green-600" />
-                          </Button>
-                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelQtyEdit}>
-                            <X className="h-3 w-3 text-red-600" />
-                          </Button>
+                          <Input type="number" value={tempQty} onChange={(e) => setTempQty(e.target.value)} className="h-7 w-16 text-sm" />
+                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => saveQtyEdit(product.id)}><Check className="h-3 w-3 text-green-600" /></Button>
+                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelQtyEdit}><X className="h-3 w-3 text-red-600" /></Button>
                         </div>
                       ) : (
-                        <div
-                          className={`text-xs cursor-pointer hover:text-primary transition-colors ${product.quantity < 10 ? "text-red-600 font-bold" : "text-muted-foreground"}`}
-                          onClick={() => handleQtyEdit(product.id, product.quantity)}
-                        >
+                        <div className={`text-xs font-medium px-2 py-0.5 rounded-full inline-block cursor-pointer hover:opacity-80 ${product.quantity > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}
+                          onClick={() => handleQtyEdit(product.id, product.quantity)}>
                           Stock: {product.quantity}
                         </div>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="align-top py-4">
                     <div className="flex flex-col gap-1">
                       <div className="flex gap-1">
                         {product.status === 'optimized' && (
-                          <Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-100 flex items-center gap-1 w-fit">
+                          <Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-100 flex items-center gap-1 w-fit text-[10px]">
                             <Sparkles className="h-3 w-3" /> AI
                           </Badge>
                         )}
@@ -596,7 +588,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                           </Badge>
                         )}
                       </div>
-                      <div className="flex gap-1 flex-wrap">
+                      <div className="flex gap-1 flex-wrap mt-1">
                         {product.marketplace_products?.map((mp, idx) => (
                           <Badge key={idx} variant="outline" className="text-[10px] h-5 border-blue-200 bg-blue-50 text-blue-700">
                             {mp.marketplace}
@@ -605,15 +597,15 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="align-top py-4">
                     <Badge variant={product.status === "synced" ? "outline" : "secondary"}>
-                      {product.status || "Imported"}
+                      {product.status || "Draft"}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right align-top py-4">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>

@@ -15,7 +15,15 @@ export class SyncService {
 
     // Called when Central Product is updated (Manual Price Change, etc)
     // "Central manual price overrides marketplace"
-    static async syncProductUpdateToAll(productId: string, updates: { price?: number; quantity?: number; title?: string; description?: string }) {
+    static async syncProductUpdateToAll(productId: string, updates: {
+        price?: number;
+        quantity?: number;
+        title?: string;
+        description?: string;
+        weight?: number;
+        shipping_type?: string;
+        images?: string[];
+    }) {
         console.log(`Syncing product ${productId} updates to all connected marketplaces...`);
 
         // Find all connected marketplaces for this product

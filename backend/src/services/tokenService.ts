@@ -38,8 +38,13 @@ export class TokenManger {
                 envCreds.client_id = process.env.OTTO_CLIENT_ID;
                 envCreds.client_secret = process.env.OTTO_CLIENT_SECRET;
             } else if (marketplace === 'ebay') {
-                envCreds.client_id = process.env.EBAY_CLIENT_ID;
-                envCreds.client_secret = process.env.EBAY_CLIENT_SECRET;
+                // If User Token is provided directly (Preferred for Inventory API)
+                if (process.env.EBAY_OAUTH_TOKEN) {
+                    envCreds.access_token = process.env.EBAY_OAUTH_TOKEN;
+                } else {
+                    envCreds.client_id = process.env.EBAY_CLIENT_ID;
+                    envCreds.client_secret = process.env.EBAY_CLIENT_SECRET;
+                }
             } else if (marketplace === 'kaufland') {
                 envCreds.client_key = process.env.KAUFLAND_CLIENT_KEY;
                 envCreds.secret_key = process.env.KAUFLAND_SECRET_KEY;
@@ -62,6 +67,7 @@ export class TokenManger {
             if (marketplace === 'billbee') return envCreds.api_key || null;
             if (marketplace === 'kaufland') return envCreds.client_key || null;
             if (marketplace === 'shopify') return envCreds.access_token || null;
+            if (marketplace === 'ebay' && envCreds.access_token) return envCreds.access_token;
 
             // Otherwise generate token using these env creds
             console.log(`Generating token for ${marketplace} using .env credentials...`);

@@ -24,18 +24,29 @@ router.post('/optimize/:id', async (req, res) => {
         // 2. Call AI Service with Fallback for Free Tier Limits (429)
         let optimized;
         try {
+            if (!process.env.OPENAI_API_KEY) {
+                console.warn("OPENAI_API_KEY missing, using MOCK mode.");
+                throw new Error("MOCK_TRIGGER"); // Jump to catch for mock
+            }
+            console.log("Calling OpenAI Service...");
             optimized = await AIService.optimizeProductListing(product.title, product.description);
         } catch (aiError: any) {
-            if (aiError.message.includes('429') || aiError.message.includes('quota')) {
-                console.warn("OpenAI Quota Exceeded. Using Mock AI for demonstration.");
-                optimized = {
-                    title: `[AI] ${product.title} (Optimized)`,
-                    description: `✨ OPTIMIZED DESCRIPTION ✨\n\n${product.description}\n\n(Note: Real AI quota exceeded, this is a mock optimization for testing flow.)`,
-                    keywords: ['mock', 'ai', 'test']
-                };
-            } else {
-                throw aiError;
-            }
+            console.warn("OpenAI Failed (likely no credit/quota), switching to MOCK Result to allow testing.");
+
+            // Mock Fallback Data (Fake Translation)
+            optimized = {
+                title: `${product.title} (DE - Optimiert)`,
+                description: `
+                    <h2>Produktbeschreibung (Mock AI)</h2>
+                    <p>Dies ist eine <strong>automatisch generierte Test-Beschreibung</strong>, da der OpenAI API Key kein Guthaben hat (Error 429) oder fehlt.</p>
+                    <p><strong>Original Content:</strong> ${product.description}</p>
+                    <ul>
+                        <li>Feature 1: Test Mode Active</li>
+                        <li>Feature 2: Real Sync will still work</li>
+                        <li>Status: MOCK_OPTIMIZED</li>
+                    </ul>
+                `
+            };
         }
 
         // 3. Update Product
