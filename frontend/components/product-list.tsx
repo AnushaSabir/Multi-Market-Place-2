@@ -17,7 +17,9 @@ import {
   X,
   Eye,
   Sparkles,
-  Zap
+  Zap,
+  ImageIcon,
+  Pencil
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -59,7 +61,9 @@ interface Product {
   marketplace_products?: {
     marketplace: string
     external_id: string
+    sync_status?: string
   }[]
+  images?: string[]
 }
 
 export function ProductList({ initialProducts }: { initialProducts: Product[] }) {
@@ -73,6 +77,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   const { toast } = useToast()
 
   // Pagination State
+  // FIX: Start page at 1, so next request is for page 2
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
@@ -90,25 +95,33 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     setIsLoadingMore(true)
     try {
       const nextPage = page + 1
+      console.log("Loading page:", nextPage) // DEBUG
+
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
       const res = await fetch(`${API_URL}/api/products?page=${nextPage}&limit=50`, {
         headers: { 'x-api-key': 'Epic_Tech_2026' }
       })
 
-      if (!res.ok) throw new Error("Failed to load more products")
+      if (!res.ok) throw new Error(`API Error: ${res.status}`)
 
-      const data = await res.json()
+      const json = await res.json()
+      const newProducts = json.data
 
-      if (data.data.length === 0) {
+      if (!newProducts || newProducts.length === 0) {
         setHasMore(false)
-        toast({ title: "No more products", description: "You have reached the end of the list." })
+        toast({ title: "End of list", description: "No more products to load." })
       } else {
-        setProducts(prev => [...prev, ...data.data])
+        // Prevent duplicates
+        setProducts(prev => {
+          const existingIds = new Set(prev.map(p => p.id))
+          const uniqueNew = newProducts.filter((p: Product) => !existingIds.has(p.id))
+          return [...prev, ...uniqueNew]
+        })
         setPage(nextPage)
       }
     } catch (error: any) {
       console.error("Load More Error:", error);
-      toast({ title: "Error", description: error.message || "Could not load more products", variant: "destructive" })
+      toast({ title: "Load Failed", description: "Check console for details.", variant: "destructive" })
     } finally {
       setIsLoadingMore(false)
     }
@@ -139,39 +152,23 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   const savePriceEdit = (id: string) => {
     const newPrice = Number.parseFloat(tempPrice)
     if (isNaN(newPrice) || newPrice < 0) {
-      toast({
-        title: "Invalid price",
-        description: "Please enter a valid price.",
-        variant: "destructive",
-      })
+      toast({ title: "Invalid price", description: "Please enter a valid price.", variant: "destructive" })
       return
     }
-
     setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, price: newPrice } : p)))
     setEditingPrice(null)
-    toast({
-      title: "Price updated",
-      description: "Product price has been updated successfully.",
-    })
+    toast({ title: "Price updated", description: "Product price has been updated successfully." })
   }
 
   const saveQtyEdit = (id: string) => {
     const newQty = Number.parseInt(tempQty)
     if (isNaN(newQty) || newQty < 0) {
-      toast({
-        title: "Invalid quantity",
-        description: "Please enter a valid quantity.",
-        variant: "destructive",
-      })
+      toast({ title: "Invalid quantity", description: "Please enter a valid quantity.", variant: "destructive" })
       return
     }
-
     setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, quantity: newQty } : p)))
     setEditingQty(null)
-    toast({
-      title: "Quantity updated",
-      description: "Product quantity has been updated successfully.",
-    })
+    toast({ title: "Quantity updated", description: "Product quantity has been updated successfully." })
   }
 
   const cancelPriceEdit = () => {
@@ -186,43 +183,25 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
 
   const handleBulkAIOptimization = async () => {
     if (selected.length === 0) {
-      toast({
-        title: "No products selected",
-        description: "Please select at least one product to optimize.",
-        variant: "destructive",
-      })
+      toast({ title: "No products selected", description: "Please select at least one product to optimize.", variant: "destructive" })
       return
     }
-
-    toast({
-      title: "AI Optimization started",
-      description: `Optimizing ${selected.length} products for German market...`,
-    })
+    toast({ title: "AI Optimization started", description: `Optimizing ${selected.length} products for German market...` })
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
     let successCount = 0;
 
     for (const id of selected) {
       try {
-        // Step 1: Optimize locally via API
-        toast({ title: "AI Optimization Started", description: "Generating optimizations..." });
-
         const res = await fetch(`${API_URL}/api/ai/optimize/${id}`, {
           method: 'POST',
           headers: { 'x-api-key': 'Epic_Tech_2026' }
         });
         if (res.ok) successCount++;
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) { console.error(e); }
     }
 
-    toast({
-      title: "Optimization Complete",
-      description: `${successCount} / ${selected.length} products optimized successfully. Refresh to see changes.`,
-    })
-
-    // Ideally we re-fetch products here, but for now user can refresh.
+    toast({ title: "Optimization Complete", description: `${successCount} / ${selected.length} products optimized successfully.` })
     setSelected([])
   }
 
@@ -234,22 +213,15 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
       const res = await fetch(`${API_URL}/api/products/batch`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': 'Epic_Tech_2026'
-        },
+        headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
         body: JSON.stringify({ ids: selected })
       });
 
-      if (!res.ok) {
-        const json = await res.json();
-        throw new Error(json.error || "Batch delete failed");
-      }
+      if (!res.ok) throw new Error("Batch delete failed");
 
       setProducts(prev => prev.filter(p => !selected.includes(p.id)));
       toast({ title: "Deleted", description: `${selected.length} products removed.` });
       setSelected([]);
-
     } catch (error: any) {
       toast({ title: "Error", description: error.message || "Could not delete products", variant: "destructive" });
     }
@@ -259,16 +231,11 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
       toast({ title: "Optimizing...", description: "AI is rewriting product content..." })
-
       const res = await fetch(`${API_URL}/api/ai/optimize/${id}`, {
-        method: "POST",
-        headers: { 'x-api-key': 'Epic_Tech_2026' }
+        method: "POST", headers: { 'x-api-key': 'Epic_Tech_2026' }
       })
-
       if (!res.ok) throw new Error("Optimization failed")
-
       const result = await res.json()
-
       setProducts(products.map(p => p.id === id ? { ...p, ...result.data, status: 'optimized' } : p))
       toast({ title: "Success", description: "Product optimized by AI!", className: "bg-green-600 text-white" })
     } catch (error: any) {
@@ -277,16 +244,13 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   }
 
   const openPublishDialog = (id: string | null = null) => {
-    setSelectedProductForPublish(id) // If null, means we are publishing SELECTED items
+    setSelectedProductForPublish(id)
     setPublishDialogOpen(true)
   }
 
   const handlePublish = async () => {
     if (!selectedMarketplace) return
-
-    // Determine which IDs to publish (Single or Bulk)
     const idsToPublish = selectedProductForPublish ? [selectedProductForPublish] : selected
-
     if (idsToPublish.length === 0) return
 
     setIsPublishing(true)
@@ -299,28 +263,20 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
         try {
           const res = await fetch(`${API_URL}/api/products/${id}/publish`, {
             method: "POST",
-            headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': 'Epic_Tech_2026'
-            },
+            headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
             body: JSON.stringify({ marketplace: selectedMarketplace })
           })
-
-          if (!res.ok) throw new Error("Failed")
+          if (!res.ok) throw new Error("Failed");
           successCount++
-        } catch (e) {
-          failCount++
-        }
+        } catch (e) { failCount++ }
       }
-
       toast({
         title: "Publish Complete",
         description: `Success: ${successCount}, Failed: ${failCount}`,
         className: successCount > 0 ? "bg-green-600 text-white" : "bg-red-600 text-white"
       })
-
       setPublishDialogOpen(false)
-      setSelected([]) // Clear selection
+      setSelected([])
     } catch (error: any) {
       toast({ title: "Error", description: "Batch publish encountered an error", variant: "destructive" })
     } finally {
@@ -329,114 +285,72 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   }
 
   const handleDeleteAll = async () => {
-    // Double confirmation for safety
     if (!confirm("⚠️ WARNING: This will delete ALL products locally. Are you sure?")) return;
-    if (!confirm("This action is irreversible. All synced data will be lost. Proceed?")) return;
-
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
       const res = await fetch(`${API_URL}/api/products/cleanup?marketplace=all`, {
-        method: 'DELETE',
-        headers: { 'x-api-key': 'Epic_Tech_2026' }
+        method: 'DELETE', headers: { 'x-api-key': 'Epic_Tech_2026' }
       });
-
-      if (!res.ok) {
-        const json = await res.json();
-        throw new Error(json.error || "Delete All failed");
-      }
-
-      setProducts([]);
-      setSelected([]);
+      if (!res.ok) throw new Error("Delete All failed");
+      setProducts([]); setSelected([]);
       toast({ title: "System Cleared", description: "All products have been deleted." });
-
     } catch (e: any) {
       toast({ title: "Error", description: e.message || "Could not clear system", variant: "destructive" });
     }
   }
 
-  const handleBulkSync = async () => {
-    if (selected.length === 0) {
-      toast({
-        title: "No products selected",
-        description: "Please select at least one product to sync.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    toast({
-      title: "Sync started",
-      description: `Syncing ${selected.length} product(s) to all connected marketplaces...`,
-    })
-
-    toast({
-      title: "Sync started",
-      description: `Syncing ${selected.length} product(s) to all connected marketplaces...`,
-    })
-
-    try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-      const res = await fetch(`${API_URL}/api/sync/batch`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': 'Epic_Tech_2026'
-        },
-        body: JSON.stringify({ ids: selected })
-      });
-
-      if (!res.ok) throw new Error("Sync failed");
-
-      toast({
-        title: "Sync complete",
-        description: `${selected.length} product(s) successfully pushed to all marketplaces.`,
-      })
-      setSelected([])
-
-    } catch (e) {
-      toast({
-        title: "Sync Error",
-        description: "Failed to sync products. Check connection.",
-        variant: "destructive"
-      });
-    }
-  }
-
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
-
+    if (!confirm("Are you sure?")) return;
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
       const res = await fetch(`${API_URL}/api/products/${id}`, {
-        method: 'DELETE',
-        headers: { 'x-api-key': 'Epic_Tech_2026' }
+        method: 'DELETE', headers: { 'x-api-key': 'Epic_Tech_2026' }
       });
-
-      if (!res.ok) {
-        const json = await res.json();
-        throw new Error(json.error || "Delete failed");
-      }
-
+      if (!res.ok) throw new Error("Delete failed");
       setProducts(prev => prev.filter(p => p.id !== id));
       toast({ title: "Deleted", description: "Product removed." });
-
     } catch (e: any) {
       toast({ title: "Error", description: e.message || "Could not delete product", variant: "destructive" });
     }
   }
 
+  const handleBulkSync = async () => {
+    if (selected.length === 0) {
+      toast({ title: "No products", description: "Select products to sync.", variant: "destructive" })
+      return
+    }
+    toast({ title: "Sync started", description: `Syncing ${selected.length} products...` })
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const res = await fetch(`${API_URL}/api/sync/batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
+        body: JSON.stringify({ ids: selected })
+      });
+      if (!res.ok) throw new Error("Sync failed");
+      toast({ title: "Sync complete", description: "Products pushed to marketplaces." })
+      setSelected([])
+    } catch (e) {
+      toast({ title: "Sync Error", description: "Failed to sync products.", variant: "destructive" });
+    }
+  }
+
+  // Helper to check marketplace status
+  const getMarketplaceStatus = (product: Product, mp: string) => {
+    const found = product.marketplace_products?.find(p => p.marketplace === mp);
+    return found ? { connected: true, data: found } : { connected: false };
+  }
+
   return (
-    <div className="p-6 space-y-6 animate-fade-in">
+    <div className="p-6 space-y-6 animate-fade-in w-full">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Products</h1>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleBulkSync}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Sync All
+          <Button size="sm" onClick={handleBulkSync} variant="outline">
+            <RefreshCw className="mr-2 h-4 w-4" /> Sync All
           </Button>
           <Button size="sm" onClick={handleBulkAIOptimization}>
-            <Sparkles className="mr-2 h-4 w-4" />
-            AI Optimization (Bulk)
+            <Sparkles className="mr-2 h-4 w-4" /> Bulk AI
           </Button>
         </div>
       </div>
@@ -445,258 +359,145 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
         <div className="p-4 border-b bg-muted/10 flex flex-col gap-4 md:flex-row md:items-center">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              className="pl-9"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <Input className="pl-9" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant={showOptimizedOnly ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowOptimizedOnly(!showOptimizedOnly)}
-              className={showOptimizedOnly ? "bg-purple-600 hover:bg-purple-700" : ""}
-            >
-              <Sparkles className="mr-2 h-4 w-4" />
-              {showOptimizedOnly ? "Show All" : "Show Optimized Only"}
-            </Button>
-            <Button variant="outline" size="sm" className="hidden sm:flex">
-              <Filter className="mr-2 h-4 w-4" />
-              Filter
-            </Button>
             {selected.length > 0 && (
-              <div className="w-full flex items-center justify-between gap-2 p-2 bg-muted/20 rounded-lg border border-muted-foreground/20">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-muted-foreground bg-white px-2 py-1 rounded border shadow-sm">{selected.length} Selected</span>
-                  <Button size="sm" variant="default" className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm" onClick={() => openPublishDialog(null)}>
-                    <Download className="mr-2 h-4 w-4" /> Publish
-                  </Button>
-                  <Button size="sm" variant="destructive" className="shadow-sm" onClick={handleBulkDelete}>
-                    <Trash2 className="mr-2 h-4 w-4" /> Delete
-                  </Button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button size="sm" variant="secondary" className="bg-white hover:bg-gray-100 border text-purple-700 border-purple-200" onClick={handleBulkAIOptimization}>
-                    <Sparkles className="mr-2 h-4 w-4" /> Optimize
-                  </Button>
-                  <Button size="sm" variant="outline" className="bg-white" onClick={() => { toast({ title: "Sync", description: "Sync coming soon" }) }}>
-                    <RefreshCw className="mr-2 h-4 w-4" /> Sync
-                  </Button>
-                </div>
-              </div>
+              <>
+                <span className="text-sm font-medium px-2">{selected.length} Selected</span>
+                <Button size="sm" onClick={() => openPublishDialog(null)}>Publish</Button>
+                <Button size="sm" variant="destructive" onClick={handleBulkDelete}><Trash2 className="w-4 h-4" /></Button>
+              </>
             )}
-            <Button size="sm" variant="destructive" onClick={handleDeleteAll}>
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete All
-            </Button>
           </div>
         </div>
+
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">
-                  <Checkbox
-                    checked={selected.length > 0 && selected.length === filteredProducts.length}
-                    onCheckedChange={(checked) => setSelected(checked ? filteredProducts.map((p) => p.id) : [])}
-                  />
+              <TableRow className="bg-muted/50">
+                <TableHead className="w-10 text-center">
+                  <Checkbox checked={selected.length > 0 && selected.length === filteredProducts.length} onCheckedChange={(c) => setSelected(c ? filteredProducts.map(p => p.id) : [])} />
                 </TableHead>
-                <TableHead className="min-w-[300px]">Product Details</TableHead>
-                <TableHead>Stock / Price</TableHead>
-                <TableHead className="hidden lg:table-cell">Marketplaces</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="w-16">Image</TableHead>
+                <TableHead className="w-24">SKU / EAN</TableHead>
+                <TableHead>Product Title</TableHead>
+                <TableHead className="w-24">Price</TableHead>
+                <TableHead className="w-20">Stock</TableHead>
+                <TableHead className="w-40 text-center">Platform Actions</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredProducts.map((product) => (
-                <TableRow key={product.id} className="hover:bg-muted/50">
-                  <TableCell className="align-top py-4">
+                <TableRow key={product.id} className="hover:bg-muted/50 group text-sm">
+                  <TableCell className="text-center py-2">
                     <Checkbox checked={selected.includes(product.id)} onCheckedChange={() => toggleSelect(product.id)} />
                   </TableCell>
-                  <TableCell className="align-top py-4">
-                    <div className="flex gap-3">
-                      {/* Placeholder Image if we had images */}
-                      <div className="h-16 w-16 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground border">
-                        Tags/Img
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <div className="font-bold text-base text-primary leading-tight" title={product.title}>
-                          {product.title}
-                        </div>
-                        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground mt-1">
-                          <span className="flex items-center gap-1 bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100">
-                            <span className="font-semibold">SKU:</span> {product.sku || "N/A"}
-                          </span>
-                          <span className="flex items-center gap-1 bg-green-50 text-green-700 px-1.5 py-0.5 rounded border border-green-100">
-                            <span className="font-semibold">EAN:</span> {product.ean || "N/A"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="align-top py-4">
-                    <div className="space-y-2">
-                      {/* Price Edit Block */}
-                      {editingPrice === product.id ? (
-                        <div className="flex items-center gap-1">
-                          <Input
-                            type="number"
-                            value={tempPrice}
-                            onChange={(e) => setTempPrice(e.target.value)}
-                            className="h-7 w-20 text-sm"
-                            step="0.01"
-                            autoFocus
-                          />
-                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => savePriceEdit(product.id)}><Check className="h-3 w-3 text-green-600" /></Button>
-                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelPriceEdit}><X className="h-3 w-3 text-red-600" /></Button>
-                        </div>
-                      ) : (
-                        <div className="font-bold text-sm cursor-pointer hover:underline" onClick={() => handlePriceEdit(product.id, product.price)}>
-                          {new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(product.price)}
-                        </div>
-                      )}
 
-                      {/* Stock Edit Block */}
-                      {editingQty === product.id ? (
-                        <div className="flex items-center gap-1">
-                          <Input type="number" value={tempQty} onChange={(e) => setTempQty(e.target.value)} className="h-7 w-16 text-sm" />
-                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => saveQtyEdit(product.id)}><Check className="h-3 w-3 text-green-600" /></Button>
-                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelQtyEdit}><X className="h-3 w-3 text-red-600" /></Button>
-                        </div>
-                      ) : (
-                        <div className={`text-xs font-medium px-2 py-0.5 rounded-full inline-block cursor-pointer hover:opacity-80 ${product.quantity > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}
-                          onClick={() => handleQtyEdit(product.id, product.quantity)}>
-                          Stock: {product.quantity}
-                        </div>
-                      )}
+                  <TableCell className="py-2">
+                    <div className="h-10 w-10 bg-muted rounded flex items-center justify-center border overflow-hidden">
+                      {product.images && product.images.length > 0 ? (
+                        <img src={product.images[0]} alt="" className="h-full w-full object-cover" />
+                      ) : <ImageIcon className="h-4 w-4 text-muted-foreground" />}
                     </div>
                   </TableCell>
-                  <TableCell className="align-top py-4">
+
+                  <TableCell className="py-2 align-top">
                     <div className="flex flex-col gap-1">
-                      <div className="flex gap-1">
-                        {product.status === 'optimized' && (
-                          <Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-100 flex items-center gap-1 w-fit text-[10px]">
-                            <Sparkles className="h-3 w-3" /> AI
-                          </Badge>
-                        )}
-                        {product.shipping_type && (
-                          <Badge variant="secondary" className="capitalize text-[10px] px-1.5 h-5 w-fit">
-                            {product.shipping_type}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex gap-1 flex-wrap mt-1">
-                        {product.marketplace_products?.map((mp, idx) => (
-                          <Badge key={idx} variant="outline" className="text-[10px] h-5 border-blue-200 bg-blue-50 text-blue-700">
-                            {mp.marketplace}
-                          </Badge>
-                        ))}
-                      </div>
+                      <span className="font-mono text-xs font-semibold">{product.sku || <span className="text-red-300">No SKU</span>}</span>
+                      <span className="text-[10px] text-muted-foreground">{product.ean || "-"}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="align-top py-4">
-                    <Badge variant={product.status === "synced" ? "outline" : "secondary"}>
-                      {product.status || "Draft"}
-                    </Badge>
+
+                  <TableCell className="py-2 align-top">
+                    <div className="font-medium line-clamp-2" title={product.title}>{product.title}</div>
+                    {product.status === 'optimized' && (
+                      <Badge variant="secondary" className="mt-1 text-[10px] h-5 bg-purple-100 text-purple-700">Optimized</Badge>
+                    )}
                   </TableCell>
-                  <TableCell className="text-right align-top py-4">
+
+                  <TableCell className="py-2 align-top font-semibold">
+                    {new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(product.price)}
+                  </TableCell>
+
+                  <TableCell className="py-2 align-top">
+                    <span className={`px-2 py-0.5 rounded text-xs ${product.quantity > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {product.quantity}
+                    </span>
+                  </TableCell>
+
+                  <TableCell className="py-2 align-top text-center">
+                    <div className="flex justify-center gap-2">
+                      {['ebay', 'shopify', 'otto', 'kaufland'].map((mp) => {
+                        const { connected } = getMarketplaceStatus(product, mp);
+                        return (
+                          <div key={mp} className="relative group/icon">
+                            <button
+                              onClick={() => connected ? null : openPublishDialog(product.id)}
+                              className={`
+                                            h-7 w-7 rounded-sm flex items-center justify-center border transition-all text-[10px] font-bold uppercase
+                                            ${connected
+                                  ? 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm'
+                                  : 'bg-gray-50 border-gray-200 text-gray-400 hover:bg-white hover:border-blue-300 hover:text-blue-500'}
+                                        `}
+                              title={connected ? `Synced to ${mp}` : `Click to Publish to ${mp}`}
+                            >
+                              {mp.charAt(0)}
+                              {!connected && <Plus className="absolute -top-1 -right-1 h-2.5 w-2.5 bg-blue-500 text-white rounded-full p-0.5" />}
+                            </button>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="text-right py-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/products/${product.id}`} className="flex items-center" prefetch={true}>
-                            <Eye className="mr-2 h-4 w-4" /> Details
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleOptimize(product.id)} className="text-purple-600 font-medium cursor-pointer">
-                          <Zap className="mr-2 h-4 w-4" /> Optimize with AI
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => openPublishDialog(product.id)} className="cursor-pointer">
-                          <Download className="mr-2 h-4 w-4" /> Publish to Market
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(product.id)}>Delete</DropdownMenuItem>
+                        <DropdownMenuItem asChild><Link href={`/products/${product.id}`}>Details</Link></DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleOptimize(product.id)}>AI Optimize</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDelete(product.id)} className="text-red-600">Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
-              {filteredProducts.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-10 text-muted-foreground">
-                    No products found in database.
-                  </TableCell>
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </div>
-      </Card >
+      </Card>
 
-      {
-        hasMore && (
-          <div className="flex justify-center pt-4">
-            <Button
-              onClick={loadMoreProducts}
-              disabled={isLoadingMore}
-              variant="outline"
-              className="w-full max-w-xs"
-            >
-              {isLoadingMore ? (
-                <>
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> Loading...
-                </>
-              ) : (
-                "Load More Products"
-              )}
-            </Button>
-          </div>
-        )
-      }
+      {hasMore && (
+        <div className="flex justify-center pt-4">
+          <Button onClick={loadMoreProducts} disabled={isLoadingMore} variant="outline">
+            {isLoadingMore ? "Loading..." : "Load More Products"}
+          </Button>
+        </div>
+      )}
 
       <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Publish {selectedProductForPublish ? "Product" : `${selected.length} Products`} to Marketplace</DialogTitle>
-            <DialogDescription>
-              Select the marketplace you want to upload {selectedProductForPublish ? "this product" : "these products"} to.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <Select onValueChange={setSelectedMarketplace} value={selectedMarketplace}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Marketplace" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ebay">eBay</SelectItem>
-                <SelectItem value="otto">Otto</SelectItem>
-                <SelectItem value="kaufland">Kaufland</SelectItem>
-                <SelectItem value="shopify">Shopify</SelectItem>
-              </SelectContent>
-            </Select>
-            {!selectedProductForPublish && (
-              <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
-                ⚠️ Bulk publishing may take some time. Please do not close this window.
-              </p>
-            )}
-          </div>
+          <DialogHeader><DialogTitle>Publish to Marketplace</DialogTitle></DialogHeader>
+          <Select onValueChange={setSelectedMarketplace} value={selectedMarketplace}>
+            <SelectTrigger><SelectValue placeholder="Select Marketplace" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ebay">eBay</SelectItem>
+              <SelectItem value="otto">Otto</SelectItem>
+              <SelectItem value="kaufland">Kaufland</SelectItem>
+              <SelectItem value="shopify">Shopify</SelectItem>
+            </SelectContent>
+          </Select>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setPublishDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handlePublish} disabled={isPublishing || !selectedMarketplace}>
-              {isPublishing ? "Publishing..." : `Publish ${selectedProductForPublish ? "1" : selected.length} Products`}
-            </Button>
+            <Button onClick={handlePublish} disabled={isPublishing}>Publish</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div >
+    </div>
   )
 }
