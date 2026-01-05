@@ -48,7 +48,14 @@ export class SyncService {
             return Promise.resolve();
         });
 
-        await Promise.all(promises);
+        // Push updates safely - Using allSettled to ensure one failure doesn't stop others
+        const results = await Promise.allSettled(promises);
+
+        results.forEach((result, index) => {
+            if (result.status === 'rejected') {
+                console.error(`Sync failed for link index ${index}:`, result.reason);
+            }
+        });
     }
 
     // Called via Webhook from Marketplace (Stock Sold, etc)

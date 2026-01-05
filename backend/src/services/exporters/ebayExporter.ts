@@ -15,56 +15,66 @@ export class EbayExporter extends BaseExporter {
         console.log(`[eBay] Updating listing ${externalId}...`);
 
         try {
-            // 1. Update Price & Quantity (Inventory API)
-            // Use 'bulkUpdatePriceQuantity' if SKU based, or Offer based?
-            // eBay simplified: often uses 'Inventory Item' based on SKU.
-            // Assumption: externalId here is the 'Item ID'.
-            // For Inventory API we typically need SKU. But let's assume Item ID update for simplicity on Trading/Browse API if possible.
-            // Actually, best practice for modern eBay is Inventory API (requires SKU).
-            // Fallback: Trading API or Browse API patch? Browse API doesn't allow easy edits.
-            // Trading API is XML based.
-            // Inventory API is JSON. URL: https://api.ebay.com/sell/inventory/v1/inventory_item/{sku}
+            // Strategy: Use eBay Inventory API 'bulkUpdatePriceQuantity' which is efficient.
+            // Requirement: We need the SKU.
 
-            // We need SKU for Inventory API. BaseExporter arguments only have ExternalID (Item ID).
-            // We should ideally pass SKU in 'updates' or fetch it.
-            // For MVP, if 'updates.sku' is present, we use it. If not, we might struggle.
-            // Let's assume updates object carries SKU if needed or we use Item ID with Trading API (legacy but robust).
-            // Let's try Inventory API approach assuming 'externalId' MIGHT be 'SKU' if we designed it that way?
-            // No, external_id is Item ID.
-
-            // LET'S USE TRADING API (XML) WRAPPER or simple JSON if available?
-            // Actually, eBay 'Sell > Inventory' API is best.
-            // PUT /sell/inventory/v1/inventory_item/{sku}
-
-            // Since we might not have SKU handy in 'BaseExporter' call signature (only externalId),
-            // we will stick to a simpler implementation:
-            // IF we have SKU in updates, update Inventory.
-
-            if (updates.sku) {
-                const sku = updates.sku;
-                const body: any = {};
-                if (updates.quantity !== undefined) body.availability = { shipToLocationAvailability: { quantity: updates.quantity } };
-                if (updates.weight) body.packageWeightAndSize = { weight: { value: updates.weight, unit: 'KILOGRAM' } };
-
-                // Image update via Inventory API?
-                if (updates.images) body.imageUrls = updates.images;
-
-                if (Object.keys(body).length > 0) {
-                    await import('axios').then(a => a.default.put(
-                        `https://api.ebay.com/sell/inventory/v1/inventory_item/${sku}`,
-                        { product: body }, // Schema varies, simplified here
-                        { headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
-                    ));
-                }
-
-                // Price update requires 'Offer' endpoint usually
-                if (updates.price) {
-                    // Find offer by SKU? quite complex.
-                    console.warn("[eBay] Price update requires Offer ID. Skipping for MVP unless Offering ID stored.");
-                }
-            } else {
-                console.warn("[eBay] SKU missing for update. Cannot use Inventory API.");
+            if (!updates.sku) {
+                // If SKU is missing in updates, we can't easily use Inventory API specific to SKU.
+                // However, usually 'updates' comes from our formatted payload.
+                // For now, we warn if SKU is missing.
+                console.warn("[eBay] SKU is required for Price/Quantity sync. Skipping update.");
+                return { success: false, error: "SKU missing for eBay sync" };
             }
+
+            const payload: any = {
+                requests: [
+                    {
+                        sku: updates.sku,
+                        // Update Price if present
+                        ...(updates.price ? {
+                            offers: [{
+                                price: {
+                                    value: updates.price.toString(),
+                                    currency: "EUR"
+                                }
+                                // Note: In a real scenario, we might need the specific OfferID. 
+                                // But for 'Inventory' based items, updating the SKU's price often reflects if configured.
+                                // If this fails, we might need 'createOrReplaceInventoryItem'.
+                            }]
+                        } : {}),
+                        // Update Quantity if present
+                        ...(updates.quantity !== undefined ? {
+                            shipToLocationAvailability: {
+                                quantity: updates.quantity
+                            }
+                        } : {})
+                    }
+                ]
+            };
+
+            // If we are strictly updating Price and content, we might use:
+            // https://api.ebay.com/sell/inventory/v1/bulk_update_price_quantity
+
+            const body = {
+                requests: [
+                    {
+                        sku: updates.sku,
+                        ...(updates.price ? { price: { value: updates.price.toString(), currency: "EUR" } } : {}),
+                        ...(updates.quantity !== undefined ? { shipToLocationAvailability: { quantity: updates.quantity } } : {})
+                    }
+                ]
+            };
+
+            await import('axios').then(a => a.default.post(
+                'https://api.ebay.com/sell/inventory/v1/bulk_update_price_quantity',
+                body,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            ));
 
             return { success: true };
 

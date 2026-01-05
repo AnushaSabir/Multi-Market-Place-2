@@ -77,12 +77,16 @@ export default function ProductDetailPage() {
         body: JSON.stringify(formData)
       })
 
-      if (!res.ok) throw new Error("Failed to update")
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: "Unknown server error" }));
+        throw new Error(errorData.error || "Failed to update");
+      }
 
       toast({ title: "Saved", description: "Product updated successfully." })
       setProduct(prev => ({ ...prev!, ...formData } as Product))
-    } catch (e) {
-      toast({ title: "Error", description: "Could not save changes", variant: "destructive" })
+    } catch (e: any) {
+      console.error("Save Error Details:", e);
+      toast({ title: "Error", description: `Could not save changes: ${e.message}`, variant: "destructive" })
     }
   }
 

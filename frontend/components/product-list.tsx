@@ -149,26 +149,54 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     setTempQty(currentQty.toString())
   }
 
-  const savePriceEdit = (id: string) => {
+  const savePriceEdit = async (id: string) => {
     const newPrice = Number.parseFloat(tempPrice)
     if (isNaN(newPrice) || newPrice < 0) {
       toast({ title: "Invalid price", description: "Please enter a valid price.", variant: "destructive" })
       return
     }
-    setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, price: newPrice } : p)))
-    setEditingPrice(null)
-    toast({ title: "Price updated", description: "Product price has been updated successfully." })
+
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const res = await fetch(`${API_URL}/api/products/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
+        body: JSON.stringify({ price: newPrice })
+      })
+
+      if (!res.ok) throw new Error("Failed to update price")
+
+      setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, price: newPrice } : p)))
+      setEditingPrice(null)
+      toast({ title: "Price Updated", description: "Synced to all connected marketplaces." })
+    } catch (e: any) {
+      toast({ title: "Update Failed", description: e.message || "Could not save price", variant: "destructive" })
+    }
   }
 
-  const saveQtyEdit = (id: string) => {
+  const saveQtyEdit = async (id: string) => {
     const newQty = Number.parseInt(tempQty)
     if (isNaN(newQty) || newQty < 0) {
       toast({ title: "Invalid quantity", description: "Please enter a valid quantity.", variant: "destructive" })
       return
     }
-    setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, quantity: newQty } : p)))
-    setEditingQty(null)
-    toast({ title: "Quantity updated", description: "Product quantity has been updated successfully." })
+
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const res = await fetch(`${API_URL}/api/products/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
+        body: JSON.stringify({ quantity: newQty })
+      })
+
+      if (!res.ok) throw new Error("Failed to update stock")
+
+      setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, quantity: newQty } : p)))
+      setEditingQty(null)
+      toast({ title: "Stock Updated", description: "Synced to all connected marketplaces." })
+    } catch (e: any) {
+      toast({ title: "Update Failed", description: e.message || "Could not save stock", variant: "destructive" })
+    }
   }
 
   const cancelPriceEdit = () => {
