@@ -73,7 +73,7 @@ router.post('/:id/publish', async (req, res) => {
 // PUT /api/products/:id
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const updates = req.body;
+    const { marketplace_products, ...updates } = req.body; // Remove relational data that isn't a column
 
     const { error } = await supabase
         .from('products')
