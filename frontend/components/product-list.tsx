@@ -79,7 +79,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   // Pagination State
   // FIX: Start page at 1, so next request is for page 2
   const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
+  const [hasMore, setHasMore] = useState(false) // Default false as we load all
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
   // Filter State
