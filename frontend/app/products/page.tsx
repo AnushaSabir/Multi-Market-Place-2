@@ -16,7 +16,7 @@ export default async function ProductsPage() {
       .from("products")
       .select("*")
       .order("created_at", { ascending: false })
-      .range(0, 49)
+      .range(0, 9999)
 
     products = response.data || []
     error = response.error

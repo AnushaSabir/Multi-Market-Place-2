@@ -6,7 +6,8 @@ const router = express.Router();
 // GET /api/products
 // Fetch all products with optional filters
 router.get('/', async (req, res) => {
-    const { page = 1, limit = 20, status } = req.query;
+    // Default to a high limit to show "all" products as requested, unless specified
+    const { page = 1, limit = 10000, status } = req.query;
     const from = (Number(page) - 1) * Number(limit);
     const to = from + Number(limit) - 1;
 
@@ -44,6 +45,8 @@ router.get('/stats', async (req, res) => {
             .select('marketplace');
 
         if (mpError) throw mpError;
+
+        console.log(`[Stats] Found ${marketplaceData.length} marketplace entries in DB.`); // Debug Log
 
         // Group by marketplace
         const counts: Record<string, number> = {};

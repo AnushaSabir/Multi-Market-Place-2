@@ -501,13 +501,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
         </div>
       </Card>
 
-      {hasMore && (
-        <div className="flex justify-center pt-4">
-          <Button onClick={loadMoreProducts} disabled={isLoadingMore} variant="outline">
-            {isLoadingMore ? "Loading..." : "Load More Products"}
-          </Button>
-        </div>
-      )}
+      {/* Pagination Removed as per user request to show all products */}
 
       <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
         <DialogContent>
