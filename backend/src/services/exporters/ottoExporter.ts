@@ -16,7 +16,12 @@ export class OttoExporter extends BaseExporter {
 
         try {
             const axios = (await import('axios')).default;
-            const headers = { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' };
+            console.log(`[Otto] Using Token (start): ${accessToken.substring(0, 10)}...`);
+            const headers = {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            };
 
             // Otto typically uses 'Pricing' and 'Quantity' endpoints separated involved with Position Item ID or SKU
             // API: https://api.otto.market/v1/products/{sku}/pricing
@@ -29,37 +34,57 @@ export class OttoExporter extends BaseExporter {
 
             // Ensure SKU is URL encoded to handle spaces/special chars
             const safeSku = encodeURIComponent(sku);
+            let errors = [];
 
+            // 1. Update Price
             if (updates.price) {
-                // Pricing: Try V2 standard endpoint
-                const priceUrl = `https://api.otto.market/v2/products/${safeSku}/pricing`;
-                console.log(`[Otto] Posting Price to: ${priceUrl}`);
-                promises.push(axios.post(priceUrl, {
-                    standardPrice: {
-                        amount: updates.price,
-                        currency: "EUR"
-                    }
-                }, { headers }));
+                try {
+                    const priceUrl = `https://api.otto.market/v5/products/prices`;
+                    console.log(`[Otto] Posting Price to: ${priceUrl}`);
+                    await axios.post(priceUrl, [
+                        {
+                            sku: sku,
+                            standardPrice: {
+                                amount: updates.price,
+                                currency: "EUR"
+                            }
+                        }
+                    ], { headers });
+                    console.log(`[Otto] Price Updated Successfully`);
+                } catch (pErr: any) {
+                    const msg = pErr.response?.data ? JSON.stringify(pErr.response.data) : pErr.message;
+                    console.error(`[Otto] Price Update Failed: ${msg}`);
+                    errors.push(`Price: ${msg}`);
+                }
             }
 
+            // 2. Update Quantity (Availability V1)
             if (updates.quantity !== undefined) {
-                // Quantity: MUST use Availability V1 API (Batch format)
-                const qtyUrl = `https://api.otto.market/v1/availability/quantities`;
-                console.log(`[Otto] Posting Quantity to: ${qtyUrl}`);
-                promises.push(axios.post(qtyUrl, [
-                    {
-                        sku: sku, // Send raw SKU (not encoded) in body, as it matches partnerSku
-                        quantity: updates.quantity
-                    }
-                ], { headers }));
+                try {
+                    const qtyUrl = `https://api.otto.market/v1/availability/quantities`;
+                    console.log(`[Otto] Posting Quantity to: ${qtyUrl}`);
+                    await axios.post(qtyUrl, [
+                        {
+                            sku: sku, // Raw SKU for body
+                            quantity: updates.quantity
+                        }
+                    ], { headers });
+                    console.log(`[Otto] Quantity Updated Successfully`);
+                } catch (qErr: any) {
+                    const msg = qErr.response?.data ? JSON.stringify(qErr.response.data) : qErr.message;
+                    console.error(`[Otto] Quantity Update Failed: ${msg}`);
+                    errors.push(`Qty: ${msg}`);
+                }
             }
 
-            await Promise.all(promises);
+            if (errors.length > 0) {
+                return { success: false, error: errors.join(" | ") };
+            }
             return { success: true };
 
         } catch (error: any) {
             const errorMsg = error.response?.data ? JSON.stringify(error.response.data) : error.message;
-            console.error(`[Otto] Update Failed for SKU '${externalId}': ${errorMsg}`);
+            console.error(`[Otto] Global Update Failed for SKU '${externalId}': ${errorMsg}`);
             return { success: false, error: errorMsg };
         }
     }

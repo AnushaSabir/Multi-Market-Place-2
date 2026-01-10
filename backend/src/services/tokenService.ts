@@ -113,7 +113,7 @@ export class TokenManger {
 
                 const res = await axios.post(tokenUrl, qs.stringify({
                     grant_type: 'client_credentials',
-                    scope: 'products'
+                    scope: 'products availability'
                 }), {
                     headers: {
                         'Authorization': `Basic ${auth}`,
@@ -121,6 +121,7 @@ export class TokenManger {
                     }
                 });
 
+                console.log(`[TokenManager] Otto Token generated successfully. Expires in ${res.data.expires_in}s`);
                 newAccessToken = res.data.access_token;
                 newExpiresAt = Date.now() + (res.data.expires_in * 1000);
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Package, CheckCircle2, RefreshCw, AlertCircle } from "lucide-react"
 import Loading from "@/app/loading"
@@ -103,7 +104,12 @@ export default function DashboardPage() {
                 </div>
                 <div className="text-right">
                   <div className="font-bold text-lg">{m.importedCount}</div>
-                  <span className="text-xs text-muted-foreground">Products</span>
+                  <Link
+                    href={`/products?marketplace=${m.name.toLowerCase()}`}
+                    className="text-xs text-blue-600 hover:underline block"
+                  >
+                    View Products
+                  </Link>
                 </div>
               </div>
             ))}

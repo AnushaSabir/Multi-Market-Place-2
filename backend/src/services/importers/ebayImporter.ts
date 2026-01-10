@@ -4,7 +4,7 @@ import axios from 'axios';
 export class EbayImporter extends BaseImporter {
     marketplace: 'ebay' = 'ebay';
 
-    protected async fetchProductsFromApi(accessToken: string): Promise<ImportedProduct[]> {
+    protected async fetchProductsFromApi(accessToken: string): Promise<ImportedProduct[] | number> {
         // Searching for 'iphone' as a test. TODO: Change 'iphone' to your seller username filter like `q=...&filter=sellers:{USERNAME}`
         console.log(`Starting Unlimited Import from eBay (Seller: ${process.env.EBAY_SELLER_ID || 'All'})...`);
 
@@ -89,7 +89,6 @@ export class EbayImporter extends BaseImporter {
         }
 
         console.log(`eBay Import Finished. Total successfully imported: ${totalSaved}`);
-        // Return empty array because we already upserted everything locally
-        return [];
+        return totalSaved;
     }
 }

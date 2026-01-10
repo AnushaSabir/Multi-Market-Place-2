@@ -5,7 +5,7 @@ import crypto from 'crypto';
 export class KauflandImporter extends BaseImporter {
     marketplace: 'kaufland' = 'kaufland';
 
-    protected async fetchProductsFromApi(accessToken: string): Promise<ImportedProduct[]> {
+    protected async fetchProductsFromApi(accessToken: string): Promise<ImportedProduct[] | number> {
         console.log("Starting Unlimited Batch Import from Kaufland...");
 
         const secretKey = process.env.KAUFLAND_SECRET_KEY || '';
@@ -88,12 +88,11 @@ export class KauflandImporter extends BaseImporter {
         }
 
         console.log(`Kaufland Import Finished. Total successfully imported: ${totalSaved}`);
-        console.log(`Kaufland Import Finished. Total successfully imported: ${totalSaved}`);
 
         if (totalSaved === 0) {
             throw new Error("Zero products found on Kaufland. Verify your 'Client Key' and 'Secret Key'.");
         }
 
-        return [];
+        return totalSaved;
     }
 }

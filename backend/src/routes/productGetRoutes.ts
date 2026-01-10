@@ -39,20 +39,25 @@ router.get('/stats', async (req, res) => {
 
         if (totalError) throw totalError;
 
-        // Marketplace counts
-        const { data: marketplaceData, error: mpError } = await supabase
-            .from('marketplace_products')
-            .select('marketplace');
+        // Marketplace counts using efficient count queries to avoid 1000 row limit
+        const getMpCount = async (mp: string) => {
+            const { count, error } = await supabase
+                .from('marketplace_products')
+                .select('*', { count: 'exact', head: true })
+                .eq('marketplace', mp);
+            if (error) throw error;
+            return count || 0;
+        };
 
-        if (mpError) throw mpError;
+        const [ottoCount, ebayCount, kauflandCount, shopifyCount] = await Promise.all([
+            getMpCount('otto'),
+            getMpCount('ebay'),
+            getMpCount('kaufland'),
+            getMpCount('shopify')
+        ]);
 
-        console.log(`[Stats] Found ${marketplaceData.length} marketplace entries in DB.`); // Debug Log
-
-        // Group by marketplace
-        const counts: Record<string, number> = {};
-        marketplaceData.forEach((row: any) => {
-            counts[row.marketplace] = (counts[row.marketplace] || 0) + 1;
-        });
+        // Total synced is sum of all
+        const totalSynced = ottoCount + ebayCount + kauflandCount + shopifyCount;
 
         // Real "AI Optimized" count
         const { count: optimizedCount, error: optError } = await supabase
@@ -60,15 +65,17 @@ router.get('/stats', async (req, res) => {
             .select('*', { count: 'exact', head: true })
             .eq('status', 'optimized');
 
+        if (optError) throw optError;
+
         const stats = {
             total: totalCount || 0,
-            aiOptimized: optimizedCount || 0, // REAL count now
-            synced: marketplaceData.length,
+            aiOptimized: optimizedCount || 0,
+            synced: totalSynced,
             marketplaces: {
-                otto: counts['otto'] || 0,
-                ebay: counts['ebay'] || 0,
-                kaufland: counts['kaufland'] || 0,
-                shopify: counts['shopify'] || 0
+                otto: ottoCount,
+                ebay: ebayCount,
+                kaufland: kauflandCount,
+                shopify: shopifyCount
             }
         };
 

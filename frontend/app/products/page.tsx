@@ -5,16 +5,41 @@ import { Suspense } from "react"
 
 export const dynamic = "force-dynamic"
 
-export default async function ProductsPage() {
+export default async function ProductsPage({ searchParams }: { searchParams: { marketplace?: string } }) {
   const supabase = await createClient()
+  const selectedMarketplace = searchParams.marketplace
 
   let products: any[] = []
   let error: any = null
 
   try {
-    const response = await supabase
-      .from("products")
-      .select("*")
+    let query;
+    if (selectedMarketplace && selectedMarketplace !== 'all') {
+      query = supabase
+        .from("products")
+        .select(`
+          *,
+          marketplace_products!inner (
+            marketplace,
+            external_id,
+            sync_status
+          )
+        `)
+        .eq('marketplace_products.marketplace', selectedMarketplace)
+    } else {
+      query = supabase
+        .from("products")
+        .select(`
+          *,
+          marketplace_products (
+            marketplace,
+            external_id,
+            sync_status
+          )
+        `)
+    }
+
+    const response = await query
       .order("created_at", { ascending: false })
       .range(0, 9999)
 
@@ -22,7 +47,6 @@ export default async function ProductsPage() {
     error = response.error
   } catch (err: any) {
     console.error("[v0] CRITICAL: Server-side fetch failed (Network/Timeout). Rendering with empty list.", err.message)
-    // We suppress the crash so the page can at least load the client component
     products = []
   }
 

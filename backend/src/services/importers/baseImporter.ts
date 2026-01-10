@@ -21,7 +21,7 @@ export abstract class BaseImporter {
     public static isRunning = false;
 
     // Abstract method to specific marketplace API logic
-    protected abstract fetchProductsFromApi(accessToken: string): Promise<ImportedProduct[]>;
+    protected abstract fetchProductsFromApi(accessToken: string): Promise<ImportedProduct[] | number>;
 
     public async runImport(): Promise<{ success: boolean; count: number; error?: string }> {
         BaseImporter.stopImport = false; // Reset flag at start
@@ -34,22 +34,21 @@ export abstract class BaseImporter {
             if (BaseImporter.stopImport) throw new Error("Import stopped by user");
 
             const token = await TokenManger.getAccessToken(this.marketplace);
-            // For simulation purposes, we might allow null tokens if we are just mocking the fetch in the implementation
-            // But strictly speaking, we need a token.
             if (!token && process.env.NODE_ENV !== 'test') {
-                // If no token logic is fully set up, we might fail or continue with mock data if desired.
-                // For now, we assume token needed.
-                // Note: User can skip actual auth flow if they just want to see the merge logic working.
                 console.warn(`No access token found for ${this.marketplace}. Depending on implementation, this might fail.`);
             }
 
             // Fetch
-            const items = await this.fetchProductsFromApi(token || 'mock_token');
+            const result = await this.fetchProductsFromApi(token || 'mock_token');
 
             let count = 0;
-            for (const item of items) {
-                await this.upsertProduct(item);
-                count++;
+            if (typeof result === 'number') {
+                count = result;
+            } else {
+                for (const item of result) {
+                    await this.upsertProduct(item);
+                    count++;
+                }
             }
 
             await this.logSync('import', 'synced');

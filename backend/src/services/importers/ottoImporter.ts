@@ -4,13 +4,14 @@ import axios from 'axios';
 export class OttoImporter extends BaseImporter {
     marketplace: 'otto' = 'otto';
 
-    protected async fetchProductsFromApi(accessToken: string): Promise<ImportedProduct[]> {
+    protected async fetchProductsFromApi(accessToken: string): Promise<ImportedProduct[] | number> {
         console.log("Fetching all products from Otto API...");
 
         let allProducts: ImportedProduct[] = [];
         let nextUrl: string | null = 'https://api.otto.market/v4/products?limit=50';
         let pageCount = 0;
-        const MAX_PAGES = 50; // Limit to prevent infinite loops (approx 2500 products)
+        const MAX_PAGES = 50;
+        let totalProcessed = 0;
 
         try {
             while (nextUrl && pageCount < MAX_PAGES) {
@@ -49,17 +50,18 @@ export class OttoImporter extends BaseImporter {
                     marketplace: 'otto'
                 }));
 
-                allProducts.push(...pageProducts);
-                console.log(`Page ${pageCount + 1} processed. Total items: ${allProducts.length}`);
+                for (const prod of pageProducts) {
+                    await this.upsertProduct(prod as ImportedProduct);
+                    totalProcessed++;
+                }
 
-                // Pagination: Look for 'next' link in HAL response
-                // Pagination: Look for 'next' link in HAL response
+                console.log(`Page ${pageCount + 1} processed. Total items: ${totalProcessed}`);
+
                 const links: any = response.data.links;
                 const nextLink: any = Array.isArray(links) ? links.find((l: any) => l.rel === 'next') : null;
 
                 if (nextLink && nextLink.href) {
                     let href = nextLink.href;
-                    // Handle relative URLs which cause 'Invalid URL' error
                     if (!href.startsWith('http')) {
                         const baseUrl = 'https://api.otto.market';
                         href = href.startsWith('/') ? `${baseUrl}${href}` : `${baseUrl}/${href}`;
@@ -73,12 +75,11 @@ export class OttoImporter extends BaseImporter {
             }
         } catch (error: any) {
             console.error("Otto Fetch Error:", error.response?.data || error.message);
-            // Return whatever we managed to fetch so far if we crash midway
-            if (allProducts.length > 0) return allProducts;
+            if (totalProcessed > 0) return totalProcessed;
             throw error;
         }
 
-        console.log(`Total Otto products fetched: ${allProducts.length}`);
-        return allProducts;
+        console.log(`Total Otto products imported: ${totalProcessed}`);
+        return totalProcessed;
     }
 }

@@ -47,6 +47,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import { useSearchParams, useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 
 interface Product {
@@ -369,10 +370,31 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     return found ? { connected: true, data: found } : { connected: false };
   }
 
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const marketplaceParam = searchParams.get('marketplace')
+
   return (
     <div className="p-6 space-y-6 animate-fade-in w-full">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Products</h1>
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight">
+            {marketplaceParam ? `${marketplaceParam.charAt(0).toUpperCase() + marketplaceParam.slice(1)} Products` : 'Products'}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Total {filteredProducts.length} products found
+            {marketplaceParam && (
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0 ml-2 text-blue-600"
+                onClick={() => router.push('/products')}
+              >
+                Clear filter
+              </Button>
+            )}
+          </p>
+        </div>
         <div className="flex items-center gap-2">
           <Button size="sm" onClick={handleBulkSync} variant="outline">
             <RefreshCw className="mr-2 h-4 w-4" /> Sync All
