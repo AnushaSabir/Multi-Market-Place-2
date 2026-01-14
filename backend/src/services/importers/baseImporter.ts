@@ -66,27 +66,52 @@ export abstract class BaseImporter {
     protected async upsertProduct(item: ImportedProduct) {
         if (BaseImporter.stopImport) throw new Error("Import stopped by user");
 
-        // 1. Check if product exists by EAN
         let productId: string | null = null;
 
-        if (item.ean) {
-            const { data: existing } = await supabase
-                .from('products')
-                .select('id')
-                .eq('ean', item.ean)
-                .single();
+        // 1. Check if this specific marketplace product is already linked
+        const { data: existingMP } = await supabase
+            .from('marketplace_products')
+            .select('product_id')
+            .eq('marketplace', this.marketplace)
+            .eq('external_id', item.external_id)
+            .maybeSingle();
 
-            if (existing) {
-                productId = existing.id;
-                console.log(`Product found for EAN ${item.ean}, merging...`);
+        if (existingMP) {
+            productId = existingMP.product_id;
+            console.log(`Product ${item.external_id} already linked to marketplace ${this.marketplace}.`);
+        } else {
+            // 2. Not linked yet, check if product exists globally by EAN
+            if (item.ean) {
+                const { data: existingByEAN } = await supabase
+                    .from('products')
+                    .select('id')
+                    .eq('ean', item.ean)
+                    .maybeSingle();
+
+                if (existingByEAN) {
+                    productId = existingByEAN.id;
+                    console.log(`Product found globally by EAN ${item.ean}, will link to this marketplace.`);
+                }
+            }
+
+            // 3. If still not found, check by SKU
+            if (!productId && item.sku) {
+                const { data: existingBySKU } = await supabase
+                    .from('products')
+                    .select('id')
+                    .eq('sku', item.sku)
+                    .maybeSingle();
+
+                if (existingBySKU) {
+                    productId = existingBySKU.id;
+                    console.log(`Product found globally by SKU ${item.sku}, will link to this marketplace.`);
+                }
             }
         }
 
-        // 2. If not found by EAN, create new Product
+        // 4. If no product ID found, create new Product
         if (!productId) {
-            // Fallback: check by specific marketplace ID link if we want strict linking? 
-            // But req says "If same EAN exists -> merge".
-
+            console.log(`Creating new global product for SKU: ${item.sku}`);
             const { data: newProd, error } = await supabase
                 .from('products')
                 .insert({
@@ -105,13 +130,9 @@ export abstract class BaseImporter {
 
             if (error) throw new Error(`Failed to create product: ${error.message}`);
             productId = newProd.id;
-        } else {
-            // Optional: Update existing product fields if newer? 
-            // For now, we prefer not to overwrite "optimized" data with raw import unless empty.
-            // We could fill in missing fields.
         }
 
-        // 3. Update/Insert Marketplace Product Entry
+        // 5. Link/Update Marketplace Product Entry
         const { error: mpError } = await supabase
             .from('marketplace_products')
             .upsert({
