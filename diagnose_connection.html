@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multi-Marketplace Connection Diagnostic</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
+        .status { font-weight: bold; margin-bottom: 10px; }
+        .error { color: #d32f2f; }
+        .success { color: #388e3c; }
+        button { background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #1565c0; }
+        pre { background: #eee; padding: 10px; overflow-x: auto; border-radius: 4px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔍 Connectivity Diagnostic</h1>
+        <p>This tool checks if your browser can reach the Supabase Database.</p>
+        
+        <div id="result" class="status">Click the button to start test...</div>
+        <button onclick="testConnection()">Test Supabase Connection</button>
+        
+        <h3>Details:</h3>
+        <pre id="details">Waiting for test...</pre>
+        
+        <div style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px;">
+            <p><strong>Database URL:</strong> <code>https://reungcioxbgtidkuhfbl.supabase.co</code></p>
+            <p><strong>Diagnosis:</strong> If this test fails, it means the URL is "Paused" or "Deleted" in the Supabase Dashboard.</p>
+        </div>
+    </div>
+
+    <script>
+        async function testConnection() {
+            const resultBox = document.getElementById('result');
+            const detailsBox = document.getElementById('details');
+            resultBox.innerHTML = "Testing... ⏳";
+            detailsBox.innerHTML = "Sending request to: https://reungcioxbgtidkuhfbl.supabase.co/rest/v1/";
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                await fetch('https://reungcioxbgtidkuhfbl.supabase.co/rest/v1/', { 
+                    signal: controller.signal,
+                    mode: 'no-cors' 
+                });
+                
+                resultBox.innerHTML = "✅ CONNECTION SUCCESS!";
+                resultBox.className = "status success";
+                detailsBox.innerHTML = "Connection successful! The database is online.";
+            } catch (e) {
+                resultBox.innerHTML = "❌ CONNECTION FAILED!";
+                resultBox.className = "status error";
+                detailsBox.innerHTML = "Error: " + e.message + "\n\nPossible reasons:\n1. Supabase project is PAUSED.\n2. URL is incorrect.\n3. Internet connection issue.";
+            }
+        }
+    </script>
+</body>
+</html>

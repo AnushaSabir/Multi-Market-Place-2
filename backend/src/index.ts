@@ -13,6 +13,25 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+import fs from 'fs';
+import path from 'path';
+
+const logFile = path.resolve(process.cwd(), 'debug_server.log');
+
+// Request logging for debugging
+app.use((req, res, next) => {
+    const originalSend = res.send;
+    const logEntryStart = `[${new Date().toISOString()}] ${req.method} ${req.url}\nBody: ${JSON.stringify(req.body)}\n`;
+
+    res.send = function (body) {
+        const logEntryEnd = `Response Status: ${res.statusCode}\nResponse: ${body}\n-------------------\n`;
+        console.log(logEntryStart + logEntryEnd);
+        fs.appendFileSync(logFile, logEntryStart + logEntryEnd);
+        return originalSend.call(this, body);
+    };
+    next();
+});
+
 // Public Health Check
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -25,7 +44,8 @@ import syncRoutes from './routes/syncRoutes';
 import importRoutes from './routes/importRoutes';
 import rateLimit from 'express-rate-limit';
 
-// Rate Limiting
+// Rate Limiting - Disabled for debugging
+/*
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // Limit each IP to 100 requests per windowMs
@@ -35,6 +55,7 @@ const apiLimiter = rateLimit({
 
 // Apply rate limiting to all requests
 app.use('/api', apiLimiter);
+*/
 
 import aiRoutes from './routes/aiRoutes';
 
@@ -46,8 +67,16 @@ app.use('/api/sync', authenticateAPI, syncRoutes);
 app.use('/api/import', authenticateAPI, importRoutes);
 app.use('/api/ai', authenticateAPI, aiRoutes);
 
-// Webhook Routes (Public or validated by signature, not API key usually, but for MVP we might leave open or add specific middleware)
+// Webhook Routes
 app.use('/api/webhooks', webhookRoutes);
+
+// Global Error Handler
+app.use((err: any, req: any, res: any, next: any) => {
+    const errorMsg = `[CRITICAL ERROR] ${err.stack || err.message}\n`;
+    console.error(errorMsg);
+    fs.appendFileSync(logFile, errorMsg);
+    res.status(500).json({ error: 'Internal Server Error', details: err.message });
+});
 
 // Start Server
 if (process.env.NODE_ENV !== 'production') {

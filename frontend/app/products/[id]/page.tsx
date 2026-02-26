@@ -12,6 +12,12 @@ import { useParams } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface Product {
   id: string
@@ -116,7 +122,56 @@ export default function ProductDetailPage() {
     }
   }
 
-  if (loading) return <div className="p-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+  const handlePublish = async (marketplace: string) => {
+    toast({ title: "Publishing...", description: `Sending product to ${marketplace.toUpperCase()}...` })
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const res = await fetch(`${API_URL}/api/products/${id}/publish`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': 'Epic_Tech_2026'
+        },
+        body: JSON.stringify({ marketplace })
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: "Publish failed" }));
+        throw new Error(errorData.error || "Failed to publish");
+      }
+
+      const result = await res.json()
+      toast({
+        title: "Success",
+        description: `Product published to ${marketplace.toUpperCase()}`,
+        className: "bg-green-600 text-white"
+      })
+
+      // Update local state to show it's connected
+      setProduct(prev => {
+        if (!prev) return null;
+        const newMps = [...(prev.marketplace_products || [])];
+        const existing = newMps.find(m => m.marketplace === marketplace);
+        if (existing) {
+          existing.sync_status = 'synced';
+          existing.last_synced_at = new Date().toISOString();
+          existing.external_id = result.external_id;
+        } else {
+          newMps.push({
+            marketplace,
+            sync_status: 'synced',
+            last_synced_at: new Date().toISOString(),
+            external_id: result.external_id
+          });
+        }
+        return { ...prev, marketplace_products: newMps };
+      });
+
+    } catch (e: any) {
+      toast({ title: "Publish Error", description: e.message, variant: "destructive" })
+    }
+  }
+
   if (!product) return <div className="p-10 text-center">Product not found.</div>
 
   return (
@@ -141,6 +196,20 @@ export default function ProductDetailPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="border-blue-500 text-blue-600 hover:bg-blue-50">
+                <Store className="mr-2 h-4 w-4" /> Publish to...
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => handlePublish('ebay')}>eBay</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handlePublish('shopify')}>Shopify</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handlePublish('otto')}>Otto</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handlePublish('kaufland')}>Kaufland</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Button variant="outline" onClick={handleSave}>
             <Save className="mr-2 h-4 w-4" /> Save Changes
           </Button>

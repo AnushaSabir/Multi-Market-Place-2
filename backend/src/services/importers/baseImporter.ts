@@ -80,31 +80,33 @@ export abstract class BaseImporter {
             productId = existingMP.product_id;
             console.log(`Product ${item.external_id} already linked to marketplace ${this.marketplace}.`);
         } else {
-            // 2. Not linked yet, check if product exists globally by EAN
-            if (item.ean) {
+            // 2. Not linked yet, check if product exists globally by EAN (Trimmed & case-insensitive check)
+            const cleanEan = item.ean?.trim();
+            if (cleanEan && cleanEan !== '') {
                 const { data: existingByEAN } = await supabase
                     .from('products')
                     .select('id')
-                    .eq('ean', item.ean)
+                    .eq('ean', cleanEan)
                     .maybeSingle();
 
                 if (existingByEAN) {
                     productId = existingByEAN.id;
-                    console.log(`Product found globally by EAN ${item.ean}, will link to this marketplace.`);
+                    console.log(`Product found globally by EAN ${cleanEan}, will link to this marketplace.`);
                 }
             }
 
-            // 3. If still not found, check by SKU
-            if (!productId && item.sku) {
+            // 3. If still not found, check by SKU (Trimmed & case-insensitive check)
+            const cleanSku = item.sku?.trim();
+            if (!productId && cleanSku && cleanSku !== '') {
                 const { data: existingBySKU } = await supabase
                     .from('products')
                     .select('id')
-                    .eq('sku', item.sku)
+                    .eq('sku', cleanSku)
                     .maybeSingle();
 
                 if (existingBySKU) {
                     productId = existingBySKU.id;
-                    console.log(`Product found globally by SKU ${item.sku}, will link to this marketplace.`);
+                    console.log(`Product found globally by SKU ${cleanSku}, will link to this marketplace.`);
                 }
             }
         }
@@ -130,6 +132,26 @@ export abstract class BaseImporter {
 
             if (error) throw new Error(`Failed to create product: ${error.message}`);
             productId = newProd.id;
+        } else {
+            // 4b. Update existing product details if they are better (title, ean, images)
+            // Especially important if the previous title was "Unknown Kaufland Item"
+            const { data: currentProd } = await supabase.from('products').select('title, ean, images').eq('id', productId).single();
+
+            const updates: any = {};
+            if (item.title && item.title !== 'Unknown Kaufland Item' && (!currentProd?.title || currentProd.title === 'Unknown Kaufland Item')) {
+                updates.title = item.title;
+            }
+            if (item.ean && !currentProd?.ean) {
+                updates.ean = item.ean;
+            }
+            if (item.images && item.images.length > 0 && (!currentProd?.images || currentProd.images.length === 0)) {
+                updates.images = item.images;
+            }
+
+            if (Object.keys(updates).length > 0) {
+                console.log(`Updating existing product ${productId} with better details:`, updates);
+                await supabase.from('products').update(updates).eq('id', productId);
+            }
         }
 
         // 5. Link/Update Marketplace Product Entry

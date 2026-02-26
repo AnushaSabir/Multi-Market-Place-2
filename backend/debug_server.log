@@ -1,0 +1,3842 @@
+[2026-02-04T14:17:32.312Z] GET /api/products/stats
+Body: {}
+[2026-02-04T14:18:25.844Z] DELETE /api/products/cleanup?marketplace=all
+Body: {}
+[2026-02-04T14:18:42.014Z] POST /api/import/otto
+Body: {}
+[2026-02-04T14:18:44.016Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:18:46.015Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:18:48.021Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:18:50.015Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:18:52.029Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:18:54.016Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:18:56.020Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:18:58.027Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:00.017Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:02.019Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:04.014Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:06.023Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:08.023Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:10.016Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:12.021Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:14.023Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:16.020Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:18.980Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:20.971Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:22.968Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:24.027Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:26.019Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:28.022Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:31.163Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:33.452Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:34.973Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:37.169Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:38.963Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:40.972Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:43.004Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:44.974Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:46.971Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:49.006Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:50.697Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:52.017Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:54.961Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:56.965Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:19:58.962Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:00.979Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:02.966Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:04.987Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:06.967Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:08.962Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:10.964Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:12.969Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:14.971Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:16.969Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:18.965Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:20.973Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:22.966Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:24.974Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:26.973Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:28.965Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:31.010Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:33.439Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:34.964Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:36.967Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:38.965Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:40.963Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:42.988Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:44.969Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:46.998Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:48.969Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:50.981Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:20:53.078Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:21:22.969Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:22:22.979Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:23:23.010Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:24:22.984Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:25:22.988Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:04.826Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:06.014Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:08.015Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:10.963Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:12.964Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:14.982Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:17.015Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:19.029Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:20.963Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:22.966Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:24.973Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:27.179Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:29.151Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:30.986Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:32.981Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:34.975Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:36.973Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:38.967Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:40.962Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:42.978Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:44.978Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:46.972Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:48.967Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:50.978Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:52.988Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:54.972Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:56.965Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:26:58.972Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:27:00.968Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:27:02.969Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:27:04.962Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:27:06.970Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:27:22.979Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:28:22.971Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:29:22.978Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:30:22.980Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:31:22.975Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:32:22.974Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:33:22.996Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:34:22.973Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:35:22.977Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:36:22.981Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:37:22.977Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:38:22.979Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:39:22.979Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:40:22.976Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:41:22.979Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:42:22.977Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:43:22.990Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:44:22.982Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:45:23.203Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:46:22.981Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:47:22.973Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:48:22.974Z] GET /api/products?limit=5
+Body: {}
+[2026-02-04T14:49:22.972Z] GET /api/products?limit=5
+Body: {}
+[2026-02-21T20:08:55.745Z] GET /api/products/stats
+Body: {}
+[2026-02-21T20:16:50.230Z] GET /api/products/stats
+Body: {}
+[2026-02-21T20:19:45.114Z] GET /health
+Body: {}
+[2026-02-22T14:57:24.674Z] GET /health
+Body: {}
+Response Status: 200
+Response: {"status":"ok","timestamp":"2026-02-22T14:57:24.675Z"}
+-------------------
+[2026-02-22T14:57:27.956Z] GET /api/products/stats
+Body: {}
+Response Status: 500
+Response: {"error":"TypeError: fetch failed"}
+-------------------
+[2026-02-23T15:22:51.192Z] GET /health
+Body: {}
+Response Status: 200
+Response: {"status":"ok","timestamp":"2026-02-23T15:22:51.196Z"}
+-------------------
+[2026-02-23T15:34:11.456Z] GET /health
+Body: {}
+Response Status: 200
+Response: {"status":"ok","timestamp":"2026-02-23T15:34:11.457Z"}
+-------------------
+[2026-02-23T15:35:02.226Z] GET /api/products/stats
+Body: {}
+Response Status: 500
+Response: {"error":"TypeError: fetch failed"}
+-------------------
+[2026-02-25T14:34:03.013Z] GET /api/products/stats
+Body: {}
+Response Status: 500
+Response: {"error":"TypeError: fetch failed"}
+-------------------
+[2026-02-25T14:50:39.945Z] GET /api/products/stats
+Body: {}
+Response Status: 200
+Response: {"total":399,"aiOptimized":0,"synced":399,"marketplaces":{"otto":399,"ebay":0,"kaufland":0,"shopify":0}}
+-------------------
+[2026-02-25T14:51:21.993Z] DELETE /api/products/cleanup?marketplace=all
+Body: {}
+Response Status: 200
+Response: {"message":"All products and links deleted."}
+-------------------
+[2026-02-25T14:51:25.276Z] GET /api/products/stats
+Body: {}
+Response Status: 200
+Response: {"total":0,"aiOptimized":0,"synced":0,"marketplaces":{"otto":0,"ebay":0,"kaufland":0,"shopify":0}}
+-------------------
+[2026-02-25T14:51:26.286Z] GET /api/products/stats
+Body: {}
+Response Status: 200
+Response: {"total":0,"aiOptimized":0,"synced":0,"marketplaces":{"otto":0,"ebay":0,"kaufland":0,"shopify":0}}
+-------------------
+[2026-02-25T14:51:28.297Z] GET /api/products/stats
+Body: {}
+Response Status: 200
+Response: {"total":0,"aiOptimized":0,"synced":0,"marketplaces":{"otto":0,"ebay":0,"kaufland":0,"shopify":0}}
+-------------------
+[2026-02-25T14:53:08.757Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:10.758Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:13.381Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:15.373Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:17.155Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:18.757Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:20.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:22.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:24.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:26.758Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:28.760Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:30.762Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:33.373Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:35.363Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:36.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:38.761Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:40.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:42.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:44.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:46.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:48.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:50.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:52.761Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:54.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:56.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:58.760Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:00.759Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:02.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:04.757Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:06.764Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:08.761Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:10.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:12.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:14.763Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:16.757Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:18.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:20.765Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:22.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:24.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:26.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:28.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:30.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:32.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:34.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:36.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:38.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:40.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:42.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:44.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:46.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:48.762Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:50.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:52.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:54.761Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:56.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:54:58.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:00.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:02.758Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:04.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:06.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:08.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:11.372Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:13.361Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:15.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:17.377Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:19.370Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:20.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:22.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:24.758Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:26.760Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:28.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:30.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:32.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:34.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:36.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:38.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:40.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:42.745Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:44.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:46.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:48.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:50.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:52.759Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:54.757Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:56.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:55:58.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:00.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:02.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:04.760Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:06.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:08.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:10.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:12.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:14.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:16.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:18.744Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:20.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:22.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:24.744Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:26.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:28.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:30.744Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:32.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:34.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:36.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:38.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:40.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:42.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:44.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:46.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:48.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:50.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:52.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:54.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:56.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:56:58.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:00.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:02.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:04.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:06.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:08.763Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:10.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:12.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:14.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:16.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:18.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:20.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:22.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:24.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:26.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:28.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:30.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:32.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:34.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:36.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:38.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:40.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:42.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:44.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:46.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:48.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:50.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:52.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:54.758Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:56.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:57:58.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:00.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:02.758Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:04.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:06.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:08.757Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:10.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:12.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:14.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:16.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:18.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:20.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:22.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:24.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:26.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:28.745Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:30.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:32.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:34.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:36.757Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:38.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:40.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:42.757Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:44.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:46.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:48.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:50.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:52.758Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:54.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:56.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:58:58.758Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:00.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:02.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:04.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:06.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:08.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:10.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:12.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:14.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:16.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:18.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:20.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:22.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:24.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:26.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:28.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:30.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:32.757Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:34.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:36.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:38.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:40.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:42.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:44.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:46.760Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:48.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:50.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:52.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:54.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:56.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:59:58.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:00.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:02.758Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:04.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:06.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:08.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:10.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:12.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:14.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:16.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:18.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:20.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:22.744Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:24.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:26.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:28.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:30.758Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:32.745Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:34.744Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:36.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:38.758Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:40.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:42.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:44.752Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:46.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:48.755Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:50.745Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:52.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:54.761Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:56.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:00:58.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:00.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:02.753Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:04.747Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:06.751Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:08.746Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:10.756Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:12.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:14.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:16.754Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:18.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:20.750Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:22.749Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:24.748Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:27.363Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:29.368Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:31.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:33.372Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:35.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:37.363Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:39.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:41.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:43.370Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:45.369Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:47.370Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:49.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:51.365Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:53.362Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:55.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:57.365Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:01:59.362Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:01.367Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:03.368Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:05.370Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:07.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:09.367Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:11.361Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:13.365Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:15.363Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:17.363Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:19.363Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:21.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:23.368Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:02:25.365Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:03:07.372Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:04:07.369Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:05:07.368Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:06:07.375Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:07:07.374Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T14:53:06.742Z] POST /api/import/otto
+Body: {}
+Response Status: 200
+Response: {"message":"Otto import completed","count":454}
+-------------------
+[2026-02-25T15:25:34.994Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:25:48.119Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:25:50.368Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:25:52.366Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:25:54.373Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:25:56.368Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:25:58.362Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:00.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:02.368Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:04.362Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:06.369Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:08.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:10.359Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:12.362Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:14.366Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:16.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:18.363Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:20.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:22.365Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:24.371Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:26.368Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:28.375Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:30.373Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:32.364Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:34.368Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:36.366Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:38.366Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:40.367Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:42.369Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:44.372Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:26:46.372Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:27:07.372Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:28:07.371Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:29:07.383Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:25:46.082Z] POST /api/import/ebay
+Body: {}
+Response Status: 200
+Response: {"message":"eBay import completed","count":143}
+-------------------
+[2026-02-25T15:32:41.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:32:43.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:32:45.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:32:46.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:32:49.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:32:51.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:32:52.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:32:54.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:32:57.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:32:58.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:01.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:03.001Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:04.997Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:06.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:08.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:10.997Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:13.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:14.997Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:16.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:19.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:21.008Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:22.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:25.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:27.008Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:29.005Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:30.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:32.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:35.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:37.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:39.007Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:40.997Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:42.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:45.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:47.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:48.997Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:51.001Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:53.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:54.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:57.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:33:58.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:00.994Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:02.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:05.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:06.994Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:09.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:11.008Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:13.005Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:14.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:16.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:19.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:20.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:23.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:25.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:27.007Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:29.005Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:30.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:33.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:34.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:36.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:39.001Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:41.008Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:42.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:45.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:47.005Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:48.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:51.009Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:53.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:54.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:57.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:34:59.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:01.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:03.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:05.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:07.008Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:09.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:10.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:12.995Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:14.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:16.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:18.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:21.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:22.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:25.012Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:26.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:29.001Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:31.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:33.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:35.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:37.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:39.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:40.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:43.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:45.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:46.995Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:48.997Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:50.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:52.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:54.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:56.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:35:58.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:00.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:03.007Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:05.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:06.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:08.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:10.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:13.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:14.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:17.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:19.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:21.007Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:22.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:25.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:26.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:28.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:31.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:33.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:35.007Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:36.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:39.010Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:40.997Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:42.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:45.001Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:47.005Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:48.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:51.001Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:52.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:54.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:57.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:36:59.005Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:00.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:03.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:05.001Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:07.009Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:08.995Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:11.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:13.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:15.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:16.995Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:19.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:21.005Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:23.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:24.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:27.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:29.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:31.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:32.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:35.004Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:36.997Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:39.008Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:41.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:43.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:44.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:47.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:48.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:51.008Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:52.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:54.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:56.997Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:37:58.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:01.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:03.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:04.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:07.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:08.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:10.999Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:13.006Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:15.005Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:17.011Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:19.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:21.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:23.011Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:25.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:27.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:29.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:30.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:32.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:34.998Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:37.003Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:38.996Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:41.002Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:38:43.000Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:32:38.961Z] POST /api/import/kaufland
+Body: {}
+Response Status: 200
+Response: {"message":"Kaufland import completed","count":216}
+-------------------
+[2026-02-25T15:56:04.321Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:06.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:08.331Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:10.325Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:12.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:14.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:16.328Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:18.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:20.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:22.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:24.324Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:26.323Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:28.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:30.321Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:32.313Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:34.322Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:36.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:38.328Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:40.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:42.328Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:44.321Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:46.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:48.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:50.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:52.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:54.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:56.322Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:58.326Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:00.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:02.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:04.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:06.325Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:08.323Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:10.326Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:12.321Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:14.327Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:16.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:18.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:20.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:22.328Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:24.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:26.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:28.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:30.331Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:32.330Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:34.329Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:36.328Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:38.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:40.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:42.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:44.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:46.322Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:48.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:50.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:52.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:54.327Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:56.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:57:58.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:00.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:02.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:04.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:06.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:08.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:10.327Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:12.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:14.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:16.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:18.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:20.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:22.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:24.323Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:26.328Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:28.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:30.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:32.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:34.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:36.329Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:38.322Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:40.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:42.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:44.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:46.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:48.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:50.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:52.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:54.322Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:56.325Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:58:58.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:00.327Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:02.330Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:04.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:06.322Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:08.326Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:10.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:12.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:14.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:16.313Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:18.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:20.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:22.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:24.328Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:26.330Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:28.321Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:30.328Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:32.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:34.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:36.322Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:38.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:40.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:42.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:44.328Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:46.329Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:48.330Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:50.322Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:52.321Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:54.327Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:56.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:59:58.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:00.346Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:02.313Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:04.313Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:06.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:08.331Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:10.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:12.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:14.322Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:16.322Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:18.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:20.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:22.321Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:24.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:26.325Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:28.313Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:30.313Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:32.320Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:34.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:36.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:38.325Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:40.322Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:42.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:44.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:46.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:48.323Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:50.331Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:52.321Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:54.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:56.312Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:00:58.313Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:00.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:02.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:04.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:06.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:08.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:10.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:12.313Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:14.321Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:16.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:18.327Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:20.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:22.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:24.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:26.331Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:28.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:30.327Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:32.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:34.316Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:36.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:38.324Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:40.327Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:42.314Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:44.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:46.321Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:48.329Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:50.331Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:52.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:54.324Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:56.318Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:01:58.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:02:00.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:02:02.323Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:02:04.325Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:02:06.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:02:08.319Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:02:10.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:02:12.317Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:02:14.325Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:02:16.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:02:18.313Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:02:20.322Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T16:02:22.315Z] GET /api/products?limit=5
+Body: {}
+Response Status: 401
+Response: {"error":"Unauthorized: API Key missing"}
+-------------------
+[2026-02-25T15:56:02.285Z] POST /api/import/shopify
+Body: {}
+Response Status: 200
+Response: {"message":"Shopify import completed","count":272}
+-------------------
+[2026-02-25T16:07:21.049Z] GET /api/products/stats
+Body: {}
+Response Status: 200
+Response: {"total":596,"aiOptimized":0,"synced":1074,"marketplaces":{"otto":453,"ebay":143,"kaufland":206,"shopify":272}}
+-------------------
+[2026-02-25T16:07:23.356Z] GET /api/products/stats
+Body: {}
+Response Status: 200
+Response: {"total":596,"aiOptimized":0,"synced":1074,"marketplaces":{"otto":453,"ebay":143,"kaufland":206,"shopify":272}}
+-------------------
+[2026-02-25T16:08:09.477Z] PUT /api/products/e01a92da-76da-4c5c-9947-2e601502ae9b
+Body: {"price":129.99}
+Response Status: 200
+Response: {"message":"Product updated and sync triggered"}
+-------------------
+[2026-02-25T16:08:19.111Z] GET /api/products/e01a92da-76da-4c5c-9947-2e601502ae9b
+Body: {}
+Response Status: 200
+Response: {"data":{"id":"e01a92da-76da-4c5c-9947-2e601502ae9b","title":"IPL 735654147879","description":"\n\n  <h1>Lästige Rasur oder schmerzhafte Epilation? Die Lösung ist der Einsatz modernster Lichttechnik – Das neue Sarlisi IPL Light-Touch-System.</h1>\n\n  <ol><li>\n      <h2>Gefrierpunkt-Haarentfernungstechnologie:</h2>\n      <p>\n        Durch diese innovative Technologie wird die Haarentfernungsrate um das 3-5-fache gesteigert, wodurch Rötungen und Schwellungen effektiv vermieden werden.\n      </p>\n    </li><li>\n      <h2>Professionelle IPL-Haarentfernung:</h2>\n      <p>\n        Stoppen Sie endloses Rasieren und Zupfen mit dieser IPL-Technologie, die das Haarwachstum effektiv stoppt.\n      </p>\n    </li><li>\n      <h2>Langfristige Nutzung:</h2>\n      <p>\n        Mit beeindruckenden 999.999 Blitzen erfüllt das Gerät Ihre lebenslangen Haarentfernungsbedürfnisse.\n      </p>\n    </li><li>\n      <h2>5 Energiestufen, 2 Modi:</h2>\n      <p>\n        5 einstellbare Energiestufen passen sich jedem Hauttyp an, während 2 Modi für vielseitige Anwendungen im gesamten Körperbereich sorgen.\n      </p>\n    </li><li>\n      <h2>Großes LCD-Display:</h2>\n      <p>\n        Das Display zeigt intuitiv verbleibende Leistung, Blitzzahl und ermöglicht die Auswahl der Behandlungsstelle.\n      </p>\n    </li></ol>\n\n  <p>\n    Die Epidermis wird während der Behandlung durch leistungsstarke Hautkontakt-Kühlung geschützt. Die Gefrierpunkt-Haarentfernungstechnologie setzt neue Maßstäbe für schmerzfreie und schnelle Haarentfernung. Erleben Sie die Wirksamkeit in nur 4 Wochen, und genießen Sie langfristige Ergebnisse mit regelmäßigen Behandlungen.\n  </p>\n\n  <h2>Was ist die Gefrierpunkt-Haarentfernungstechnologie?</h2>\n  <p>\n    Diese fortschrittliche Methode inaktiviert sanft Haarfollikel und umliegende Stammzellen, um eine dauerhafte Haarentfernung zu erreichen. Die Geschwindigkeit der Haarentfernung wird auf das 3-5-fache erhöht, wodurch eine schmerzfreie und effiziente Behandlung gewährleistet ist.\n  </p>\n\n  <h2>Was können Sie erwarten?</h2>\n  <ul><li>In 4 Wochen beginnen 90% der Haarfollikel zu welken, das Haarwachstum verlangsamt sich und wird dünner.</li><li>Nach 8 Wochen sind 95% des Haarwuchses gehemmt, die Haare sind deutlich reduziert.</li><li>In 12 Wochen sind die Haare fast vollständig entfernt, und regelmäßige monatliche Behandlungen halten Sie dauerhaft haarlos.</li></ul>\n\n  <h2>Sind Sie für Sarlisi geeignet?</h2>\n  <p>\n    Die IPL-Haarentfernung ist bei dunklen Haaren und heller Haut am effektivsten. Nicht empfohlen für blondes, rotes, graues oder weißes Haar, tätowierte Haut und dunkle Haut.\n  </p>\n\n  <h2>Vorsichtsmaßnahmen bei der Verwendung:</h2>\n  <ol><li>Überprüfen Sie vor der Anwendung die Kompatibilität mit Ihrem Hautton und Ihrer Haarfarbe.</li><li>Führen Sie vor der Behandlung einen Hautempfindlichkeitstest durch.</li></ol>\n\n  <p>\n    Das Paket enthält das IPL-Haarentfernungsgerät, Netzteil, Rasierer, Schutzbrille und Benutzerhandbuch. Bitte lesen Sie das Handbuch vor der Verwendung sorgfältig durch. Gönnen Sie sich die bequeme und effektive Lösung der IPL-Haarentfernung von Sarlisi für lang anhalt\n</p>","sku":"IPL 735654147879","ean":"0735654147879","price":129.99,"quantity":0,"weight":0,"shipping_type":null,"images":[null,null,null,null,null,null,null,null,null,null],"status":"imported","created_at":"2026-02-25T15:09:19.081882+00:00","marketplace_products":[{"price":129.99,"quantity":0,"external_id":"IPL 735654147879","marketplace":"otto","sync_status":"synced","last_synced_at":"2026-02-25T16:08:12.519+00:00"},{"price":129.99,"quantity":13,"external_id":"389391003605","marketplace":"kaufland","sync_status":"synced","last_synced_at":"2026-02-25T16:08:12.517+00:00"},{"price":129.99,"quantity":13,"external_id":"15346769953093","marketplace":"shopify","sync_status":"synced","last_synced_at":"2026-02-25T16:08:12.871+00:00"}]}}
+-------------------
+[2026-02-25T16:08:19.570Z] GET /api/products/e01a92da-76da-4c5c-9947-2e601502ae9b
+Body: {}
+Response Status: 200
+Response: {"data":{"id":"e01a92da-76da-4c5c-9947-2e601502ae9b","title":"IPL 735654147879","description":"\n\n  <h1>Lästige Rasur oder schmerzhafte Epilation? Die Lösung ist der Einsatz modernster Lichttechnik – Das neue Sarlisi IPL Light-Touch-System.</h1>\n\n  <ol><li>\n      <h2>Gefrierpunkt-Haarentfernungstechnologie:</h2>\n      <p>\n        Durch diese innovative Technologie wird die Haarentfernungsrate um das 3-5-fache gesteigert, wodurch Rötungen und Schwellungen effektiv vermieden werden.\n      </p>\n    </li><li>\n      <h2>Professionelle IPL-Haarentfernung:</h2>\n      <p>\n        Stoppen Sie endloses Rasieren und Zupfen mit dieser IPL-Technologie, die das Haarwachstum effektiv stoppt.\n      </p>\n    </li><li>\n      <h2>Langfristige Nutzung:</h2>\n      <p>\n        Mit beeindruckenden 999.999 Blitzen erfüllt das Gerät Ihre lebenslangen Haarentfernungsbedürfnisse.\n      </p>\n    </li><li>\n      <h2>5 Energiestufen, 2 Modi:</h2>\n      <p>\n        5 einstellbare Energiestufen passen sich jedem Hauttyp an, während 2 Modi für vielseitige Anwendungen im gesamten Körperbereich sorgen.\n      </p>\n    </li><li>\n      <h2>Großes LCD-Display:</h2>\n      <p>\n        Das Display zeigt intuitiv verbleibende Leistung, Blitzzahl und ermöglicht die Auswahl der Behandlungsstelle.\n      </p>\n    </li></ol>\n\n  <p>\n    Die Epidermis wird während der Behandlung durch leistungsstarke Hautkontakt-Kühlung geschützt. Die Gefrierpunkt-Haarentfernungstechnologie setzt neue Maßstäbe für schmerzfreie und schnelle Haarentfernung. Erleben Sie die Wirksamkeit in nur 4 Wochen, und genießen Sie langfristige Ergebnisse mit regelmäßigen Behandlungen.\n  </p>\n\n  <h2>Was ist die Gefrierpunkt-Haarentfernungstechnologie?</h2>\n  <p>\n    Diese fortschrittliche Methode inaktiviert sanft Haarfollikel und umliegende Stammzellen, um eine dauerhafte Haarentfernung zu erreichen. Die Geschwindigkeit der Haarentfernung wird auf das 3-5-fache erhöht, wodurch eine schmerzfreie und effiziente Behandlung gewährleistet ist.\n  </p>\n\n  <h2>Was können Sie erwarten?</h2>\n  <ul><li>In 4 Wochen beginnen 90% der Haarfollikel zu welken, das Haarwachstum verlangsamt sich und wird dünner.</li><li>Nach 8 Wochen sind 95% des Haarwuchses gehemmt, die Haare sind deutlich reduziert.</li><li>In 12 Wochen sind die Haare fast vollständig entfernt, und regelmäßige monatliche Behandlungen halten Sie dauerhaft haarlos.</li></ul>\n\n  <h2>Sind Sie für Sarlisi geeignet?</h2>\n  <p>\n    Die IPL-Haarentfernung ist bei dunklen Haaren und heller Haut am effektivsten. Nicht empfohlen für blondes, rotes, graues oder weißes Haar, tätowierte Haut und dunkle Haut.\n  </p>\n\n  <h2>Vorsichtsmaßnahmen bei der Verwendung:</h2>\n  <ol><li>Überprüfen Sie vor der Anwendung die Kompatibilität mit Ihrem Hautton und Ihrer Haarfarbe.</li><li>Führen Sie vor der Behandlung einen Hautempfindlichkeitstest durch.</li></ol>\n\n  <p>\n    Das Paket enthält das IPL-Haarentfernungsgerät, Netzteil, Rasierer, Schutzbrille und Benutzerhandbuch. Bitte lesen Sie das Handbuch vor der Verwendung sorgfältig durch. Gönnen Sie sich die bequeme und effektive Lösung der IPL-Haarentfernung von Sarlisi für lang anhalt\n</p>","sku":"IPL 735654147879","ean":"0735654147879","price":129.99,"quantity":0,"weight":0,"shipping_type":null,"images":[null,null,null,null,null,null,null,null,null,null],"status":"imported","created_at":"2026-02-25T15:09:19.081882+00:00","marketplace_products":[{"price":129.99,"quantity":0,"external_id":"IPL 735654147879","marketplace":"otto","sync_status":"synced","last_synced_at":"2026-02-25T16:08:12.519+00:00"},{"price":129.99,"quantity":13,"external_id":"389391003605","marketplace":"kaufland","sync_status":"synced","last_synced_at":"2026-02-25T16:08:12.517+00:00"},{"price":129.99,"quantity":13,"external_id":"15346769953093","marketplace":"shopify","sync_status":"synced","last_synced_at":"2026-02-25T16:08:12.871+00:00"}]}}
+-------------------
+[2026-02-25T16:08:49.677Z] PUT /api/products/e01a92da-76da-4c5c-9947-2e601502ae9b
+Body: {"id":"e01a92da-76da-4c5c-9947-2e601502ae9b","title":"IPL 735654147879","description":"\n\n  <h1>Lästige Rasur oder schmerzhafte Epilation? Die Lösung ist der Einsatz modernster Lichttechnik – Das neue Sarlisi IPL Light-Touch-System.</h1>\n\n  <ol><li>\n      <h2>Gefrierpunkt-Haarentfernungstechnologie:</h2>\n      <p>\n        Durch diese innovative Technologie wird die Haarentfernungsrate um das 3-5-fache gesteigert, wodurch Rötungen und Schwellungen effektiv vermieden werden.\n      </p>\n    </li><li>\n      <h2>Professionelle IPL-Haarentfernung:</h2>\n      <p>\n        Stoppen Sie endloses Rasieren und Zupfen mit dieser IPL-Technologie, die das Haarwachstum effektiv stoppt.\n      </p>\n    </li><li>\n      <h2>Langfristige Nutzung:</h2>\n      <p>\n        Mit beeindruckenden 999.999 Blitzen erfüllt das Gerät Ihre lebenslangen Haarentfernungsbedürfnisse.\n      </p>\n    </li><li>\n      <h2>5 Energiestufen, 2 Modi:</h2>\n      <p>\n        5 einstellbare Energiestufen passen sich jedem Hauttyp an, während 2 Modi für vielseitige Anwendungen im gesamten Körperbereich sorgen.\n      </p>\n    </li><li>\n      <h2>Großes LCD-Display:</h2>\n      <p>\n        Das Display zeigt intuitiv verbleibende Leistung, Blitzzahl und ermöglicht die Auswahl der Behandlungsstelle.\n      </p>\n    </li></ol>\n\n  <p>\n    Die Epidermis wird während der Behandlung durch leistungsstarke Hautkontakt-Kühlung geschützt. Die Gefrierpunkt-Haarentfernungstechnologie setzt neue Maßstäbe für schmerzfreie und schnelle Haarentfernung. Erleben Sie die Wirksamkeit in nur 4 Wochen, und genießen Sie langfristige Ergebnisse mit regelmäßigen Behandlungen.\n  </p>\n\n  <h2>Was ist die Gefrierpunkt-Haarentfernungstechnologie?</h2>\n  <p>\n    Diese fortschrittliche Methode inaktiviert sanft Haarfollikel und umliegende Stammzellen, um eine dauerhafte Haarentfernung zu erreichen. Die Geschwindigkeit der Haarentfernung wird auf das 3-5-fache erhöht, wodurch eine schmerzfreie und effiziente Behandlung gewährleistet ist.\n  </p>\n\n  <h2>Was können Sie erwarten?</h2>\n  <ul><li>In 4 Wochen beginnen 90% der Haarfollikel zu welken, das Haarwachstum verlangsamt sich und wird dünner.</li><li>Nach 8 Wochen sind 95% des Haarwuchses gehemmt, die Haare sind deutlich reduziert.</li><li>In 12 Wochen sind die Haare fast vollständig entfernt, und regelmäßige monatliche Behandlungen halten Sie dauerhaft haarlos.</li></ul>\n\n  <h2>Sind Sie für Sarlisi geeignet?</h2>\n  <p>\n    Die IPL-Haarentfernung ist bei dunklen Haaren und heller Haut am effektivsten. Nicht empfohlen für blondes, rotes, graues oder weißes Haar, tätowierte Haut und dunkle Haut.\n  </p>\n\n  <h2>Vorsichtsmaßnahmen bei der Verwendung:</h2>\n  <ol><li>Überprüfen Sie vor der Anwendung die Kompatibilität mit Ihrem Hautton und Ihrer Haarfarbe.</li><li>Führen Sie vor der Behandlung einen Hautempfindlichkeitstest durch.</li></ol>\n\n  <p>\n    Das Paket enthält das IPL-Haarentfernungsgerät, Netzteil, Rasierer, Schutzbrille und Benutzerhandbuch. Bitte lesen Sie das Handbuch vor der Verwendung sorgfältig durch. Gönnen Sie sich die bequeme und effektive Lösung der IPL-Haarentfernung von Sarlisi für lang anhalt\n</p>","sku":"IPL 735654147879","ean":"0735654147879","price":129.98,"quantity":0,"weight":0,"shipping_type":null,"images":[null,null,null,null,null,null,null,null,null,null],"status":"imported","created_at":"2026-02-25T15:09:19.081882+00:00","marketplace_products":[{"price":129.99,"quantity":0,"external_id":"IPL 735654147879","marketplace":"otto","sync_status":"synced","last_synced_at":"2026-02-25T16:08:12.519+00:00"},{"price":129.99,"quantity":13,"external_id":"389391003605","marketplace":"kaufland","sync_status":"synced","last_synced_at":"2026-02-25T16:08:12.517+00:00"},{"price":129.99,"quantity":13,"external_id":"15346769953093","marketplace":"shopify","sync_status":"synced","last_synced_at":"2026-02-25T16:08:12.871+00:00"}]}
+Response Status: 200
+Response: {"message":"Product updated and sync triggered"}
+-------------------
+[2026-02-25T16:09:34.194Z] GET /api/products/stats
+Body: {}
+Response Status: 200
+Response: {"total":596,"aiOptimized":0,"synced":1074,"marketplaces":{"otto":453,"ebay":143,"kaufland":206,"shopify":272}}
+-------------------
+[2026-02-25T16:09:35.382Z] GET /api/products/stats
+Body: {}
+Response Status: 200
+Response: {"total":596,"aiOptimized":0,"synced":1074,"marketplaces":{"otto":453,"ebay":143,"kaufland":206,"shopify":272}}
+-------------------
+[2026-02-25T21:28:27.610Z] GET /api/products/stats
+Body: {}
+Response Status: 200
+Response: {"total":596,"aiOptimized":0,"synced":1074,"marketplaces":{"otto":453,"ebay":143,"kaufland":206,"shopify":272}}
+-------------------
+[2026-02-25T21:48:33.298Z] GET /api/products/stats
+Body: {}
+Response Status: 200
+Response: {"total":596,"aiOptimized":0,"synced":1074,"marketplaces":{"otto":453,"ebay":143,"kaufland":206,"shopify":272}}
+-------------------
+[2026-02-26T14:51:19.834Z] GET /api/products/stats
+Body: {}
+Response Status: 200
+Response: {"total":596,"aiOptimized":0,"synced":1074,"marketplaces":{"otto":453,"ebay":143,"kaufland":206,"shopify":272}}
+-------------------

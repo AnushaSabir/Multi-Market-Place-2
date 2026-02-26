@@ -14,10 +14,22 @@ export abstract class BaseExporter {
     protected abstract createListingOnApi(accessToken: string, product: any): Promise<ExportResult>;
 
     // Specific API implementation to update price/stock or details
-    protected abstract updateListingOnApi(accessToken: string, externalId: string, updates: { price?: number; quantity?: number; title?: string; description?: string; sku?: string; weight?: number; images?: string[]; shipping_type?: string }): Promise<ExportResult>;
+    protected abstract updateListingOnApi(accessToken: string, externalId: string, updates: { price?: number; quantity?: number; title?: string; description?: string; sku?: string; weight?: number; images?: string[]; shipping_type?: string }, credentials?: any): Promise<ExportResult>;
 
     async publishProduct(productId: string): Promise<ExportResult> {
         try {
+            // 0. Check if already linked to this marketplace
+            const { data: mapping } = await supabase
+                .from('marketplace_products')
+                .select('external_id')
+                .eq('product_id', productId)
+                .eq('marketplace', this.marketplace)
+                .maybeSingle();
+
+            if (mapping) {
+                return { success: false, error: `Product is already listed on ${this.marketplace} (ID: ${mapping.external_id})` };
+            }
+
             await this.logSync('export', 'pending');
 
             // 1. Get Product Data
@@ -93,15 +105,14 @@ export abstract class BaseExporter {
 
             const token = await TokenManger.getAccessToken(this.marketplace);
             const productSku = (mapping.products as any)?.sku;
-
-            // Merge SKU into updates if missing
-            const enhancedUpdates = {
-                ...updates,
-                sku: updates.sku || productSku
-            };
+            const fullCreds = await TokenManger.getFullCredentials(this.marketplace);
+            console.log(`[Sync] Triggering ${this.marketplace} update. ExternalID: ${mapping.external_id}, Global SKU: ${productSku}`);
 
             // 2. Call API
-            const result = await this.updateListingOnApi(token || 'mock_token', mapping.external_id, enhancedUpdates);
+            const result = await this.updateListingOnApi(token || 'mock_token', mapping.external_id, {
+                ...updates,
+                sku: updates.sku || productSku
+            }, fullCreds);
 
             // 3. Update local sync status
             if (result.success) {
@@ -133,6 +144,8 @@ export abstract class BaseExporter {
             return result;
 
         } catch (e: any) {
+            console.error(`[BaseExporter] Update Product failed for ${this.marketplace}:`, e);
+            await this.logSync('update', 'failed', e.message);
             return { success: false, error: e.message };
         }
     }

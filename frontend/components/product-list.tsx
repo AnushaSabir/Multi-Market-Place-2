@@ -19,7 +19,8 @@ import {
   Sparkles,
   Zap,
   ImageIcon,
-  Pencil
+  Pencil,
+  Store
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -277,6 +278,51 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     setPublishDialogOpen(true)
   }
 
+  const handlePushAllOtto = async () => {
+    // 1. Find products that are only on Otto (no other marketplace mapping)
+    const ottoOnly = products.filter(p =>
+      !p.marketplace_products?.some(mp => ['ebay', 'shopify', 'kaufland'].includes(mp.marketplace))
+    )
+
+    if (ottoOnly.length === 0) {
+      toast({ title: "No new products", description: "All Otto products are already listed elsewhere." })
+      return
+    }
+
+    if (!confirm(`Found ${ottoOnly.length} new Otto products. Push them to eBay, Shopify, and Kaufland?`)) return
+
+    setIsPublishing(true)
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+    const targetMarketplaces = ['ebay', 'shopify', 'kaufland']
+    let totalSuccess = 0
+    let totalFail = 0
+
+    try {
+      for (const product of ottoOnly) {
+        for (const mp of targetMarketplaces) {
+          try {
+            const res = await fetch(`${API_URL}/api/products/${product.id}/publish`, {
+              method: "POST",
+              headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
+              body: JSON.stringify({ marketplace: mp })
+            })
+            if (res.ok) totalSuccess++
+            else totalFail++
+          } catch (e) { totalFail++ }
+        }
+      }
+      toast({
+        title: "Bulk Push Complete",
+        description: `Total Success: ${totalSuccess}, Failures: ${totalFail}`,
+        className: "bg-blue-600 text-white"
+      })
+    } catch (error) {
+      toast({ title: "Error", description: "Bulk push failed", variant: "destructive" })
+    } finally {
+      setIsPublishing(false)
+    }
+  }
+
   const handlePublish = async () => {
     if (!selectedMarketplace) return
     const idsToPublish = selectedProductForPublish ? [selectedProductForPublish] : selected
@@ -288,16 +334,20 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     let failCount = 0
 
     try {
+      const targetMarketplaces = selectedMarketplace === 'all' ? ['ebay', 'shopify', 'kaufland'] : [selectedMarketplace]
+
       for (const id of idsToPublish) {
-        try {
-          const res = await fetch(`${API_URL}/api/products/${id}/publish`, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
-            body: JSON.stringify({ marketplace: selectedMarketplace })
-          })
-          if (!res.ok) throw new Error("Failed");
-          successCount++
-        } catch (e) { failCount++ }
+        for (const mp of targetMarketplaces) {
+          try {
+            const res = await fetch(`${API_URL}/api/products/${id}/publish`, {
+              method: "POST",
+              headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
+              body: JSON.stringify({ marketplace: mp })
+            })
+            if (!res.ok) throw new Error("Failed");
+            successCount++
+          } catch (e) { failCount++ }
+        }
       }
       toast({
         title: "Publish Complete",
@@ -396,11 +446,20 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Button size="sm" onClick={handlePushAllOtto} className="bg-orange-600 hover:bg-orange-700 animate-pulse-subtle">
+            <Zap className="mr-2 h-4 w-4" /> Push New Otto
+          </Button>
+          <Button size="sm" onClick={() => openPublishDialog(null)} className="bg-blue-600 hover:bg-blue-700">
+            <Store className="mr-2 h-4 w-4" /> Bulk Publish
+          </Button>
           <Button size="sm" onClick={handleBulkSync} variant="outline">
             <RefreshCw className="mr-2 h-4 w-4" /> Sync All
           </Button>
-          <Button size="sm" onClick={handleBulkAIOptimization}>
+          <Button size="sm" onClick={handleBulkAIOptimization} variant="ghost">
             <Sparkles className="mr-2 h-4 w-4" /> Bulk AI
+          </Button>
+          <Button size="sm" variant="destructive" onClick={handleDeleteAll}>
+            <Trash2 className="mr-2 h-4 w-4" /> Reset All
           </Button>
         </div>
       </div>
@@ -468,13 +527,50 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                   </TableCell>
 
                   <TableCell className="py-2 align-top font-semibold">
-                    {new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(product.price)}
+                    {editingPrice === product.id ? (
+                      <div className="flex items-center gap-1">
+                        <Input
+                          className="w-20 h-8"
+                          value={tempPrice}
+                          onChange={(e) => setTempPrice(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && savePriceEdit(product.id)}
+                          autoFocus
+                        />
+                        <Button size="icon" variant="ghost" className="h-7 w-7 text-green-600" onClick={() => savePriceEdit(product.id)}>
+                          <Check className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 group/edit cursor-pointer" onClick={() => handlePriceEdit(product.id, product.price)}>
+                        <span>{new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(product.price)}</span>
+                        <Pencil className="h-3 w-3 opacity-0 group-hover/edit:opacity-100 text-blue-500" />
+                      </div>
+                    )}
                   </TableCell>
 
                   <TableCell className="py-2 align-top">
-                    <span className={`px-2 py-0.5 rounded text-xs ${product.quantity > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                      {product.quantity}
-                    </span>
+                    {editingQty === product.id ? (
+                      <div className="flex items-center gap-1">
+                        <Input
+                          className="w-16 h-8"
+                          value={tempQty}
+                          type="number"
+                          onChange={(e) => setTempQty(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && saveQtyEdit(product.id)}
+                          autoFocus
+                        />
+                        <Button size="icon" variant="ghost" className="h-7 w-7 text-green-600" onClick={() => saveQtyEdit(product.id)}>
+                          <Check className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 group/edit cursor-pointer" onClick={() => handleQtyEdit(product.id, product.quantity)}>
+                        <span className={`px-2 py-0.5 rounded text-xs ${product.quantity > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {product.quantity}
+                        </span>
+                        <Pencil className="h-3 w-3 opacity-0 group-hover/edit:opacity-100 text-blue-500" />
+                      </div>
+                    )}
                   </TableCell>
 
                   <TableCell className="py-2 align-top text-center">
@@ -531,6 +627,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
           <Select onValueChange={setSelectedMarketplace} value={selectedMarketplace}>
             <SelectTrigger><SelectValue placeholder="Select Marketplace" /></SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">All Marketplaces (eBay, Shopify, Kaufland)</SelectItem>
               <SelectItem value="ebay">eBay</SelectItem>
               <SelectItem value="otto">Otto</SelectItem>
               <SelectItem value="kaufland">Kaufland</SelectItem>

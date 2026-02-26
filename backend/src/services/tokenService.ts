@@ -136,7 +136,7 @@ export class TokenManger {
 
                 const res = await axios.post(tokenUrl, qs.stringify({
                     grant_type: 'client_credentials',
-                    scope: 'https://api.ebay.com/oauth/api_scope' // Revert to default public scope to fix invalid_scope
+                    scope: 'https://api.ebay.com/oauth/api_scope'
                 }), {
                     headers: {
                         'Authorization': `Basic ${auth}`,
@@ -187,5 +187,26 @@ export class TokenManger {
             console.error(`Failed to generate token for ${marketplace}:`, e.response?.data || e.message);
             return null;
         }
+    }
+
+    // New helper to get ALL credentials (for things like Kaufland Secret Key)
+    static async getFullCredentials(marketplace: string): Promise<any> {
+        const { data, error } = await supabase
+            .from('marketplace_credentials')
+            .select('credentials')
+            .eq('marketplace', marketplace)
+            .single();
+
+        if (error || !data) {
+            // Fallback to minimal env if needed, but usually we want the DB one
+            if (marketplace === 'kaufland') {
+                return {
+                    client_key: process.env.KAUFLAND_CLIENT_KEY,
+                    secret_key: process.env.KAUFLAND_SECRET_KEY
+                };
+            }
+            return null;
+        }
+        return data.credentials;
     }
 }

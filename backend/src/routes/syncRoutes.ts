@@ -2,6 +2,10 @@ import express from 'express';
 import { supabase } from '../database/supabaseClient';
 import { SyncService } from '../services/syncService';
 import { TokenManger } from '../services/tokenService';
+import { OttoImporter } from '../services/importers/ottoImporter';
+import { EbayImporter } from '../services/importers/ebayImporter';
+import { KauflandImporter } from '../services/importers/kauflandImporter';
+import { ShopifyImporter } from '../services/importers/shopifyImporter';
 
 const router = express.Router();
 
@@ -83,6 +87,51 @@ router.post('/batch', async (req, res) => {
     } catch (err: any) {
         res.status(500).json({ error: err.message });
     }
+});
+
+/**
+ * cron trigger for all marketplaces
+ * Usually called by Vercel Cron or similar
+ * Requires CRON_SECRET for security
+ */
+router.post('/cron', async (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
+
+    // Basic security check
+    if (process.env.CRON_SECRET && authHeader !== expectedSecret) {
+        console.warn("[Cron] Unauthorized trigger attempt.");
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    console.log("[Cron] Starting automated batch imports for all marketplaces...");
+
+    const importers = [
+        new OttoImporter(),
+        new EbayImporter(),
+        new KauflandImporter(),
+        new ShopifyImporter()
+    ];
+
+    const results: any = {};
+
+    for (const importer of importers) {
+        try {
+            console.log(`[Cron] Triggering ${importer.marketplace}...`);
+            const result = await importer.runImport();
+            results[importer.marketplace] = {
+                success: result.success,
+                count: result.count,
+                error: result.error
+            };
+        } catch (e: any) {
+            console.error(`[Cron] Critical failure for ${importer.marketplace}:`, e.message);
+            results[importer.marketplace] = { success: false, error: e.message };
+        }
+    }
+
+    console.log("[Cron] Batch imports finished:", JSON.stringify(results));
+    res.json({ message: "Cron sync finished", results });
 });
 
 export default router;

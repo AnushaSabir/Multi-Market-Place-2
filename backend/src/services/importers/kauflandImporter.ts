@@ -25,7 +25,7 @@ export class KauflandImporter extends BaseImporter {
 
                 const timestamp = Math.floor(Date.now() / 1000).toString();
                 const method = 'GET';
-                const listUrl = `https://sellerapi.kaufland.com/v2/units?limit=${limit}&offset=${offset}&storefront=de`;
+                const listUrl = `https://sellerapi.kaufland.com/v2/units?limit=${limit}&offset=${offset}&storefront=de&embedded=products`;
                 const body = ''; // GET request has no body
 
                 // Generate Signature for THIS request
@@ -55,11 +55,11 @@ export class KauflandImporter extends BaseImporter {
                     title: u.product?.title || 'Unknown Kaufland Item',
                     description: u.product?.description || '',
                     sku: u.v_number || u.ean,
-                    ean: u.ean || '',
+                    ean: u.ean || (u.product?.eans ? u.product.eans[0] : ''),
                     price: parseFloat(u.price || '0') / 100, // Price is in cents usually
                     quantity: parseInt(u.amount || '0'),
                     weight: 0,
-                    images: u.product?.picture ? [u.product.picture] : [],
+                    images: u.product?.main_picture ? [u.product.main_picture] : (u.product?.picture ? [u.product.picture] : []),
                     external_id: u.id_unit.toString(),
                     marketplace: 'kaufland'
                 }));

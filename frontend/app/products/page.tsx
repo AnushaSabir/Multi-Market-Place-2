@@ -5,7 +5,8 @@ import { Suspense } from "react"
 
 export const dynamic = "force-dynamic"
 
-export default async function ProductsPage({ searchParams }: { searchParams: { marketplace?: string } }) {
+export default async function ProductsPage({ searchParams: searchParamsPromise }: { searchParams: Promise<{ marketplace?: string }> }) {
+  const searchParams = await searchParamsPromise
   const supabase = await createClient()
   const selectedMarketplace = searchParams.marketplace
 

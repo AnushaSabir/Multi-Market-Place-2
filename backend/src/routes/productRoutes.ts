@@ -82,7 +82,7 @@ router.put('/:id', async (req, res) => {
 
     if (error) return res.status(500).json({ error: error.message });
 
-    if (updates.price || updates.quantity || updates.title || updates.description) {
+    if (updates.price !== undefined || updates.quantity !== undefined || updates.title || updates.description) {
         await SyncService.syncProductUpdateToAll(id, updates);
     }
 

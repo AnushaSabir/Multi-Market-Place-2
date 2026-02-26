@@ -8,7 +8,7 @@ export class OttoImporter extends BaseImporter {
         console.log("Fetching all products from Otto API...");
 
         let allProducts: ImportedProduct[] = [];
-        let nextUrl: string | null = 'https://api.otto.market/v4/products?limit=50';
+        let nextUrl: string | null = 'https://api.otto.market/v5/products?limit=50';
         let pageCount = 0;
         const MAX_PAGES = 50;
         let totalProcessed = 0;
@@ -17,11 +17,18 @@ export class OttoImporter extends BaseImporter {
             while (nextUrl && pageCount < MAX_PAGES) {
                 if (BaseImporter.stopImport) throw new Error("Import stopped by user");
                 console.log(`Fetching page ${pageCount + 1}...`);
+
+                // Add a small delay between pages to prevent overloading Otto API
+                if (pageCount > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                }
+
                 const response: any = await axios.get(nextUrl!, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
                         'Accept': 'application/json'
-                    }
+                    },
+                    timeout: 45000 // Increase timeout to 45 seconds for large pages
                 });
 
                 let productsRaw = [];
@@ -38,17 +45,20 @@ export class OttoImporter extends BaseImporter {
                     break;
                 }
 
-                const pageProducts = productsRaw.map((p: any) => ({
-                    title: p.productName || p.productReference || 'Unknown Title',
-                    description: p.productDescription?.description || p.description || '',
-                    sku: p.sku || p.partnerSku || '',
-                    ean: p.ean || p.gtin || '',
-                    price: parseFloat(p.pricing?.standardPrice?.amount || p.price || '0'),
-                    quantity: parseInt(p.stock?.quantity || p.quantity || '0'),
-                    images: p.mediaAssets?.map((m: any) => m.location) || [],
-                    external_id: p.productReference || p.sku,
-                    marketplace: 'otto'
-                }));
+                const pageProducts = productsRaw.map((p: any) => {
+                    const actualSku = p.sku || p.partnerSku || p.productReference;
+                    return {
+                        title: p.productName || p.productReference || 'Unknown Title',
+                        description: p.productDescription?.description || p.description || '',
+                        sku: actualSku,
+                        ean: p.ean || p.gtin || '',
+                        price: parseFloat(p.pricing?.standardPrice?.amount || p.price || '0'),
+                        quantity: parseInt(p.stock?.quantity || p.quantity || '0'),
+                        images: p.mediaAssets?.map((m: any) => m.location) || [],
+                        external_id: actualSku, // Ensure external_id is the SKU, not the title
+                        marketplace: 'otto'
+                    };
+                });
 
                 for (const prod of pageProducts) {
                     await this.upsertProduct(prod as ImportedProduct);
@@ -57,8 +67,8 @@ export class OttoImporter extends BaseImporter {
 
                 console.log(`Page ${pageCount + 1} processed. Total items: ${totalProcessed}`);
 
-                const links: any = response.data.links;
-                const nextLink: any = Array.isArray(links) ? links.find((l: any) => l.rel === 'next') : null;
+                const links: any = response.data.links || response.data._links;
+                const nextLink: any = Array.isArray(links) ? links.find((l: any) => l.rel === 'next') : (links?.next || null);
 
                 if (nextLink && nextLink.href) {
                     let href = nextLink.href;

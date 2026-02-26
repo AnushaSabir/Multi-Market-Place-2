@@ -11,37 +11,27 @@ export class OttoExporter extends BaseExporter {
         };
     }
 
-    protected async updateListingOnApi(accessToken: string, externalId: string, updates: any): Promise<ExportResult> {
+    protected async updateListingOnApi(accessToken: string, externalId: string, updates: any, credentials?: any): Promise<ExportResult> {
         console.log(`[Otto] Updating listing ${externalId}:`, updates);
 
         try {
             const axios = (await import('axios')).default;
-            console.log(`[Otto] Using Token (start): ${accessToken.substring(0, 10)}...`);
+            const sku = externalId;
+            console.log(`[Otto] Official Update for SKU: ${sku}`);
+
             const headers = {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             };
 
-            // Otto typically uses 'Pricing' and 'Quantity' endpoints separated involved with Position Item ID or SKU
-            // API: https://api.otto.market/v1/products/{sku}/pricing
-            // API: https://api.otto.market/v1/products/{sku}/quantity
-
-            // We assume externalId is the SKU based on our Importer logic, or we rely on updates.sku
-            const sku = updates.sku || externalId;
-
-            const promises = [];
-
-            // Ensure SKU is URL encoded to handle spaces/special chars
-            const safeSku = encodeURIComponent(sku);
             let errors = [];
 
             // 1. Update Price
             if (updates.price) {
                 try {
                     const priceUrl = `https://api.otto.market/v5/products/prices`;
-                    console.log(`[Otto] Posting Price to: ${priceUrl}`);
-                    await axios.post(priceUrl, [
+                    const pRes = await axios.post(priceUrl, [
                         {
                             sku: sku,
                             standardPrice: {
@@ -50,29 +40,37 @@ export class OttoExporter extends BaseExporter {
                             }
                         }
                     ], { headers });
-                    console.log(`[Otto] Price Updated Successfully`);
+
+                    console.log(`[Otto] Price API Response for ${sku}:`, JSON.stringify(pRes.data));
+                    console.log(`[Otto] Price Updated Successfully for ${sku}`);
                 } catch (pErr: any) {
                     const msg = pErr.response?.data ? JSON.stringify(pErr.response.data) : pErr.message;
-                    console.error(`[Otto] Price Update Failed: ${msg}`);
+                    console.error(`[Otto] Price Update Failed for ${sku}: ${msg}`);
                     errors.push(`Price: ${msg}`);
                 }
             }
 
-            // 2. Update Quantity (Availability V1)
+            // 2. Update Quantity
             if (updates.quantity !== undefined) {
                 try {
+                    // Reverting to v1 now that SKU is confirmed correct
                     const qtyUrl = `https://api.otto.market/v1/availability/quantities`;
-                    console.log(`[Otto] Posting Quantity to: ${qtyUrl}`);
-                    await axios.post(qtyUrl, [
+                    const qtyBody = [
                         {
-                            sku: sku, // Raw SKU for body
+                            sku: sku,
                             quantity: updates.quantity
                         }
-                    ], { headers });
-                    console.log(`[Otto] Quantity Updated Successfully`);
+                    ];
+
+                    console.log(`[Otto] Dispatching Quantity Update to V1:`, JSON.stringify(qtyBody));
+
+                    const qRes = await axios.post(qtyUrl, qtyBody, { headers });
+
+                    console.log(`[Otto] Quantity API Response for ${sku}:`, JSON.stringify(qRes.data));
+                    console.log(`[Otto] Quantity Updated Successfully for ${sku}`);
                 } catch (qErr: any) {
                     const msg = qErr.response?.data ? JSON.stringify(qErr.response.data) : qErr.message;
-                    console.error(`[Otto] Quantity Update Failed: ${msg}`);
+                    console.error(`[Otto] Quantity Update Failed for ${sku}: ${msg}`);
                     errors.push(`Qty: ${msg}`);
                 }
             }

@@ -37,14 +37,21 @@ export class SyncService {
             return;
         }
 
-        if (!links || links.length === 0) return;
+        if (!links || links.length === 0) {
+            console.log(`[SyncService] No connected marketplaces found for product ${productId}`);
+            return;
+        }
+
+        console.log(`[SyncService] Found ${links.length} marketplaces: ${links.map(l => l.marketplace).join(', ')}`);
 
         // Push updates
         const promises = links.map(link => {
             const mp = link.marketplace as keyof typeof exporters;
             if (exporters[mp]) {
+                console.log(`[SyncService] Dispatching update to ${mp}...`);
                 return exporters[mp].updateProduct(productId, updates);
             }
+            console.warn(`[SyncService] No exporter found for marketplace: ${mp}`);
             return Promise.resolve();
         });
 
@@ -52,8 +59,11 @@ export class SyncService {
         const results = await Promise.allSettled(promises);
 
         results.forEach((result, index) => {
+            const mp = links[index].marketplace;
             if (result.status === 'rejected') {
-                console.error(`Sync failed for link index ${index}:`, result.reason);
+                console.error(`[SyncService] Sync failed for ${mp}:`, result.reason);
+            } else {
+                console.log(`[SyncService] Sync process finished for ${mp}. Result Success: ${(result.value as any)?.success}`);
             }
         });
     }
