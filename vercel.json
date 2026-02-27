@@ -1,0 +1,15 @@
+{
+    "version": 2,
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": "/backend/api/index.ts"
+        }
+    ],
+    "crons": [
+        {
+            "path": "/api/sync/cron",
+            "schedule": "0 0 * * *"
+        }
+    ]
+}
