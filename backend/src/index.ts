@@ -16,7 +16,7 @@ app.use(express.json());
 import fs from 'fs';
 import path from 'path';
 
-const logFile = path.resolve(process.cwd(), 'debug_server.log');
+// const logFile = path.resolve(process.cwd(), 'debug_server.log');
 
 // Request logging for debugging
 app.use((req, res, next) => {
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
     res.send = function (body) {
         const logEntryEnd = `Response Status: ${res.statusCode}\nResponse: ${body}\n-------------------\n`;
         console.log(logEntryStart + logEntryEnd);
-        fs.appendFileSync(logFile, logEntryStart + logEntryEnd);
+        // fs.appendFileSync(logFile, logEntryStart + logEntryEnd);
         return originalSend.call(this, body);
     };
     next();
@@ -70,11 +70,12 @@ app.use('/api/ai', authenticateAPI, aiRoutes);
 // Webhook Routes
 app.use('/api/webhooks', webhookRoutes);
 
-// Global Error Handler
 app.use((err: any, req: any, res: any, next: any) => {
     const errorMsg = `[CRITICAL ERROR] ${err.stack || err.message}\n`;
     console.error(errorMsg);
-    fs.appendFileSync(logFile, errorMsg);
+    // if (process.env.NODE_ENV !== 'production') {
+    //     fs.appendFileSync(logFile, errorMsg);
+    // }
     res.status(500).json({ error: 'Internal Server Error', details: err.message });
 });
 
