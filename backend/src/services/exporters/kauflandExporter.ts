@@ -21,8 +21,7 @@ export class KauflandExporter extends BaseExporter {
                 listing_price: Math.round(product.price * 100),
                 amount: product.quantity || 0,
                 id_offer: product.sku,
-                delivery_time_min: 1,
-                delivery_time_max: 3
+                handling_time: 2
             };
 
             const timestamp = Math.floor(Date.now() / 1000).toString();

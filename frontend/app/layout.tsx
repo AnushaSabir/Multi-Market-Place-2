@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-// Font imports removed due to Turbopack compatibility issues
-// import { Geist, Geist_Mono } from "next/font/google"
+import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
@@ -9,8 +8,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { PageTransition } from "@/components/page-transition"
 import "./globals.css"
 
-// const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
-// const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
   title: "v0 App",
@@ -42,16 +40,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased`}>
         <SidebarProvider>
           <div className="flex min-h-screen w-full">
             <AppSidebar />
-            <main className="flex-1 overflow-y-auto bg-muted/30">
-              <div className="p-4 border-b flex items-center md:hidden bg-background sticky top-0 z-10">
+            <main className="flex-1 overflow-y-auto bg-slate-50/50 dark:bg-background">
+              <div className="p-4 border-b flex items-center bg-white/80 dark:bg-background/80 backdrop-blur-md sticky top-0 z-10 shadow-sm">
                 <SidebarTrigger />
-                <span className="ml-2 font-semibold">Menu</span>
+                <span className="ml-3 font-semibold text-foreground">Menu</span>
               </div>
-              <div className="p-2 md:p-4">
+              <div className="p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto">
                 <PageTransition>{children}</PageTransition>
               </div>
             </main>

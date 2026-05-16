@@ -8,7 +8,9 @@ export class OttoImporter extends BaseImporter {
         console.log("Fetching all products from Otto API...");
 
         let allProducts: ImportedProduct[] = [];
-        let nextUrl: string | null = 'https://api.otto.market/v5/products?limit=50';
+        const isSandbox = process.env.OTTO_ENV === 'sandbox';
+        const baseUrl = isSandbox ? 'https://sandbox.api.otto.market' : 'https://api.otto.market';
+        let nextUrl: string | null = `${baseUrl}/v5/products?limit=50`;
         let pageCount = 0;
         const MAX_PAGES = 50;
         let totalProcessed = 0;
@@ -73,7 +75,6 @@ export class OttoImporter extends BaseImporter {
                 if (nextLink && nextLink.href) {
                     let href = nextLink.href;
                     if (!href.startsWith('http')) {
-                        const baseUrl = 'https://api.otto.market';
                         href = href.startsWith('/') ? `${baseUrl}${href}` : `${baseUrl}/${href}`;
                     }
                     nextUrl = href;

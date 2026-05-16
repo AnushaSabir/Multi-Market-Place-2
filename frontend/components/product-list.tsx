@@ -78,14 +78,17 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   const [tempQty, setTempQty] = useState<string>("")
   const { toast } = useToast()
 
-  // Pagination State
-  // FIX: Start page at 1, so next request is for page 2
-  const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(false) // Default false as we load all
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-
   // Filter State
   const [showOptimizedOnly, setShowOptimizedOnly] = useState(false)
+
+  // Client-side Pagination State (to prevent browser lag)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 50
+
+  // Server-side Load More State
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
 
   // Publish State
   const [publishDialogOpen, setPublishDialogOpen] = useState(false)
@@ -136,6 +139,17 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
         p.ean?.toLowerCase().includes(searchQuery.toLowerCase())) &&
       (!showOptimizedOnly || p.status === 'optimized')
   )
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
+
+  // Reset to page 1 when search changes
+  if (currentPage > totalPages && totalPages > 0) {
+    setCurrentPage(1)
+  }
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]))
@@ -279,27 +293,38 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   }
 
   const handlePushAllOtto = async () => {
-    // 1. Find products that are only on Otto (no other marketplace mapping)
-    const ottoOnly = products.filter(p =>
-      !p.marketplace_products?.some(mp => ['ebay', 'shopify', 'kaufland'].includes(mp.marketplace))
+    // 1. Find products that are from Otto
+    const ottoProducts = products.filter(p =>
+      p.marketplace_products?.some(mp => mp.marketplace === 'otto')
     )
 
-    if (ottoOnly.length === 0) {
-      toast({ title: "No new products", description: "All Otto products are already listed elsewhere." })
+    // Filter those that still need to be pushed to either Shopify or Kaufland
+    const productsToPush = ottoProducts.filter(p => 
+      !p.marketplace_products?.some(mp => mp.marketplace === 'shopify') || 
+      !p.marketplace_products?.some(mp => mp.marketplace === 'kaufland')
+    )
+
+    if (productsToPush.length === 0) {
+      toast({ title: "No new products", description: "All Otto products are already listed on Shopify and Kaufland." })
       return
     }
 
-    if (!confirm(`Found ${ottoOnly.length} new Otto products. Push them to eBay, Shopify, and Kaufland?`)) return
+    if (!confirm(`Found ${productsToPush.length} Otto products missing on Shopify or Kaufland. Push them now?`)) return
 
     setIsPublishing(true)
     const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
-    const targetMarketplaces = ['ebay', 'shopify', 'kaufland']
+    const targetMarketplaces = ['shopify', 'kaufland']
     let totalSuccess = 0
     let totalFail = 0
 
     try {
-      for (const product of ottoOnly) {
+      for (const product of productsToPush) {
         for (const mp of targetMarketplaces) {
+          // Skip if already on this marketplace
+          if (product.marketplace_products?.some(pmp => pmp.marketplace === mp)) {
+            continue;
+          }
+
           try {
             const res = await fetch(`${API_URL}/api/products/${product.id}/publish`, {
               method: "POST",
@@ -428,7 +453,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     <div className="p-6 space-y-6 animate-fade-in w-full">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
             {marketplaceParam ? `${marketplaceParam.charAt(0).toUpperCase() + marketplaceParam.slice(1)} Products` : 'Products'}
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -445,11 +470,11 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
             )}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button size="sm" onClick={handlePushAllOtto} className="bg-orange-600 hover:bg-orange-700 animate-pulse-subtle">
+        <div className="flex items-center gap-3">
+          <Button size="sm" onClick={handlePushAllOtto} className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all animate-pulse-subtle border-0">
             <Zap className="mr-2 h-4 w-4" /> Push New Otto
           </Button>
-          <Button size="sm" onClick={() => openPublishDialog(null)} className="bg-blue-600 hover:bg-blue-700">
+          <Button size="sm" onClick={() => openPublishDialog(null)} className="bg-blue-600 hover:bg-blue-700 shadow-sm hover:shadow-md transition-all">
             <Store className="mr-2 h-4 w-4" /> Bulk Publish
           </Button>
           <Button size="sm" onClick={handleBulkSync} variant="outline">
@@ -464,11 +489,11 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
         </div>
       </div>
 
-      <Card className="overflow-hidden">
-        <div className="p-4 border-b bg-muted/10 flex flex-col gap-4 md:flex-row md:items-center">
-          <div className="relative flex-1">
+      <Card className="overflow-hidden bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-border/50 shadow-sm">
+        <div className="p-5 border-b bg-white/40 dark:bg-slate-800/40 flex flex-col gap-4 md:flex-row md:items-center">
+          <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input className="pl-9" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+            <Input className="pl-9 bg-white dark:bg-slate-900 border-border/50 shadow-sm focus-visible:ring-primary/50" placeholder="Search products, SKU or EAN..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {selected.length > 0 && (
@@ -484,21 +509,21 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="w-10 text-center">
+              <TableRow className="bg-slate-50/50 dark:bg-slate-800/50 hover:bg-transparent border-b-border/50">
+                <TableHead className="w-10 text-center font-semibold">
                   <Checkbox checked={selected.length > 0 && selected.length === filteredProducts.length} onCheckedChange={(c) => setSelected(c ? filteredProducts.map(p => p.id) : [])} />
                 </TableHead>
-                <TableHead className="w-16">Image</TableHead>
-                <TableHead className="w-24">SKU / EAN</TableHead>
-                <TableHead>Product Title</TableHead>
-                <TableHead className="w-24">Price</TableHead>
-                <TableHead className="w-20">Stock</TableHead>
-                <TableHead className="w-40 text-center">Platform Actions</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-16 font-semibold">Image</TableHead>
+                <TableHead className="w-24 font-semibold">SKU / EAN</TableHead>
+                <TableHead className="font-semibold">Product Title</TableHead>
+                <TableHead className="w-24 font-semibold">Price</TableHead>
+                <TableHead className="w-20 font-semibold">Stock</TableHead>
+                <TableHead className="w-40 text-center font-semibold">Platform Actions</TableHead>
+                <TableHead className="text-right font-semibold">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredProducts.map((product) => (
+              {paginatedProducts.map((product) => (
                 <TableRow key={product.id} className="hover:bg-muted/50 group text-sm">
                   <TableCell className="text-center py-2">
                     <Checkbox checked={selected.includes(product.id)} onCheckedChange={() => toggleSelect(product.id)} />
@@ -582,15 +607,15 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                             <button
                               onClick={() => connected ? null : openPublishDialog(product.id)}
                               className={`
-                                            h-7 w-7 rounded-sm flex items-center justify-center border transition-all text-[10px] font-bold uppercase
+                                            h-8 w-8 rounded-md flex items-center justify-center border transition-all duration-200 text-xs font-bold uppercase
                                             ${connected
-                                  ? 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm'
-                                  : 'bg-gray-50 border-gray-200 text-gray-400 hover:bg-white hover:border-blue-300 hover:text-blue-500'}
+                                  ? 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm hover:bg-emerald-100'
+                                  : 'bg-slate-50 border-slate-200 text-slate-400 hover:bg-white hover:border-primary/40 hover:text-primary hover:shadow-sm'}
                                         `}
                               title={connected ? `Synced to ${mp}` : `Click to Publish to ${mp}`}
                             >
                               {mp.charAt(0)}
-                              {!connected && <Plus className="absolute -top-1 -right-1 h-2.5 w-2.5 bg-blue-500 text-white rounded-full p-0.5" />}
+                              {!connected && <Plus className="absolute -top-1.5 -right-1.5 h-3.5 w-3.5 bg-primary text-white rounded-full p-0.5 shadow-sm" />}
                             </button>
                           </div>
                         )
@@ -619,7 +644,32 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
         </div>
       </Card>
 
-      {/* Pagination Removed as per user request to show all products */}
+      <div className="flex items-center justify-between p-5 bg-white/40 dark:bg-slate-800/40 border-t border-border/50 backdrop-blur-md rounded-b-xl">
+        <div className="text-sm text-muted-foreground">
+          Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredProducts.length)} of {filteredProducts.length} products
+        </div>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          >
+            Previous
+          </Button>
+          <span className="text-sm font-medium px-4">
+            Page {currentPage} of {totalPages || 1}
+          </span>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            disabled={currentPage === totalPages || totalPages === 0}
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
 
       <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
         <DialogContent>

@@ -108,8 +108,11 @@ export class TokenManger {
 
                 const auth = Buffer.from(`${creds.client_id}:${creds.client_secret}`).toString('base64');
 
-                // Using Sandbox or Prod depending on config? Defaulting to prod URL structure or checking credentials
-                const tokenUrl = 'https://api.otto.market/v1/token'; // Verify strict URL
+                // Using Sandbox or Prod depending on config
+                const isSandbox = process.env.OTTO_ENV === 'sandbox';
+                const tokenUrl = isSandbox 
+                    ? 'https://sandbox.api.otto.market/v1/token' 
+                    : 'https://api.otto.market/v1/token';
 
                 const res = await axios.post(tokenUrl, qs.stringify({
                     grant_type: 'client_credentials',
@@ -121,7 +124,7 @@ export class TokenManger {
                     }
                 });
 
-                console.log(`[TokenManager] Otto Token generated successfully. Expires in ${res.data.expires_in}s`);
+                console.log(`[TokenManager] Otto Token generated successfully (${isSandbox ? 'sandbox' : 'live'}). Expires in ${res.data.expires_in}s`);
                 newAccessToken = res.data.access_token;
                 newExpiresAt = Date.now() + (res.data.expires_in * 1000);
 

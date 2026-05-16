@@ -34,8 +34,10 @@ export abstract class BaseImporter {
             if (BaseImporter.stopImport) throw new Error("Import stopped by user");
 
             const token = await TokenManger.getAccessToken(this.marketplace);
-            if (!token && process.env.NODE_ENV !== 'test') {
-                console.warn(`No access token found for ${this.marketplace}. Depending on implementation, this might fail.`);
+            if (!token) {
+                if (process.env.NODE_ENV !== 'test') {
+                    throw new Error(`Failed to obtain access token for ${this.marketplace}. Please verify your API credentials in the .env file or database.`);
+                }
             }
 
             // Fetch

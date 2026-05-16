@@ -134,4 +134,79 @@ router.post('/cron', async (req, res) => {
     res.json({ message: "Cron sync finished", results });
 });
 
+/**
+ * monthly cron trigger for auto-pushing Otto products to eBay and Kaufland
+ */
+router.post('/cron-monthly-push', async (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
+
+    // Basic security check
+    if (process.env.CRON_SECRET && authHeader !== expectedSecret) {
+        console.warn("[Cron] Unauthorized trigger attempt.");
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    console.log("[Cron] Starting automated monthly push for new Otto products...");
+
+    try {
+        // Fetch products and their marketplace mappings
+        const { data: allProducts, error } = await supabase
+            .from('products')
+            .select(`
+                id,
+                marketplace_products ( marketplace, external_id )
+            `);
+
+        if (error) throw error;
+
+        // Filter products that came from Otto
+        const ottoProducts = allProducts?.filter(p => 
+            p.marketplace_products?.some((mp: any) => mp.marketplace === 'otto')
+        ) || [];
+
+        // Filter those that need to be pushed to eBay or Kaufland
+        const productsToPush = ottoProducts.filter(p => 
+            !p.marketplace_products?.some((mp: any) => mp.marketplace === 'ebay') || 
+            !p.marketplace_products?.some((mp: any) => mp.marketplace === 'kaufland')
+        );
+
+        if (productsToPush.length === 0) {
+            console.log("[Cron] No new Otto products to push.");
+            return res.json({ message: "No new Otto products to push." });
+        }
+
+        const { EbayExporter } = await import('../services/exporters/ebayExporter');
+        const { KauflandExporter } = await import('../services/exporters/kauflandExporter');
+        
+        const ebayExporter = new EbayExporter();
+        const kauflandExporter = new KauflandExporter();
+        
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const product of productsToPush) {
+            const mps = product.marketplace_products || [];
+            const hasEbay = mps.some((mp: any) => mp.marketplace === 'ebay');
+            const hasKaufland = mps.some((mp: any) => mp.marketplace === 'kaufland');
+
+            if (!hasEbay) {
+                const res = await ebayExporter.publishProduct(product.id);
+                if (res.success) successCount++; else failCount++;
+            }
+            
+            if (!hasKaufland) {
+                const res = await kauflandExporter.publishProduct(product.id);
+                if (res.success) successCount++; else failCount++;
+            }
+        }
+
+        console.log(`[Cron] Monthly push complete. Success: ${successCount}, Failed: ${failCount}`);
+        res.json({ message: "Auto-push complete", successCount, failCount });
+    } catch (e: any) {
+        console.error("[Cron] Auto-push Error:", e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
 export default router;

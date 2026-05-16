@@ -24,7 +24,9 @@ export default function ImportPage() {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
         try {
           // Poll for latest imported products to show "live feed"
-          const res = await fetch(`${API_URL}/api/products?limit=5`);
+          const res = await fetch(`${API_URL}/api/products?limit=5`, {
+            headers: { 'x-api-key': 'Epic_Tech_2026' }
+          });
           const json = await res.json();
           if (json.data) {
             setRecentImports(json.data);

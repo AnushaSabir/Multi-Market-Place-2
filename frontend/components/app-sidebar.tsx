@@ -1,4 +1,6 @@
-import { LayoutDashboard, Package, Download, Settings, BarChart3, RefreshCcw, Store } from "lucide-react"
+"use client"
+
+import { LayoutDashboard, Package, Download, Settings, BarChart3, RefreshCcw } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -12,6 +14,7 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import Image from "next/image"
+import { usePathname } from "next/navigation"
 
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -23,9 +26,11 @@ const menuItems = [
 ]
 
 export function AppSidebar() {
+  const pathname = usePathname()
+
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b px-4 py-4">
+    <Sidebar collapsible="icon" className="border-r border-border/50 bg-white dark:bg-background">
+      <SidebarHeader className="border-b border-border/50 px-4 py-4 mb-4">
         <div className="flex items-center gap-2 font-bold text-xl px-2">
           <div className="relative h-12 w-40 overflow-hidden">
             <Image src="/logo.png" alt="EpicTec Logo" fill className="object-contain" priority />
@@ -34,19 +39,33 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground/70 mb-2">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link href={item.url} prefetch={true} className="flex items-center gap-2 transition-all duration-200 hover:translate-x-1">
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+            <SidebarMenu className="gap-1.5">
+              {menuItems.map((item) => {
+                const isActive = pathname?.startsWith(item.url)
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      asChild 
+                      tooltip={item.title}
+                      isActive={isActive}
+                      className={`
+                        transition-all duration-300 ease-in-out font-medium
+                        ${isActive 
+                          ? 'bg-primary/10 text-primary hover:bg-primary/15' 
+                          : 'text-muted-foreground hover:text-foreground hover:bg-slate-100 dark:hover:bg-slate-800'
+                        }
+                      `}
+                    >
+                      <Link href={item.url} prefetch={true} className="flex items-center gap-3 py-2 px-3">
+                        <item.icon className={`h-4 w-4 ${isActive ? 'text-primary' : 'opacity-70'}`} />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
