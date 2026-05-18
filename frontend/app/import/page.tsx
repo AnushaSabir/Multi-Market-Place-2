@@ -21,7 +21,7 @@ export default function ImportPage() {
     let interval: any;
     if (isImporting) {
       interval = setInterval(async () => {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
         try {
           // Poll for latest imported products to show "live feed"
           const res = await fetch(`${API_URL}/api/products?limit=5`, {
@@ -39,7 +39,7 @@ export default function ImportPage() {
 
   const handleStopImport = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
       await fetch(`${API_URL}/api/import/stop`, { method: 'POST' });
       toast({ title: "Stopping...", description: "Import will stop shortly." });
     } catch (e) {
@@ -55,7 +55,7 @@ export default function ImportPage() {
     })
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
       const response = await fetch(`${API_URL}/api/import/${source.toLowerCase()}`, {
         method: 'POST',
         headers: {

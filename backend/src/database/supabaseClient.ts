@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import WebSocket from 'ws';
+
 dotenv.config();
 
 // These should be in .env
@@ -15,4 +17,11 @@ if (!SUPABASE_URL || !SUPABASE_KEY || SUPABASE_URL.includes('YOUR_SUPABASE_URL')
     throw new Error('Missing Supabase Credentials: SUPABASE_URL or SUPABASE_KEY is not defined in environment variables.');
 }
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: {
+        persistSession: false
+    },
+    realtime: {
+        transport: WebSocket as any
+    }
+});

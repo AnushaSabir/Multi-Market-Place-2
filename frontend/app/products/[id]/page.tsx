@@ -54,7 +54,7 @@ export default function ProductDetailPage() {
 
     const fetchProduct = async () => {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
         const res = await fetch(`${API_URL}/api/products/${id}`, {
           headers: { 'x-api-key': 'Epic_Tech_2026' }
         })
@@ -73,7 +73,7 @@ export default function ProductDetailPage() {
 
   const handleSave = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
       const res = await fetch(`${API_URL}/api/products/${id}`, {
         method: 'PUT',
         headers: {
@@ -107,7 +107,7 @@ export default function ProductDetailPage() {
   const handleOptimise = async () => {
     toast({ title: "AI Optimization", description: "Generating new content..." })
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
       const res = await fetch(`${API_URL}/api/ai/optimize/${id}`, {
         method: 'POST',
         headers: { 'x-api-key': 'Epic_Tech_2026' }
@@ -125,7 +125,7 @@ export default function ProductDetailPage() {
   const handlePublish = async (marketplace: string) => {
     toast({ title: "Publishing...", description: `Sending product to ${marketplace.toUpperCase()}...` })
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
       const res = await fetch(`${API_URL}/api/products/${id}/publish`, {
         method: 'POST',
         headers: {

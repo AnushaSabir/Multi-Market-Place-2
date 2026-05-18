@@ -32,7 +32,7 @@ export default function DashboardPage() {
 
   const fetchStats = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
       const res = await fetch(`${API_URL}/api/products/stats`, {
         headers: { 'x-api-key': 'Epic_Tech_2026' }
       })

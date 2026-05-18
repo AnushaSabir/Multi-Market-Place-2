@@ -102,7 +102,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
       const nextPage = page + 1
       console.log("Loading page:", nextPage) // DEBUG
 
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || ""
       const res = await fetch(`${API_URL}/api/products?page=${nextPage}&limit=50`, {
         headers: { 'x-api-key': 'Epic_Tech_2026' }
       })
@@ -173,7 +173,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     }
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || ""
       const res = await fetch(`${API_URL}/api/products/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
@@ -198,7 +198,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     }
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || ""
       const res = await fetch(`${API_URL}/api/products/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
@@ -232,7 +232,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     }
     toast({ title: "AI Optimization started", description: `Optimizing ${selected.length} products for German market...` })
 
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
     let successCount = 0;
 
     for (const id of selected) {
@@ -254,7 +254,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     if (!confirm(`Are you sure you want to delete ${selected.length} products? This cannot be undone.`)) return;
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
       const res = await fetch(`${API_URL}/api/products/batch`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
@@ -273,7 +273,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
 
   const handleOptimize = async (id: string) => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || ""
       toast({ title: "Optimizing...", description: "AI is rewriting product content..." })
       const res = await fetch(`${API_URL}/api/ai/optimize/${id}`, {
         method: "POST", headers: { 'x-api-key': 'Epic_Tech_2026' }
@@ -312,7 +312,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     if (!confirm(`Found ${productsToPush.length} Otto products missing on Shopify or Kaufland. Push them now?`)) return
 
     setIsPublishing(true)
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || ""
     const targetMarketplaces = ['shopify', 'kaufland']
     let totalSuccess = 0
     let totalFail = 0
@@ -354,7 +354,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     if (idsToPublish.length === 0) return
 
     setIsPublishing(true)
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || ""
     let successCount = 0
     let failCount = 0
 
@@ -391,7 +391,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   const handleDeleteAll = async () => {
     if (!confirm("⚠️ WARNING: This will delete ALL products locally. Are you sure?")) return;
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
       const res = await fetch(`${API_URL}/api/products/cleanup?marketplace=all`, {
         method: 'DELETE', headers: { 'x-api-key': 'Epic_Tech_2026' }
       });
@@ -406,7 +406,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure?")) return;
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
       const res = await fetch(`${API_URL}/api/products/${id}`, {
         method: 'DELETE', headers: { 'x-api-key': 'Epic_Tech_2026' }
       });
@@ -425,7 +425,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     }
     toast({ title: "Sync started", description: `Syncing ${selected.length} products...` })
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
       const res = await fetch(`${API_URL}/api/sync/batch`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
