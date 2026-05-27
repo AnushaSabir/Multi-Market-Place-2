@@ -78,8 +78,10 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   const [tempQty, setTempQty] = useState<string>("")
   const { toast } = useToast()
 
-  // Filter State
+  // Filter & Sort State
   const [showOptimizedOnly, setShowOptimizedOnly] = useState(false)
+  const [marketplaceFilter, setMarketplaceFilter] = useState<string>("all")
+  const [sortConfig, setSortConfig] = useState<{ key: 'title' | 'price' | 'quantity', direction: 'asc' | 'desc' } | null>(null)
 
   // Client-side Pagination State (to prevent browser lag)
   const [currentPage, setCurrentPage] = useState(1)
@@ -132,13 +134,36 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
     }
   }
 
-  const filteredProducts = products.filter(
+  const handleSort = (key: 'title' | 'price' | 'quantity') => {
+    let direction: 'asc' | 'desc' = 'asc'
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc'
+    }
+    setSortConfig({ key, direction })
+  }
+
+  let filteredProducts = products.filter(
     (p) =>
       (p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.sku?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.ean?.toLowerCase().includes(searchQuery.toLowerCase())) &&
-      (!showOptimizedOnly || p.status === 'optimized')
+      (!showOptimizedOnly || p.status === 'optimized') &&
+      (marketplaceFilter === 'all' || p.marketplace_products?.some(mp => mp.marketplace === marketplaceFilter))
   )
+
+  if (sortConfig !== null) {
+    filteredProducts.sort((a, b) => {
+      let aValue = a[sortConfig.key]
+      let bValue = b[sortConfig.key]
+      
+      if (typeof aValue === 'string') aValue = aValue.toLowerCase()
+      if (typeof bValue === 'string') bValue = bValue.toLowerCase()
+
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1
+      return 0
+    })
+  }
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
   const paginatedProducts = filteredProducts.slice(
@@ -496,6 +521,18 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
             <Input className="pl-9 bg-white dark:bg-slate-900 border-border/50 shadow-sm focus-visible:ring-primary/50" placeholder="Search products, SKU or EAN..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <Select value={marketplaceFilter} onValueChange={setMarketplaceFilter}>
+              <SelectTrigger className="w-[150px] bg-white dark:bg-slate-900 border-border/50">
+                <SelectValue placeholder="All Markets" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Markets</SelectItem>
+                <SelectItem value="otto">Otto</SelectItem>
+                <SelectItem value="ebay">eBay</SelectItem>
+                <SelectItem value="kaufland">Kaufland</SelectItem>
+                <SelectItem value="shopify">Shopify</SelectItem>
+              </SelectContent>
+            </Select>
             {selected.length > 0 && (
               <>
                 <span className="text-sm font-medium px-2">{selected.length} Selected</span>
@@ -515,9 +552,15 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                 </TableHead>
                 <TableHead className="w-16 font-semibold">Image</TableHead>
                 <TableHead className="w-24 font-semibold">SKU / EAN</TableHead>
-                <TableHead className="font-semibold">Product Title</TableHead>
-                <TableHead className="w-24 font-semibold">Price</TableHead>
-                <TableHead className="w-20 font-semibold">Stock</TableHead>
+                <TableHead className="font-semibold cursor-pointer hover:bg-muted/50" onClick={() => handleSort('title')}>
+                  Product Title {sortConfig?.key === 'title' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                </TableHead>
+                <TableHead className="w-24 font-semibold cursor-pointer hover:bg-muted/50" onClick={() => handleSort('price')}>
+                  Price {sortConfig?.key === 'price' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                </TableHead>
+                <TableHead className="w-20 font-semibold cursor-pointer hover:bg-muted/50" onClick={() => handleSort('quantity')}>
+                  Stock {sortConfig?.key === 'quantity' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                </TableHead>
                 <TableHead className="w-40 text-center font-semibold">Platform Actions</TableHead>
                 <TableHead className="text-right font-semibold">Actions</TableHead>
               </TableRow>

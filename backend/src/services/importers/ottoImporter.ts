@@ -12,7 +12,7 @@ export class OttoImporter extends BaseImporter {
         const baseUrl = isSandbox ? 'https://sandbox.api.otto.market' : 'https://api.otto.market';
         let nextUrl: string | null = `${baseUrl}/v5/products?limit=50`;
         let pageCount = 0;
-        const MAX_PAGES = 50;
+        const MAX_PAGES = 1000;
         let totalProcessed = 0;
 
         try {

@@ -137,7 +137,7 @@ export abstract class BaseImporter {
         } else {
             // 4b. Update existing product details if they are better (title, ean, images)
             // Especially important if the previous title was "Unknown Kaufland Item"
-            const { data: currentProd } = await supabase.from('products').select('title, ean, images').eq('id', productId).single();
+            const { data: currentProd } = await supabase.from('products').select('title, ean, images, price, quantity').eq('id', productId).single();
 
             const updates: any = {};
             if (item.title && item.title !== 'Unknown Kaufland Item' && (!currentProd?.title || currentProd.title === 'Unknown Kaufland Item')) {
@@ -148,6 +148,12 @@ export abstract class BaseImporter {
             }
             if (item.images && item.images.length > 0 && (!currentProd?.images || currentProd.images.length === 0)) {
                 updates.images = item.images;
+            }
+            
+            // If Otto, treat as source of truth for price/stock to sync to others
+            if (this.marketplace === 'otto') {
+                if (item.price && currentProd?.price !== item.price) updates.price = item.price;
+                if (item.quantity !== undefined && currentProd?.quantity !== item.quantity) updates.quantity = item.quantity;
             }
 
             if (Object.keys(updates).length > 0) {

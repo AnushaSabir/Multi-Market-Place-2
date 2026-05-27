@@ -15,6 +15,38 @@ export class KauflandExporter extends BaseExporter {
                 return { success: false, error: "EAN is required for Kaufland listing" };
             }
 
+            // 1. Send Product Data (Title, Description, Image, Manufacturer)
+            const productDataBody = {
+                attributes: {
+                    title: [product.title || `Product ${product.ean}`],
+                    description: [product.description || product.title || `Description for ${product.ean}`],
+                    picture: product.images && product.images.length > 0 ? product.images : [],
+                    manufacturer: ["EpicTec"] // Fallback manufacturer
+                }
+            };
+            const pdTimestamp = Math.floor(Date.now() / 1000).toString();
+            const pdUrl = `https://sellerapi.kaufland.com/v2/product-data/${product.ean}`;
+            const pdMethod = 'PUT';
+            const pdBodyStr = JSON.stringify(productDataBody);
+            const pdStringToSign = `${pdMethod}\n${pdUrl}\n${pdBodyStr}\n${pdTimestamp}`;
+            const pdSignature = crypto.createHmac('sha256', secretKey).update(pdStringToSign).digest('hex');
+
+            try {
+                await axios.put(pdUrl, pdBodyStr, {
+                    headers: {
+                        'Shop-Client-Key': accessToken,
+                        'Shop-Timestamp': pdTimestamp,
+                        'Shop-Signature': pdSignature,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                console.log(`[Kaufland] Product data pushed for EAN: ${product.ean}`);
+            } catch (pdError: any) {
+                console.warn(`[Kaufland] Product data push warning for EAN: ${product.ean}. Details:`, pdError.response?.data || pdError.message);
+                // We continue even if product data fails, as the unit might still be created if the EAN already exists in Kaufland's catalog.
+            }
+
+            // 2. Create the Unit (Offer)
             const body = {
                 ean: product.ean,
                 condition: 'NEW',
