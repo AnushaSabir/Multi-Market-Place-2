@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Calculator, Save } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { API_BASE_URL } from "@/lib/api-config";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 const MARKETPLACES = ['otto', 'kaufland', 'ebay', 'shopify'];
 
