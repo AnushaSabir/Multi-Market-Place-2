@@ -108,7 +108,6 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   // Server-side Load More State
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [totalCount, setTotalCount] = useState(initialProducts.length) // Updated via API
-  const [isInitialized, setIsInitialized] = useState(false)
 
   // Publish State
   const [publishDialogOpen, setPublishDialogOpen] = useState(false)
@@ -151,10 +150,6 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   }
 
   useEffect(() => {
-    if (!isInitialized) {
-      setIsInitialized(true)
-      return
-    }
     const delayDebounceFn = setTimeout(() => {
       fetchProducts()
     }, 500)
