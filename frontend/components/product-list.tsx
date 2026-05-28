@@ -50,6 +50,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
+import { MergeProductsDialog } from "./merge-products-dialog"
 
 interface Product {
   id: string
@@ -76,6 +77,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   const [editingQty, setEditingQty] = useState<string | null>(null)
   const [tempPrice, setTempPrice] = useState<string>("")
   const [tempQty, setTempQty] = useState<string>("")
+  const [isMergeModalOpen, setIsMergeModalOpen] = useState(false)
   const { toast } = useToast()
 
   // Filter & Sort State
@@ -530,6 +532,9 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
             {selected.length > 0 && (
               <>
                 <span className="text-sm font-medium px-2">{selected.length} Selected</span>
+                {selected.length > 1 && (
+                  <Button size="sm" variant="secondary" onClick={() => setIsMergeModalOpen(true)}>Merge</Button>
+                )}
                 <Button size="sm" onClick={() => openPublishDialog(null)}>Publish</Button>
                 <Button size="sm" variant="destructive" onClick={handleBulkDelete}><Trash2 className="w-4 h-4" /></Button>
               </>
@@ -726,6 +731,16 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <MergeProductsDialog
+        open={isMergeModalOpen}
+        onOpenChange={setIsMergeModalOpen}
+        products={products.filter(p => selected.includes(p.id))}
+        onSuccess={() => {
+          setSelected([]);
+          fetchProducts();
+        }}
+      />
     </div>
   )
 }

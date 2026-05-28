@@ -73,14 +73,52 @@ router.post('/:id/publish', async (req, res) => {
 // PUT /api/products/:id
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { marketplace_products, ...updates } = req.body; // Remove relational data that isn't a column
+    const { marketplace_products, ...updates } = req.body; 
 
+    // 1. Update main product
     const { error } = await supabase
         .from('products')
         .update(updates)
         .eq('id', id);
 
     if (error) return res.status(500).json({ error: error.message });
+
+    // 2. Handle marketplace_products (Custom Prices)
+    if (marketplace_products && Array.isArray(marketplace_products)) {
+        for (const mp of marketplace_products) {
+            // Check if exists
+            const { data: existing } = await supabase
+                .from('marketplace_products')
+                .select('id')
+                .eq('product_id', id)
+                .eq('marketplace', mp.marketplace)
+                .single();
+
+            if (existing) {
+                // Update
+                await supabase
+                    .from('marketplace_products')
+                    .update({ 
+                        price: mp.price, 
+                        is_custom_price: mp.is_custom_price,
+                        sync_status: mp.sync_status || 'pending',
+                        external_id: mp.external_id || null
+                    })
+                    .eq('id', existing.id);
+            } else {
+                // Insert
+                await supabase
+                    .from('marketplace_products')
+                    .insert({
+                        product_id: id,
+                        marketplace: mp.marketplace,
+                        price: mp.price,
+                        is_custom_price: mp.is_custom_price,
+                        sync_status: 'pending'
+                    });
+            }
+        }
+    }
 
     if (updates.price !== undefined || updates.quantity !== undefined || updates.title || updates.description) {
         await SyncService.syncProductUpdateToAll(id, updates);

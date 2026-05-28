@@ -66,3 +66,19 @@ create table public.marketplace_credentials (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- 7. Stock Movements (Billbee Alternative)
+create table public.stock_movements (
+  id uuid primary key default uuid_generate_v4(),
+  product_id uuid references public.products(id) on delete cascade,
+  change integer not null,
+  current_stock integer not null,
+  order_id text,
+  platform text not null,
+  type text check (type in ('manual', 'order', 'initial', 'merge')) default 'manual',
+  user_name text default 'Admin',
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- ALTER EXISTING TABLE (Run these in Supabase SQL Editor manually if the table already exists)
+-- ALTER TABLE public.marketplace_products ADD COLUMN IF NOT EXISTS is_custom_price boolean default false;

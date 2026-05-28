@@ -43,26 +43,15 @@ import webhookRoutes from './routes/webhookRoutes';
 import syncRoutes from './routes/syncRoutes';
 import importRoutes from './routes/importRoutes';
 import rateLimit from 'express-rate-limit';
-
-// Rate Limiting - Disabled for debugging
-/*
-const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per windowMs
-    standardHeaders: true,
-    legacyHeaders: false,
-});
-
-// Apply rate limiting to all requests
-app.use('/api', apiLimiter);
-*/
-
 import aiRoutes from './routes/aiRoutes';
+import stockRoutes from './routes/stockRoutes';
+import productMergeRoutes from './routes/productMergeRoutes';
 
 // Protected Routes
-// app.use('/api/crawler', authenticateAPI, crawlerRoutes);
 app.use('/api/products', authenticateAPI, productRoutes); // POST/PUT
 app.use('/api/products', authenticateAPI, productGetRoutes); // GET
+app.use('/api/products', authenticateAPI, stockRoutes); // Stock updates and movements
+app.use('/api/products', authenticateAPI, productMergeRoutes); // Product merge (/merge)
 app.use('/api/sync', authenticateAPI, syncRoutes);
 app.use('/api/import', authenticateAPI, importRoutes);
 app.use('/api/ai', authenticateAPI, aiRoutes);
