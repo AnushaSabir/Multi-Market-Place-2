@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Sparkles, RefreshCw, Store, ImageIcon, Save, Check, X, History } from "lucide-react"
+import { ArrowLeft, Sparkles, RefreshCw, Store, ImageIcon, Save, Check, X, History, Search, Download, Filter } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
@@ -18,6 +18,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -77,6 +84,35 @@ export default function ProductDetailPage() {
   const [tempStock, setTempStock] = useState<number>(0)
   const [isPriceModalOpen, setIsPriceModalOpen] = useState(false)
   const [editingMarketplacePrice, setEditingMarketplacePrice] = useState<{ marketplace: string, price: number } | null>(null)
+  
+  // Stock Movements State
+  const [stockSearchQuery, setStockSearchQuery] = useState("")
+  const [stockPlatformFilter, setStockPlatformFilter] = useState("all")
+
+  const filteredStockMovements = stockMovements.filter(mov => {
+    if (stockPlatformFilter !== "all" && mov.platform.toLowerCase() !== stockPlatformFilter.toLowerCase()) return false;
+    if (stockSearchQuery) {
+      const q = stockSearchQuery.toLowerCase();
+      if (!mov.order_id?.toLowerCase().includes(q) && !mov.type.toLowerCase().includes(q) && !mov.user_name.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
+  const exportStockMovements = () => {
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + "Date,Time,Change,Current Stock,Order ID,Platform,Type,User\n"
+      + filteredStockMovements.map(m => {
+          const d = new Date(m.created_at);
+          return `${d.toLocaleDateString()},${d.toLocaleTimeString()},${m.change},${m.current_stock},${m.order_id || ''},${m.platform},${m.type},${m.user_name}`;
+        }).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `stock_movements_${product?.sku || 'export'}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
   useEffect(() => {
     if (!id) return;
@@ -412,8 +448,37 @@ export default function ProductDetailPage() {
 
         <TabsContent value="stock-movements" className="mt-6">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <CardTitle className="flex items-center gap-2"><History className="h-5 w-5" /> Stock Movement History</CardTitle>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="relative w-48">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder="Search Order ID..." 
+                    className="pl-8 h-9" 
+                    value={stockSearchQuery}
+                    onChange={(e) => setStockSearchQuery(e.target.value)}
+                  />
+                </div>
+                <Select value={stockPlatformFilter} onValueChange={setStockPlatformFilter}>
+                  <SelectTrigger className="w-[130px] h-9">
+                    <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
+                    <SelectValue placeholder="Platform" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Platforms</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                    <SelectItem value="amazon">Amazon</SelectItem>
+                    <SelectItem value="ebay">eBay</SelectItem>
+                    <SelectItem value="otto">Otto</SelectItem>
+                    <SelectItem value="shopify">Shopify</SelectItem>
+                    <SelectItem value="kaufland">Kaufland</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" size="sm" className="h-9" onClick={exportStockMovements}>
+                  <Download className="mr-2 h-4 w-4" /> Export
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <Table>
@@ -428,10 +493,10 @@ export default function ProductDetailPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {stockMovements.length === 0 ? (
+                  {filteredStockMovements.length === 0 ? (
                     <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-6">No stock movements recorded yet.</TableCell></TableRow>
                   ) : (
-                    stockMovements.map(mov => {
+                    filteredStockMovements.map(mov => {
                       const d = new Date(mov.created_at)
                       return (
                         <TableRow key={mov.id}>
@@ -440,7 +505,11 @@ export default function ProductDetailPage() {
                           <TableCell className={`font-medium ${mov.change > 0 ? 'text-green-600' : mov.change < 0 ? 'text-red-600' : ''}`}>
                             {mov.change > 0 ? '+' : ''}{mov.change}
                           </TableCell>
-                          <TableCell>{mov.order_id || '-'}</TableCell>
+                          <TableCell>
+                            {mov.order_id ? (
+                              <Link href={`#`} className="text-blue-600 hover:underline">{mov.order_id}</Link>
+                            ) : '-'}
+                          </TableCell>
                           <TableCell className="capitalize">{mov.platform}</TableCell>
                           <TableCell>{mov.user_name}</TableCell>
                         </TableRow>

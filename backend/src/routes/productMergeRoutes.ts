@@ -27,24 +27,41 @@ router.post('/merge', async (req, res) => {
         // 2. Fetch all products to merge
         const { data: productsToMerge, error: fetchMergeError } = await supabase
             .from('products')
-            .select('id, quantity, title')
+            .select('id, quantity, title, price')
             .in('id', productIdsToMerge);
 
         if (fetchMergeError) {
             return res.status(500).json({ error: 'Failed to fetch products to merge' });
         }
 
-        // 3. Update master product stock if newStock is provided
+        // Compute Price Strategy
+        let finalPrice = masterProduct.price || 0;
+        const priceStrategyVal = req.body.priceStrategy || 'master';
+        if (priceStrategyVal === 'highest') {
+            const maxPrice = Math.max(finalPrice, ...(productsToMerge || []).map(p => p.price || 0));
+            finalPrice = maxPrice;
+        } else if (priceStrategyVal === 'average') {
+            const allPrices = [finalPrice, ...(productsToMerge || []).map(p => p.price || 0)];
+            const sum = allPrices.reduce((a, b) => a + b, 0);
+            finalPrice = sum / allPrices.length;
+        }
+
+        // 3. Update master product stock if newStock is provided, and price if strategy used
         if (newStock !== undefined) {
             const stockChange = newStock - (masterProduct.quantity || 0);
             
+            const updates: any = { quantity: newStock };
+            if (priceStrategyVal !== 'master') {
+                updates.price = finalPrice;
+            }
+
             const { error: updateMasterError } = await supabase
                 .from('products')
-                .update({ quantity: newStock })
+                .update(updates)
                 .eq('id', masterProductId);
 
             if (updateMasterError) {
-                return res.status(500).json({ error: 'Failed to update master product stock' });
+                return res.status(500).json({ error: 'Failed to update master product' });
             }
 
             // Log the merge stock movement

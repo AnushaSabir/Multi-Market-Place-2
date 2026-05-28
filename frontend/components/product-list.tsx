@@ -51,6 +51,7 @@ import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { MergeProductsDialog } from "./merge-products-dialog"
+import { BulkEditDialog } from "./bulk-edit-dialog"
 
 interface Product {
   id: string
@@ -69,6 +70,19 @@ interface Product {
   images?: string[]
 }
 
+const getProductSyncStatus = (product: Product) => {
+  if (!product.marketplace_products || product.marketplace_products.length === 0) {
+    return { dot: '⚪', label: 'Not Synced', color: 'text-gray-400' }
+  }
+  const hasPending = product.marketplace_products.some(mp => mp.sync_status === 'pending');
+  if (hasPending) return { dot: '🟡', label: 'Syncing', color: 'text-yellow-500' };
+  
+  const hasFailed = product.marketplace_products.some(mp => mp.sync_status === 'failed');
+  if (hasFailed) return { dot: '🔴', label: 'Conflict', color: 'text-red-500' };
+
+  return { dot: '🟢', label: 'Synced', color: 'text-green-500' };
+}
+
 export function ProductList({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState<Product[]>(initialProducts)
   const [selected, setSelected] = useState<string[]>([])
@@ -78,6 +92,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   const [tempPrice, setTempPrice] = useState<string>("")
   const [tempQty, setTempQty] = useState<string>("")
   const [isMergeModalOpen, setIsMergeModalOpen] = useState(false)
+  const [isBulkEditModalOpen, setIsBulkEditModalOpen] = useState(false)
   const { toast } = useToast()
 
   // Filter & Sort State
@@ -191,9 +206,24 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
 
       if (!res.ok) throw new Error("Failed to update price")
 
+      const oldPrice = products.find(p => p.id === id)?.price || 0;
       setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, price: newPrice } : p)))
       setEditingPrice(null)
-      toast({ title: "Price Updated", description: "Synced to all connected marketplaces." })
+      toast({ 
+        title: "Price Updated", 
+        description: "Synced to all connected marketplaces.",
+        action: (
+          <Button variant="outline" size="sm" onClick={async () => {
+             // Undo
+             await fetch(`${API_URL}/api/products/${id}`, {
+               method: 'PUT',
+               headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
+               body: JSON.stringify({ price: oldPrice })
+             });
+             setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, price: oldPrice } : p)))
+          }}>Undo</Button>
+        )
+      })
     } catch (e: any) {
       toast({ title: "Update Failed", description: e.message || "Could not save price", variant: "destructive" })
     }
@@ -216,9 +246,24 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
 
       if (!res.ok) throw new Error("Failed to update stock")
 
+      const oldQty = products.find(p => p.id === id)?.quantity || 0;
       setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, quantity: newQty } : p)))
       setEditingQty(null)
-      toast({ title: "Stock Updated", description: "Synced to all connected marketplaces." })
+      toast({ 
+        title: "Stock Updated", 
+        description: "Synced to all connected marketplaces.",
+        action: (
+          <Button variant="outline" size="sm" onClick={async () => {
+             // Undo
+             await fetch(`${API_URL}/api/products/${id}`, {
+               method: 'PUT',
+               headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
+               body: JSON.stringify({ quantity: oldQty })
+             });
+             setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, quantity: oldQty } : p)))
+          }}>Undo</Button>
+        )
+      })
     } catch (e: any) {
       toast({ title: "Update Failed", description: e.message || "Could not save stock", variant: "destructive" })
     }
@@ -535,6 +580,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                 {selected.length > 1 && (
                   <Button size="sm" variant="secondary" onClick={() => setIsMergeModalOpen(true)}>Merge</Button>
                 )}
+                <Button size="sm" variant="outline" onClick={() => setIsBulkEditModalOpen(true)}>Bulk Edit</Button>
                 <Button size="sm" onClick={() => openPublishDialog(null)}>Publish</Button>
                 <Button size="sm" variant="destructive" onClick={handleBulkDelete}><Trash2 className="w-4 h-4" /></Button>
               </>
@@ -587,7 +633,13 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                   </TableCell>
 
                   <TableCell className="py-2 align-top">
-                    <div className="font-medium line-clamp-2" title={product.title}>{product.title}</div>
+                    <div className="flex items-start gap-2">
+                      <div className="font-medium line-clamp-2 flex-1" title={product.title}>{product.title}</div>
+                      {(() => {
+                        const status = getProductSyncStatus(product);
+                        return <span title={status.label} className={`text-xs ${status.color} cursor-help`}>{status.dot}</span>;
+                      })()}
+                    </div>
                     {product.status === 'optimized' && (
                       <Badge variant="secondary" className="mt-1 text-[10px] h-5 bg-purple-100 text-purple-700">Optimized</Badge>
                     )}
@@ -739,6 +791,15 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
         onSuccess={() => {
           setSelected([]);
           fetchProducts();
+        }}
+      />
+
+      <BulkEditDialog
+        open={isBulkEditModalOpen}
+        onOpenChange={setIsBulkEditModalOpen}
+        products={products.filter(p => selected.includes(p.id))}
+        onSuccess={(updates) => {
+          setProducts(prev => prev.map(p => selected.includes(p.id) ? { ...p, ...updates } : p));
         }}
       />
     </div>

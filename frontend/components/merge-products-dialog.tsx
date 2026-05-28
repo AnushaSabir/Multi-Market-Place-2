@@ -10,6 +10,7 @@ interface Product {
   title: string
   sku: string
   quantity: number
+  price: number
 }
 
 interface MergeProductsDialogProps {
@@ -21,6 +22,7 @@ interface MergeProductsDialogProps {
 
 export function MergeProductsDialog({ open, onOpenChange, products, onSuccess }: MergeProductsDialogProps) {
   const [masterId, setMasterId] = useState<string>("")
+  const [priceStrategy, setPriceStrategy] = useState<string>("master")
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
 
@@ -40,7 +42,8 @@ export function MergeProductsDialog({ open, onOpenChange, products, onSuccess }:
         body: JSON.stringify({
           masterProductId: masterId,
           productIdsToMerge,
-          newStock: combinedStock
+          newStock: combinedStock,
+          priceStrategy
         })
       });
 
@@ -93,6 +96,20 @@ export function MergeProductsDialog({ open, onOpenChange, products, onSuccess }:
                   {products.map(p => (
                     <SelectItem key={p.id} value={p.id}>{p.title} (SKU: {p.sku})</SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Price Strategy</label>
+              <Select value={priceStrategy} onValueChange={setPriceStrategy}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select how to handle prices" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="master">Use Master Product's Price</SelectItem>
+                  <SelectItem value="highest">Keep Highest Price</SelectItem>
+                  <SelectItem value="average">Calculate Average Price</SelectItem>
                 </SelectContent>
               </Select>
             </div>
