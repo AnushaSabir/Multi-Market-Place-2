@@ -519,20 +519,20 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
             )}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button size="sm" onClick={handlePushAllOtto} className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all animate-pulse-subtle border-0">
+        <div className="flex flex-wrap items-center gap-2 md:gap-3">
+          <Button size="sm" onClick={handlePushAllOtto} className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all animate-pulse-subtle border-0 w-full sm:w-auto">
             <Zap className="mr-2 h-4 w-4" /> Push New Otto
           </Button>
-          <Button size="sm" onClick={() => openPublishDialog(null)} className="bg-blue-600 hover:bg-blue-700 shadow-sm hover:shadow-md transition-all">
+          <Button size="sm" onClick={() => openPublishDialog(null)} className="bg-blue-600 hover:bg-blue-700 shadow-sm hover:shadow-md transition-all w-full sm:w-auto">
             <Store className="mr-2 h-4 w-4" /> Bulk Publish
           </Button>
-          <Button size="sm" onClick={handleBulkSync} variant="outline">
+          <Button size="sm" onClick={handleBulkSync} variant="outline" className="flex-1 sm:flex-none">
             <RefreshCw className="mr-2 h-4 w-4" /> Sync All
           </Button>
-          <Button size="sm" onClick={handleBulkAIOptimization} variant="ghost">
+          <Button size="sm" onClick={handleBulkAIOptimization} variant="ghost" className="flex-1 sm:flex-none">
             <Sparkles className="mr-2 h-4 w-4" /> Bulk AI
           </Button>
-          <Button size="sm" variant="destructive" onClick={handleDeleteAll}>
+          <Button size="sm" variant="destructive" onClick={handleDeleteAll} className="w-full sm:w-auto mt-2 sm:mt-0">
             <Trash2 className="mr-2 h-4 w-4" /> Reset All
           </Button>
         </div>
@@ -544,9 +544,9 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input className="pl-9 bg-white dark:bg-slate-900 border-border/50 shadow-sm focus-visible:ring-primary/50" placeholder="Search products, SKU or EAN..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
             <Select value={marketplaceFilter} onValueChange={setMarketplaceFilter}>
-              <SelectTrigger className="w-[150px] bg-white dark:bg-slate-900 border-border/50">
+              <SelectTrigger className="w-full sm:w-[150px] bg-white dark:bg-slate-900 border-border/50">
                 <SelectValue placeholder="All Markets" />
               </SelectTrigger>
               <SelectContent>
@@ -558,7 +558,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[150px] bg-white dark:bg-slate-900 border-border/50">
+              <SelectTrigger className="w-full sm:w-[150px] bg-white dark:bg-slate-900 border-border/50">
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent>

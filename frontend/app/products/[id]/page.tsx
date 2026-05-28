@@ -257,46 +257,48 @@ export default function ProductDetailPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/products" prefetch={true}>
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
-        <div className="flex-1">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{product.title}</h1>
-            <Badge variant="outline" className="text-sm border-blue-200 text-blue-700 bg-blue-50">
-              SKU: {product.sku || 'N/A'}
-            </Badge>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-start gap-4">
+          <Button variant="ghost" size="icon" asChild className="shrink-0 mt-1 md:mt-0">
+            <Link href="/products" prefetch={true}>
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+          </Button>
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-2 md:gap-3">
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight truncate">{product.title}</h1>
+              <Badge variant="outline" className="text-xs md:text-sm border-blue-200 text-blue-700 bg-blue-50 whitespace-nowrap">
+                SKU: {product.sku || 'N/A'}
+              </Badge>
+            </div>
+            <p className="text-muted-foreground mt-2 flex flex-wrap items-center gap-2 text-xs md:text-sm">
+              <span className="font-medium text-gray-900 border px-1 rounded bg-gray-50">EAN: {product.ean || 'N/A'}</span>
+              <span className="hidden md:inline">•</span>
+              <span>Status: {product.status}</span>
+            </p>
           </div>
-          <p className="text-muted-foreground mt-1 flex gap-2 text-sm">
-            <span className="font-medium text-gray-900 border px-1 rounded bg-gray-50">EAN: {product.ean || 'N/A'}</span>
-            <span>•</span>
-            <span>Status: {product.status}</span>
-          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleSave}>
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <Button variant="outline" onClick={handleSave} className="w-full md:w-auto">
             <Save className="mr-2 h-4 w-4" /> Save Changes
           </Button>
         </div>
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="w-full overflow-x-auto justify-start border-b rounded-none h-auto p-0 bg-transparent scrollbar-hide flex-nowrap">
-          <TabsTrigger value="general" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-4">General</TabsTrigger>
-          <TabsTrigger value="texts" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-4">Texts</TabsTrigger>
-          <TabsTrigger value="prices" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-4 flex items-center gap-2">
+        <TabsList className="w-full overflow-x-auto justify-start border-b rounded-none h-auto p-0 bg-transparent scrollbar-hide flex-nowrap shrink-0">
+          <TabsTrigger value="general" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-3 md:px-4 whitespace-nowrap">General</TabsTrigger>
+          <TabsTrigger value="texts" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-3 md:px-4 whitespace-nowrap">Texts</TabsTrigger>
+          <TabsTrigger value="prices" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-3 md:px-4 flex items-center gap-2 whitespace-nowrap">
             Prices 
-            {(formData.marketplace_products?.some(mp => mp.is_custom_price) ? <div className="h-2 w-2 rounded-full bg-blue-500" /> : <div className="h-2 w-2 rounded-full bg-green-500" />)}
+            {(formData.marketplace_products?.some(mp => mp.is_custom_price) ? <div className="h-2 w-2 rounded-full bg-blue-500 shrink-0" /> : <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />)}
           </TabsTrigger>
-          <TabsTrigger value="images" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-4">Images</TabsTrigger>
-          <TabsTrigger value="stock" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-4">Stock</TabsTrigger>
-          <TabsTrigger value="stock-movements" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-4">Stock Movements</TabsTrigger>
-          <TabsTrigger value="sources" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-4 text-muted-foreground">Sources</TabsTrigger>
-          <TabsTrigger value="files" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-4 text-muted-foreground">Files</TabsTrigger>
-          <TabsTrigger value="notes" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-4 text-muted-foreground">Notes</TabsTrigger>
+          <TabsTrigger value="images" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-3 md:px-4 whitespace-nowrap">Images</TabsTrigger>
+          <TabsTrigger value="stock" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-3 md:px-4 whitespace-nowrap">Stock</TabsTrigger>
+          <TabsTrigger value="stock-movements" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-3 md:px-4 whitespace-nowrap">Stock Movements</TabsTrigger>
+          <TabsTrigger value="sources" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-3 md:px-4 text-muted-foreground whitespace-nowrap">Sources</TabsTrigger>
+          <TabsTrigger value="files" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-3 md:px-4 text-muted-foreground whitespace-nowrap">Files</TabsTrigger>
+          <TabsTrigger value="notes" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-3 md:px-4 text-muted-foreground whitespace-nowrap">Notes</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general" className="mt-6">
