@@ -17,6 +17,38 @@ interface OptimizedContent {
     };
 }
 
+// Helper to analyze images using Vision AI
+async function analyzeProductImages(imageUrls: string[]): Promise<string> {
+    if (!process.env.OPENAI_API_KEY || imageUrls.length === 0) return "";
+
+    try {
+        // Prepare content array with images (limit to first 3 images to save tokens/time)
+        const content: any[] = [
+            { type: "text", text: "Please look at these product images. If there is any English text (like features, dimensions, instructions) written inside the images, extract it and translate it to German. Format it as an HTML bulleted list. If there is no text in the images, just return an empty string." }
+        ];
+
+        const imagesToAnalyze = imageUrls.slice(0, 3);
+        for (const url of imagesToAnalyze) {
+            content.push({
+                type: "image_url",
+                image_url: { url: url }
+            });
+        }
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [{ role: "user", content }],
+            max_tokens: 500
+        });
+
+        const resultText = response.choices[0].message.content || "";
+        return resultText.trim();
+    } catch (e: any) {
+        console.error("Vision AI Error:", e.message);
+        return ""; // Fail gracefully
+    }
+}
+
 export async function optimizeProduct(productId: string): Promise<{ success: boolean; data?: OptimizedContent; error?: string }> {
     try {
         // 1. Fetch Product
@@ -60,6 +92,30 @@ export async function optimizeProduct(productId: string): Promise<{ success: boo
 
         const optimizedData: OptimizedContent = JSON.parse(content);
 
+        // 3.5 Use Vision AI for Image Text Translation
+        let imageTranslationHtml = "";
+        try {
+            let images: string[] = [];
+            if (typeof product.images === 'string') {
+                images = JSON.parse(product.images);
+            } else if (Array.isArray(product.images)) {
+                images = product.images;
+            }
+
+            if (images && images.length > 0) {
+                console.log(`[AI] Analyzing ${images.length} images for text translation...`);
+                const visionResult = await analyzeProductImages(images);
+                if (visionResult && visionResult.length > 10) {
+                    imageTranslationHtml = `<br/><br/><strong>Informationen aus Bildern:</strong><br/>${visionResult}`;
+                }
+            }
+        } catch (visionError) {
+            console.error("Failed to parse images or run vision AI:", visionError);
+        }
+
+        // Append image translation to description
+        const finalDescription = optimizedData.description + imageTranslationHtml;
+
         // 4. Update Product in DB
         // We update the main fields? Or store optimized strings separately?
         // Requirement says "Optimizes Title, Description". 
@@ -68,11 +124,9 @@ export async function optimizeProduct(productId: string): Promise<{ success: boo
         const { error: updateError } = await supabase
             .from('products')
             .update({
-                title: optimizedData.title, // Overwriting original? Or user choice? Assuming overwrite for "Optimization" phase
-                description: optimizedData.description,
+                title: optimizedData.title, 
+                description: finalDescription,
                 status: 'optimized'
-                // We might want to store german metrics or keywords in a metadata column if existing schema permits,
-                // or extend schema. For now we update core fields.
             })
             .eq('id', productId);
 
