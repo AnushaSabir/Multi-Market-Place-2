@@ -109,6 +109,29 @@ router.post('/stop', (req, res) => {
     res.json({ message: "Import stop signal sent." });
 });
 
+import { AmazonCrawler } from '../services/importers/amazonCrawler';
+
+// POST /api/import/amazon
+router.post('/amazon', async (req, res) => {
+    try {
+        const { urls } = req.body;
+        if (!urls || !Array.isArray(urls)) {
+            return res.status(400).json({ error: "Please provide an array of URLs" });
+        }
+        
+        const crawler = new AmazonCrawler();
+        const result = await crawler.importUrls(urls);
+        
+        if (result.success) {
+            res.json({ message: 'Amazon import completed. Products are in Draft status.', count: result.count });
+        } else {
+            res.status(500).json({ error: 'Amazon import failed', details: result.error });
+        }
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // GET /api/import/status
 router.get('/status', (req, res) => {
     res.json({ isRunning: BaseImporter.isRunning });

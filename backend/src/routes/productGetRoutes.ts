@@ -6,22 +6,41 @@ const router = express.Router();
 // GET /api/products
 // Fetch all products with optional filters
 router.get('/', async (req, res) => {
-    // Default to a high limit to show "all" products as requested, unless specified
-    const { page = 1, limit = 10000, status } = req.query;
+    // Default to 50 for performance
+    const { page = 1, limit = 50, status, search, marketplace } = req.query;
     const from = (Number(page) - 1) * Number(limit);
     const to = from + Number(limit) - 1;
 
+    const selectString = marketplace && marketplace !== 'all' 
+        ? `*, marketplace_products!inner ( marketplace, external_id, sync_status )`
+        : `*, marketplace_products ( marketplace, external_id, sync_status )`;
+
     let query = supabase
         .from('products')
-        .select('*', { count: 'exact' })
+        .select(selectString, { count: 'exact' })
         .range(from, to);
+
+    if (marketplace && marketplace !== 'all') {
+        query = query.eq('marketplace_products.marketplace', marketplace);
+    }
 
     if (status) {
         query = query.eq('status', status);
     }
 
-    // Default sort by created_at desc if not specified, to show newest first
-    query = query.order('created_at', { ascending: false });
+    if (search) {
+        query = query.or(`title.ilike.%${search}%,sku.ilike.%${search}%,ean.ilike.%${search}%`);
+    }
+
+    const { sortKey, sortDirection } = req.query;
+
+    if (sortKey && typeof sortKey === 'string') {
+        const ascending = sortDirection === 'asc';
+        query = query.order(sortKey, { ascending });
+    } else {
+        // Default sort by created_at desc if not specified, to show newest first
+        query = query.order('created_at', { ascending: false });
+    }
 
     const { data, count, error } = await query;
 

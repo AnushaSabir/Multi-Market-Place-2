@@ -81,6 +81,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   // Filter & Sort State
   const [showOptimizedOnly, setShowOptimizedOnly] = useState(false)
   const [marketplaceFilter, setMarketplaceFilter] = useState<string>("all")
+  const [statusFilter, setStatusFilter] = useState<string>("all")
   const [sortConfig, setSortConfig] = useState<{ key: 'title' | 'price' | 'quantity', direction: 'asc' | 'desc' } | null>(null)
 
   // Client-side Pagination State (to prevent browser lag)
@@ -89,8 +90,8 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
 
   // Server-side Load More State
   const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
+  const [totalCount, setTotalCount] = useState(initialProducts.length) // Updated via API
+  const [isInitialized, setIsInitialized] = useState(false)
 
   // Publish State
   const [publishDialogOpen, setPublishDialogOpen] = useState(false)
@@ -98,41 +99,51 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
   const [selectedMarketplace, setSelectedMarketplace] = useState<string>("")
   const [isPublishing, setIsPublishing] = useState(false)
 
-  const loadMoreProducts = async () => {
+  const fetchProducts = async () => {
     setIsLoadingMore(true)
     try {
-      const nextPage = page + 1
-      console.log("Loading page:", nextPage) // DEBUG
-
       const API_URL = process.env.NEXT_PUBLIC_API_URL || ""
-      const res = await fetch(`${API_URL}/api/products?page=${nextPage}&limit=50`, {
+      const queryParams = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: itemsPerPage.toString()
+      })
+      
+      if (searchQuery) queryParams.append('search', searchQuery)
+      if (marketplaceFilter && marketplaceFilter !== 'all') queryParams.append('marketplace', marketplaceFilter)
+      if (statusFilter && statusFilter !== 'all') queryParams.append('status', statusFilter)
+      if (sortConfig) {
+        queryParams.append('sortKey', sortConfig.key)
+        queryParams.append('sortDirection', sortConfig.direction)
+      }
+
+      const res = await fetch(`${API_URL}/api/products?${queryParams.toString()}`, {
         headers: { 'x-api-key': 'Epic_Tech_2026' }
       })
 
       if (!res.ok) throw new Error(`API Error: ${res.status}`)
 
       const json = await res.json()
-      const newProducts = json.data
-
-      if (!newProducts || newProducts.length === 0) {
-        setHasMore(false)
-        toast({ title: "End of list", description: "No more products to load." })
-      } else {
-        // Prevent duplicates
-        setProducts(prev => {
-          const existingIds = new Set(prev.map(p => p.id))
-          const uniqueNew = newProducts.filter((p: Product) => !existingIds.has(p.id))
-          return [...prev, ...uniqueNew]
-        })
-        setPage(nextPage)
-      }
+      setProducts(json.data || [])
+      setTotalCount(json.count || 0)
     } catch (error: any) {
-      console.error("Load More Error:", error);
-      toast({ title: "Load Failed", description: "Check console for details.", variant: "destructive" })
+      console.error("Fetch Products Error:", error);
+      toast({ title: "Fetch Failed", description: "Check console for details.", variant: "destructive" })
     } finally {
       setIsLoadingMore(false)
     }
   }
+
+  useEffect(() => {
+    if (!isInitialized) {
+      setIsInitialized(true)
+      return
+    }
+    const delayDebounceFn = setTimeout(() => {
+      fetchProducts()
+    }, 500)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchQuery, marketplaceFilter, statusFilter, sortConfig, currentPage])
 
   const handleSort = (key: 'title' | 'price' | 'quantity') => {
     let direction: 'asc' | 'desc' = 'asc'
@@ -140,41 +151,12 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
       direction = 'desc'
     }
     setSortConfig({ key, direction })
+    setCurrentPage(1) // Reset to page 1 on sort
   }
 
-  let filteredProducts = products.filter(
-    (p) =>
-      (p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.sku?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.ean?.toLowerCase().includes(searchQuery.toLowerCase())) &&
-      (!showOptimizedOnly || p.status === 'optimized') &&
-      (marketplaceFilter === 'all' || p.marketplace_products?.some(mp => mp.marketplace === marketplaceFilter))
-  )
-
-  if (sortConfig !== null) {
-    filteredProducts.sort((a, b) => {
-      let aValue = a[sortConfig.key]
-      let bValue = b[sortConfig.key]
-      
-      if (typeof aValue === 'string') aValue = aValue.toLowerCase()
-      if (typeof bValue === 'string') bValue = bValue.toLowerCase()
-
-      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1
-      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1
-      return 0
-    })
-  }
-
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
-
-  // Reset to page 1 when search changes
-  if (currentPage > totalPages && totalPages > 0) {
-    setCurrentPage(1)
-  }
+  // We are using server-side pagination, so filteredProducts is just products
+  const paginatedProducts = products;
+  const totalPages = Math.ceil(totalCount / itemsPerPage)
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]))
@@ -482,7 +464,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
             {marketplaceParam ? `${marketplaceParam.charAt(0).toUpperCase() + marketplaceParam.slice(1)} Products` : 'Products'}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Total {filteredProducts.length} products found
+            Total {totalCount} products found
             {marketplaceParam && (
               <Button
                 variant="link"
@@ -533,6 +515,18 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                 <SelectItem value="shopify">Shopify</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[150px] bg-white dark:bg-slate-900 border-border/50">
+                <SelectValue placeholder="All Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="draft">Draft (Approval Queue)</SelectItem>
+                <SelectItem value="imported">Imported</SelectItem>
+                <SelectItem value="optimized">Optimized</SelectItem>
+                <SelectItem value="error">Error</SelectItem>
+              </SelectContent>
+            </Select>
             {selected.length > 0 && (
               <>
                 <span className="text-sm font-medium px-2">{selected.length} Selected</span>
@@ -548,7 +542,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
             <TableHeader>
               <TableRow className="bg-slate-50/50 dark:bg-slate-800/50 hover:bg-transparent border-b-border/50">
                 <TableHead className="w-10 text-center font-semibold">
-                  <Checkbox checked={selected.length > 0 && selected.length === filteredProducts.length} onCheckedChange={(c) => setSelected(c ? filteredProducts.map(p => p.id) : [])} />
+                  <Checkbox checked={selected.length > 0 && selected.length === products.length} onCheckedChange={(c) => setSelected(c ? products.map(p => p.id) : [])} />
                 </TableHead>
                 <TableHead className="w-16 font-semibold">Image</TableHead>
                 <TableHead className="w-24 font-semibold">SKU / EAN</TableHead>
@@ -689,7 +683,7 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
 
       <div className="flex items-center justify-between p-5 bg-white/40 dark:bg-slate-800/40 border-t border-border/50 backdrop-blur-md rounded-b-xl">
         <div className="text-sm text-muted-foreground">
-          Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredProducts.length)} of {filteredProducts.length} products
+          Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} products
         </div>
         <div className="flex items-center gap-2">
           <Button 

@@ -22,7 +22,7 @@ router.post('/optimize/:id', async (req, res) => {
         }
 
         // 2. Call AI Service with Fallback for Free Tier Limits (429)
-        let optimized;
+        let optimized: { title: string; description: string; otto_attributes?: { weight?: string; capacity?: string } };
         try {
             if (!process.env.OPENAI_API_KEY) {
                 console.warn("OPENAI_API_KEY missing, using MOCK mode.");
@@ -45,7 +45,11 @@ router.post('/optimize/:id', async (req, res) => {
                         <li>Feature 2: Real Sync will still work</li>
                         <li>Status: MOCK_OPTIMIZED</li>
                     </ul>
-                `
+                `,
+                otto_attributes: {
+                    weight: "1.5",
+                    capacity: "2L"
+                }
             };
         }
 
@@ -55,6 +59,7 @@ router.post('/optimize/:id', async (req, res) => {
             .update({
                 title: optimized.title,
                 description: optimized.description,
+                weight: parseFloat(optimized.otto_attributes?.weight || '0') || undefined,
                 status: 'optimized' // Mark as ready
             })
             .eq('id', id);

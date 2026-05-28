@@ -15,6 +15,7 @@ export default function ImportPage() {
   const [isImporting, setIsImporting] = useState(false)
   const [progress, setProgress] = useState(0)
   const [recentImports, setRecentImports] = useState<any[]>([])
+  const [amazonUrls, setAmazonUrls] = useState("")
 
   // Polling for live activity
   useEffect(() => {
@@ -85,6 +86,34 @@ export default function ImportPage() {
     }
   }
 
+  const handleAmazonCrawl = async () => {
+    const urls = amazonUrls.split('\n').map(u => u.trim()).filter(u => u.length > 0)
+    if (urls.length === 0) return toast({ title: "No URLs", description: "Please enter at least one Amazon URL.", variant: "destructive" })
+
+    setIsImporting(true)
+    toast({ title: "Crawler Started", description: `Crawling ${urls.length} URLs...` })
+
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+      const response = await fetch(`${API_URL}/api/import/amazon`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': 'Epic_Tech_2026' },
+        body: JSON.stringify({ urls })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Crawl failed');
+
+      toast({ title: "Crawl Successful", description: data.message })
+      setAmazonUrls("")
+    } catch (error: any) {
+      console.error("Crawl Error:", error);
+      toast({ variant: "destructive", title: "Crawl Failed", description: error.message })
+    } finally {
+      setIsImporting(false)
+    }
+  }
+
   return (
     <div className="p-6 space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -92,9 +121,10 @@ export default function ImportPage() {
       </div>
 
       <Tabs defaultValue="marketplace" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className="grid w-full max-w-md grid-cols-3">
           <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
           <TabsTrigger value="file">CSV / Excel</TabsTrigger>
+          <TabsTrigger value="amazon">Amazon Crawler</TabsTrigger>
         </TabsList>
 
         <TabsContent value="marketplace" className="mt-6">
@@ -198,6 +228,29 @@ export default function ImportPage() {
                   Start Import
                 </Button>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="amazon" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Amazon Product Crawler</CardTitle>
+              <CardDescription>Enter Amazon Product URLs or ASINs to extract full product data.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Amazon URLs (One per line)</Label>
+                <textarea 
+                  className="w-full min-h-[200px] p-3 border rounded-md text-sm bg-background"
+                  placeholder="https://www.amazon.de/dp/B0C123456&#10;https://www.amazon.de/dp/B0D987654"
+                  value={amazonUrls}
+                  onChange={(e) => setAmazonUrls(e.target.value)}
+                  disabled={isImporting}
+                />
+              </div>
+              <Button onClick={handleAmazonCrawl} disabled={isImporting || !amazonUrls.trim()}>
+                {isImporting ? 'Crawling...' : 'Start Crawl'}
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
