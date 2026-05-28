@@ -86,6 +86,15 @@ router.get('/stats', async (req, res) => {
 
         if (optError) throw optError;
 
+        // Fetch Recent Stock Movements globally
+        const { data: recentMovements, error: moveError } = await supabase
+            .from('stock_movements')
+            .select('*, products(title)')
+            .order('created_at', { ascending: false })
+            .limit(5);
+
+        // We ignore moveError, table might not exist yet if fresh setup
+
         const stats = {
             total: totalCount || 0,
             aiOptimized: optimizedCount || 0,
@@ -95,7 +104,8 @@ router.get('/stats', async (req, res) => {
                 ebay: ebayCount,
                 kaufland: kauflandCount,
                 shopify: shopifyCount
-            }
+            },
+            recentMovements: recentMovements || []
         };
 
         res.json(stats);

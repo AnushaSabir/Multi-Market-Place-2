@@ -128,17 +128,26 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-5">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-start gap-4 pb-4 border-b border-border/50 last:border-0 last:pb-0">
-                  <div className="mt-1 p-2 bg-primary/10 text-primary rounded-lg">
-                    <RefreshCw className="h-4 w-4" />
+              {stats.recentMovements && stats.recentMovements.length > 0 ? (
+                stats.recentMovements.map((move: any, i: number) => (
+                  <div key={i} className="flex items-start gap-4 pb-4 border-b border-border/50 last:border-0 last:pb-0">
+                    <div className="mt-1 p-2 bg-primary/10 text-primary rounded-lg">
+                      {move.change < 0 ? <RefreshCw className="h-4 w-4 text-orange-500" /> : <RefreshCw className="h-4 w-4 text-green-500" />}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold">{move.products?.title || 'Unknown Product'}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {move.platform} • {move.type === 'order' ? 'Sold' : 'Manual'} • Stock changed by {move.change > 0 ? `+${move.change}` : move.change}
+                      </p>
+                    </div>
+                    <div className="text-xs text-muted-foreground whitespace-nowrap">
+                      {new Date(move.created_at).toLocaleDateString()}
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold">{i === 1 ? 'System check completed' : 'Sync verified'}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">System is running normally without issues.</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <div className="text-center text-sm text-muted-foreground py-4">No recent activity</div>
+              )}
             </div>
           </CardContent>
         </Card>
