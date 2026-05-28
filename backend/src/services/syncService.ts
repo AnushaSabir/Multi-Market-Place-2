@@ -44,12 +44,45 @@ export class SyncService {
 
         console.log(`[SyncService] Found ${links.length} marketplaces: ${links.map(l => l.marketplace).join(', ')}`);
 
+        // Fetch pricing rules if price is being updated
+        let pricingRules: Record<string, { operator: string, value: number }> = {};
+        if (updates.price !== undefined) {
+            const { data: rulesData } = await supabase.from('marketplace_settings').select('*');
+            if (rulesData) {
+                rulesData.forEach(r => {
+                    if (r.auto_price_rule) {
+                        try {
+                            pricingRules[r.marketplace] = JSON.parse(r.auto_price_rule);
+                        } catch (e) {}
+                    }
+                });
+            }
+        }
+
         // Push updates
-        const promises = links.map(link => {
+        const promises = links.map(async (link) => {
             const mp = link.marketplace as keyof typeof exporters;
             if (exporters[mp]) {
                 console.log(`[SyncService] Dispatching update to ${mp}...`);
-                return exporters[mp].updateProduct(productId, updates);
+                
+                // Clone updates to avoid mutating the shared object
+                let mpUpdates = { ...updates };
+
+                // Apply pricing rules if applicable
+                if (mpUpdates.price !== undefined && pricingRules[mp]) {
+                    const rule = pricingRules[mp];
+                    let newPrice = mpUpdates.price;
+                    if (rule.operator === '+') newPrice += rule.value;
+                    else if (rule.operator === '-') newPrice -= rule.value;
+                    else if (rule.operator === '+%') newPrice = newPrice + (newPrice * (rule.value / 100));
+                    else if (rule.operator === '-%') newPrice = newPrice - (newPrice * (rule.value / 100));
+                    
+                    // Round to 2 decimal places
+                    mpUpdates.price = Math.round(newPrice * 100) / 100;
+                    console.log(`[SyncService] Applied rule to ${mp}: ${rule.operator}${rule.value}. New Price: ${mpUpdates.price}`);
+                }
+
+                return exporters[mp].updateProduct(productId, mpUpdates);
             }
             console.warn(`[SyncService] No exporter found for marketplace: ${mp}`);
             return Promise.resolve();

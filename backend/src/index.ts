@@ -46,6 +46,8 @@ import rateLimit from 'express-rate-limit';
 import aiRoutes from './routes/aiRoutes';
 import stockRoutes from './routes/stockRoutes';
 import productMergeRoutes from './routes/productMergeRoutes';
+import settingsRoutes from './routes/settingsRoutes';
+import { RetryService } from './services/retryService';
 
 // Protected Routes
 app.use('/api/products', authenticateAPI, productRoutes); // POST/PUT
@@ -55,6 +57,7 @@ app.use('/api/products', authenticateAPI, productMergeRoutes); // Product merge 
 app.use('/api/sync', authenticateAPI, syncRoutes);
 app.use('/api/import', authenticateAPI, importRoutes);
 app.use('/api/ai', authenticateAPI, aiRoutes);
+app.use('/api/settings', authenticateAPI, settingsRoutes);
 
 // Webhook Routes
 app.use('/api/webhooks', webhookRoutes);
@@ -67,6 +70,11 @@ app.use((err: any, req: any, res: any, next: any) => {
     // }
     res.status(500).json({ error: 'Internal Server Error', details: err.message });
 });
+
+// Start Retry Service (runs in background)
+if (process.env.NODE_ENV !== 'test') {
+    RetryService.start();
+}
 
 // Start Server
 if (process.env.NODE_ENV !== 'production') {

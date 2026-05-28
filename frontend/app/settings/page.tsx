@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, Store, Globe, Database, ShieldCheck } from "lucide-react"
+import { PricingRulesSettings } from "@/components/pricing-rules-settings"
 
 const platforms = [
   { name: "Otto", type: "Marketplace", status: "connected" },
@@ -82,6 +83,8 @@ export default function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+
+        <PricingRulesSettings />
       </div>
     </div>
   )
