@@ -88,13 +88,18 @@ export class SyncService {
 
         const productId = link.product_id;
 
-        // 2. Update Central Database
-        // Note: We might want a check here to ensure we don't cause an infinite loop if we reflect this back?
-        // Usually, we update central, and if central updates, it might trigger 'syncProductUpdateToAll'.
-        // To prevent loop, passed updates should maybe have a 'source' flag, or we trust that 
-        // updateProduct determines delta? 
-        // For MVP, we will update Central, and then trigger sync to OTHER marketplaces, but NOT the source.
+        // 1.5 Get current quantity to calculate change
+        const { data: currentProduct } = await supabase
+            .from('products')
+            .select('quantity')
+            .eq('id', productId)
+            .single();
+        
+        const oldQuantity = currentProduct?.quantity || 0;
+        const change = newQuantity - oldQuantity;
 
+        // 2. Update Central Database
+        // Note: We update central, and then trigger sync to OTHER marketplaces, but NOT the source.
         const { error: updateError } = await supabase
             .from('products')
             .update({ quantity: newQuantity })
@@ -103,6 +108,18 @@ export class SyncService {
         if (updateError) {
             console.error("Failed to update central stock:", updateError);
             return;
+        }
+
+        // 2.5 Log movement
+        if (change !== 0) {
+            await supabase.from('stock_movements').insert({
+                product_id: productId,
+                change: change,
+                current_stock: newQuantity,
+                platform: marketplace.charAt(0).toUpperCase() + marketplace.slice(1),
+                type: 'order',
+                user_name: 'Webhook System'
+            });
         }
 
         // 3. Propagate to OTHER marketplaces
