@@ -23,6 +23,7 @@ export class SyncService {
         weight?: number;
         shipping_type?: string;
         images?: string[];
+        sku?: string;
     }) {
         console.log(`Syncing product ${productId} updates to all connected marketplaces...`);
 
