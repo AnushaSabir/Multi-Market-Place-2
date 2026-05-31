@@ -21,7 +21,7 @@ export class KauflandExporter extends BaseExporter {
                     title: [product.title || `Product ${product.ean}`],
                     description: [product.description || product.title || `Description for ${product.ean}`],
                     picture: product.images && product.images.length > 0 ? product.images : [],
-                    manufacturer: ["EpicTec"] // Fallback manufacturer
+                    manufacturer: [product.brand || "VIVITAR"] // Fixed: Use VIVITAR as default to prevent blocks
                 }
             };
             const pdTimestamp = Math.floor(Date.now() / 1000).toString();
@@ -74,7 +74,7 @@ export class KauflandExporter extends BaseExporter {
 
             return {
                 success: true,
-                external_id: response.data.id_unit?.toString() || product.sku
+                external_id: response.data?.data?.id_unit?.toString() || response.data?.id_unit?.toString() || product.sku
             };
 
         } catch (error: any) {
