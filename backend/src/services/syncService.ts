@@ -29,8 +29,16 @@ export class SyncService {
         // Find all connected marketplaces for this product
         const { data: links, error } = await supabase
             .from('marketplace_products')
-            .select('marketplace')
+            .select('marketplace, external_id')
             .eq('product_id', productId);
+            
+        // Fetch SKU to assist Exporters (like eBay) that need SKU for updates
+        const { data: centralProd } = await supabase
+            .from('products')
+            .select('sku')
+            .eq('id', productId)
+            .single();
+        const productSku = centralProd?.sku;
 
         if (error) {
             console.error("Error fetching links:", error);
@@ -43,6 +51,11 @@ export class SyncService {
         }
 
         console.log(`[SyncService] Found ${links.length} marketplaces: ${links.map(l => l.marketplace).join(', ')}`);
+
+        // FIX: Disable syncing quantity from Master to Marketplaces (Marketplaces manage their own stock)
+        if ('quantity' in updates) {
+            delete updates.quantity;
+        }
 
         // Fetch pricing rules if price is being updated
         let pricingRules: Record<string, { operator: string, value: number }> = {};
@@ -67,6 +80,9 @@ export class SyncService {
                 
                 // Clone updates to avoid mutating the shared object
                 let mpUpdates = { ...updates };
+                if (productSku && !mpUpdates.sku) {
+                    mpUpdates.sku = productSku;
+                }
 
                 // Apply pricing rules if applicable
                 if (mpUpdates.price !== undefined && pricingRules[mp]) {

@@ -1,6 +1,6 @@
 "use client"
 
-import { LayoutDashboard, Package, Download, Settings, BarChart3, RefreshCcw } from "lucide-react"
+import { LayoutDashboard, Package, Download, Settings, BarChart3, RefreshCcw, ShoppingCart } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -18,6 +18,7 @@ import { usePathname } from "next/navigation"
 
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Orders", url: "/orders", icon: ShoppingCart },
   { title: "Products", url: "/products", icon: Package },
   { title: "Import", url: "/import", icon: Download },
   { title: "Statistics", url: "/statistics", icon: BarChart3 },

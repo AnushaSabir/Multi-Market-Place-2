@@ -47,6 +47,7 @@ import aiRoutes from './routes/aiRoutes';
 import stockRoutes from './routes/stockRoutes';
 import productMergeRoutes from './routes/productMergeRoutes';
 import settingsRoutes from './routes/settingsRoutes';
+import orderRoutes from './routes/orderRoutes';
 import { RetryService } from './services/retryService';
 
 // Protected Routes
@@ -58,6 +59,7 @@ app.use('/api/sync', authenticateAPI, syncRoutes);
 app.use('/api/import', authenticateAPI, importRoutes);
 app.use('/api/ai', authenticateAPI, aiRoutes);
 app.use('/api/settings', authenticateAPI, settingsRoutes);
+app.use('/api/orders', authenticateAPI, orderRoutes);
 
 // Webhook Routes
 app.use('/api/webhooks', webhookRoutes);

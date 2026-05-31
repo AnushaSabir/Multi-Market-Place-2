@@ -1,6 +1,7 @@
 import express from 'express';
 import crypto from 'crypto';
 import { SyncService } from '../services/syncService';
+import { OrderSyncService } from '../services/orderSyncService';
 
 const router = express.Router();
 
@@ -29,8 +30,9 @@ router.post('/shopify', async (req, res) => {
             externalId = String(data.inventory_item_id);
             newQuantity = data.available;
         } else if (topic === 'orders/create') {
-            console.log("Order created on Shopify, waiting for inventory_levels/update webhook.");
-            return res.status(200).send('Handled by inventory update');
+            console.log("Order created on Shopify, syncing to Order DB...");
+            await OrderSyncService.handleShopifyOrder(data);
+            return res.status(200).send('Order Synced');
         } else {
             // Mock fallback for test scripts
             externalId = String(data.id || data.inventory_item_id || data.external_id);
@@ -71,7 +73,16 @@ router.post('/:marketplace', async (req, res) => {
 
         if (externalId && newQuantity >= 0) {
             await SyncService.handleIncomingStockUpdate(marketplace, String(externalId), newQuantity);
-            return res.status(200).send('Webhook processed');
+        }
+
+        // Phase 3: Generic Order Sync fallback if payload indicates order
+        if (data.order_id || data.is_order) {
+            await OrderSyncService.handleGenericOrder(marketplace, data);
+            return res.status(200).send('Webhook processed (Order + Stock)');
+        }
+
+        if (externalId && newQuantity >= 0) {
+            return res.status(200).send('Webhook processed (Stock only)');
         }
 
         res.status(200).send('Ignored');

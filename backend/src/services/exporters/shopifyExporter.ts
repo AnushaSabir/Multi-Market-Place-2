@@ -3,8 +3,8 @@ import { BaseExporter, ExportResult } from './baseExporter';
 export class ShopifyExporter extends BaseExporter {
     marketplace: 'shopify' = 'shopify';
 
-    protected async createListingOnApi(accessToken: string, product: any): Promise<ExportResult> {
-        const shopDomain = process.env.SHOPIFY_SHOP_DOMAIN;
+    protected async createListingOnApi(accessToken: string, product: any, credentials?: any): Promise<ExportResult> {
+        const shopDomain = credentials?.shop_domain || process.env.SHOPIFY_SHOP_DOMAIN;
         console.log(`[Shopify] Creating product: ${product.title} on ${shopDomain}`);
 
         try {
@@ -47,7 +47,7 @@ export class ShopifyExporter extends BaseExporter {
     }
 
     protected async updateListingOnApi(accessToken: string, externalId: string, updates: any, credentials?: any): Promise<ExportResult> {
-        const shopDomain = process.env.SHOPIFY_SHOP_DOMAIN;
+        const shopDomain = credentials?.shop_domain || process.env.SHOPIFY_SHOP_DOMAIN;
         console.log(`[Shopify] Updating product ${externalId} on ${shopDomain}...`);
 
         try {
