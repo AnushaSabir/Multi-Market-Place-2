@@ -37,7 +37,6 @@ export function BulkEditDialog({ open, onOpenChange, products, onSuccess }: Bulk
     try {
       const updates: any = {};
       if (price !== undefined) updates.price = price;
-      if (quantity !== undefined) updates.quantity = quantity;
 
       const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
       
@@ -83,20 +82,11 @@ export function BulkEditDialog({ open, onOpenChange, products, onSuccess }: Bulk
               onChange={e => setPriceStr(e.target.value)}
             />
           </div>
-          <div className="space-y-2">
-            <Label>New Stock Quantity</Label>
-            <Input 
-              type="number" 
-              placeholder="e.g. 50"
-              value={qtyStr}
-              onChange={e => setQtyStr(e.target.value)}
-            />
-          </div>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>Cancel</Button>
-          <Button onClick={handleBulkEdit} disabled={loading || (!priceStr && !qtyStr)} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={handleBulkEdit} disabled={loading || (!priceStr)} className="bg-blue-600 hover:bg-blue-700">
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Apply Changes
           </Button>

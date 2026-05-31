@@ -663,28 +663,11 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                   </TableCell>
 
                   <TableCell className="py-2 align-top">
-                    {editingQty === product.id ? (
-                      <div className="flex items-center gap-1">
-                        <Input
-                          className="w-16 h-8"
-                          value={tempQty}
-                          type="number"
-                          onChange={(e) => setTempQty(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && saveQtyEdit(product.id)}
-                          autoFocus
-                        />
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-green-600" onClick={() => saveQtyEdit(product.id)}>
-                          <Check className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 group/edit cursor-pointer" onClick={() => handleQtyEdit(product.id, product.quantity)}>
+                      <div className="flex items-center gap-2">
                         <span className={`px-2 py-0.5 rounded text-xs ${product.quantity > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                           {product.quantity}
                         </span>
-                        <Pencil className="h-3 w-3 opacity-0 group-hover/edit:opacity-100 text-blue-500" />
                       </div>
-                    )}
                   </TableCell>
 
                   <TableCell className="py-2 align-top text-center">
