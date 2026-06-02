@@ -1,6 +1,6 @@
 "use client"
 
-import { LayoutDashboard, Package, Download, Settings, BarChart3, RefreshCcw, ShoppingCart } from "lucide-react"
+import { LayoutDashboard, Package, Download, Settings, BarChart3, RefreshCcw, ShoppingCart, CheckSquare, ScanLine } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -20,6 +20,8 @@ const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Orders", url: "/orders", icon: ShoppingCart },
   { title: "Products", url: "/products", icon: Package },
+  { title: "Picklist", url: "/picklist", icon: CheckSquare },
+  { title: "ScanStation", url: "/scanstation", icon: ScanLine },
   { title: "Import", url: "/import", icon: Download },
   { title: "Statistics", url: "/statistics", icon: BarChart3 },
   { title: "Sync", url: "/sync", icon: RefreshCcw },

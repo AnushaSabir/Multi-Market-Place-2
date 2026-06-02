@@ -83,28 +83,7 @@ export class KauflandImporter extends BaseImporter {
             }
         } catch (error: any) {
             console.error("Kaufland Fetch Critical Error:", error.response?.data || error.message);
-            
-            // Bypass local EAI_AGAIN / network blockages by injecting mock data
-            console.log("Injecting Kaufland Mock Data to bypass local network errors...");
-            const mockProduct: ImportedProduct = {
-                title: "Kaufland Test Product " + Math.floor(Math.random() * 100),
-                description: "Mock description because Kaufland API timed out locally.",
-                sku: "KFL-MOCK-" + Math.floor(Math.random() * 1000),
-                ean: "400" + Math.floor(Math.random() * 1000000000),
-                price: 19.99,
-                quantity: 5,
-                weight: 0,
-                images: ["https://via.placeholder.com/300x300.png?text=Kaufland+Mock"],
-                external_id: "KFL-" + Date.now().toString(),
-                marketplace: 'kaufland'
-            };
-            try {
-                await this.upsertProduct(mockProduct);
-                totalSaved++;
-            } catch (e: any) {
-                console.error("Mock Product Insert Error:", e.message);
-                totalSaved++; // Increment anyway so we don't throw below
-            }
+            throw error;
         }
 
         console.log(`Kaufland Import Finished. Total successfully imported: ${totalSaved}`);

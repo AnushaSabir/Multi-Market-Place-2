@@ -58,3 +58,15 @@ CREATE TABLE IF NOT EXISTS public.order_items (
     tax_rate numeric(5,2) DEFAULT 19.00,
     created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+
+-- Phase 3 Point 2: DHL Integration Updates
+
+-- Add DHL columns to products
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS weight numeric(10,2) DEFAULT 0;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS dhl_versandart text DEFAULT 'Paket';
+
+-- Add DHL columns to orders
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS dhl_tracking_number text;
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS dhl_label_url text;
+

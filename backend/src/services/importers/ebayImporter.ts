@@ -44,15 +44,15 @@ export class EbayImporter extends BaseImporter {
                 }
 
                 const pageProducts: ImportedProduct[] = items.map((item: any) => ({
-                    title: item.title || 'Unknown eBay Item',
-                    description: item.shortDescription || '',
-                    sku: item.sku || item.legacyItemId || item.itemId, // Try item.sku first
-                    ean: item.gtin || item.ean || item.upc || item.isbn || '', // Try specific fields if gtin missing
-                    price: parseFloat(item.price?.value || '0'),
-                    quantity: 1,
+                    title: item.product?.title || 'Unknown eBay Item',
+                    description: item.product?.description || '',
+                    sku: item.sku,
+                    ean: item.product?.isbn || item.product?.upc || item.product?.ean || '',
+                    price: 0, // Inventory API requires separate offer call for price
+                    quantity: item.availability?.shipToLocationAvailability?.quantity || 0,
                     weight: 0,
-                    images: item.image ? [item.image.imageUrl] : [],
-                    external_id: item.itemId,
+                    images: item.product?.imageUrls || [],
+                    external_id: item.sku,
                     marketplace: 'ebay'
                 }));
 
@@ -65,7 +65,6 @@ export class EbayImporter extends BaseImporter {
                     }
                 }
 
-                console.log(`Page ${pageCount + 1} done. Total saved so far: ${totalSaved}`);
 
                 // Pagination
                 const nextLink = response.data.next;

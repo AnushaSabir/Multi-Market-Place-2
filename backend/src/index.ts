@@ -48,6 +48,9 @@ import stockRoutes from './routes/stockRoutes';
 import productMergeRoutes from './routes/productMergeRoutes';
 import settingsRoutes from './routes/settingsRoutes';
 import orderRoutes from './routes/orderRoutes';
+import picklistRoutes from './routes/picklistRoutes';
+import scanstationRoutes from './routes/scanstationRoutes';
+import { SyncService } from './services/syncService';
 import { RetryService } from './services/retryService';
 
 // Protected Routes
@@ -59,9 +62,12 @@ app.use('/api/sync', authenticateAPI, syncRoutes);
 app.use('/api/import', authenticateAPI, importRoutes);
 app.use('/api/ai', authenticateAPI, aiRoutes);
 app.use('/api/settings', authenticateAPI, settingsRoutes);
-app.use('/api/orders', authenticateAPI, orderRoutes);
+app.use('/api/sync', syncRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/picklist', picklistRoutes);
+app.use('/api/scanstation', scanstationRoutes);
 
-// Webhook Routes
+// Database check Routes
 app.use('/api/webhooks', webhookRoutes);
 
 app.use((err: any, req: any, res: any, next: any) => {

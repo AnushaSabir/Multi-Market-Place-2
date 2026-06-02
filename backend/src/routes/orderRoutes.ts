@@ -1,5 +1,8 @@
 import express from 'express';
 import { supabase } from '../database/supabaseClient';
+import { DhlService } from '../services/dhlService';
+import { InvoiceService } from '../services/invoiceService';
+import { CancellationService } from '../services/cancellationService';
 
 const router = express.Router();
 
@@ -41,6 +44,52 @@ router.get('/:id', async (req, res) => {
         res.json({ success: true, data: order });
     } catch (e: any) {
         res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// Generate DHL Label
+router.post('/:id/dhl-label', async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const result = await DhlService.generateLabel(orderId);
+        
+        // Auto-generate invoice and send email when label is created (Shipment Confirmation)
+        try {
+            await InvoiceService.createAndSendInvoice(orderId);
+            console.log(`[Order Route] Auto-generated and emailed invoice for order ${orderId}`);
+        } catch (invErr) {
+            console.error(`[Order Route] Failed to auto-generate invoice:`, invErr);
+            // We don't fail the label generation if invoice fails, just log it
+        }
+
+        res.json(result);
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Generate Invoice Manually
+router.post('/:id/invoice', async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const result = await InvoiceService.createAndSendInvoice(orderId);
+        res.json(result);
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Cancel Order
+router.post('/:id/cancel', async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const result = await CancellationService.cancelOrder(orderId);
+        if (!result.success) {
+            return res.status(400).json(result);
+        }
+        res.json(result);
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
