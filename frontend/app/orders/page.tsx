@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Printer, Loader2, Package } from "lucide-react";
+import { Printer, Loader2, Package, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function OrdersPage() {
@@ -15,6 +15,7 @@ export default function OrdersPage() {
     const [generatingId, setGeneratingId] = useState<string | null>(null);
     const [generatingInvoiceId, setGeneratingInvoiceId] = useState<string | null>(null);
     const [cancellingId, setCancellingId] = useState<string | null>(null);
+    const [syncing, setSyncing] = useState(false);
     const { toast } = useToast();
 
     useEffect(() => {
@@ -36,6 +37,33 @@ export default function OrdersPage() {
             console.error("Failed to fetch orders", e);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSyncOrders = async () => {
+        setSyncing(true);
+        try {
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
+            const token = localStorage.getItem('epic_tech_token') || 'Epic_Tech_2026';
+            const res = await fetch(`${API_URL}/api/sync/cron/orders`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': token
+                }
+            });
+            const data = await res.json();
+            
+            if (!res.ok) {
+                throw new Error(data.error || "Failed to sync orders");
+            }
+
+            toast({ title: "Sync Complete", description: "Orders have been imported from all marketplaces." });
+            fetchOrders();
+        } catch (e: any) {
+            toast({ title: "Sync Failed", description: e.message, variant: "destructive" });
+        } finally {
+            setSyncing(false);
         }
     };
 
@@ -117,9 +145,15 @@ export default function OrdersPage() {
 
     return (
         <div className="p-6 space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
-                <p className="text-muted-foreground">Manage your synced orders matching Billbee's structure.</p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
+                    <p className="text-muted-foreground">Manage your synced orders matching Billbee's structure.</p>
+                </div>
+                <Button onClick={handleSyncOrders} disabled={syncing}>
+                    {syncing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+                    {syncing ? "Syncing..." : "Sync All Orders"}
+                </Button>
             </div>
 
             <Card>

@@ -1,6 +1,7 @@
 import { BaseImporter, ImportedProduct } from './baseImporter';
 import axios from 'axios';
 import crypto from 'crypto';
+import { OrderSyncService, ParsedOrder } from '../orderSyncService';
 
 export class KauflandImporter extends BaseImporter {
     marketplace: 'kaufland' = 'kaufland';
@@ -89,5 +90,102 @@ export class KauflandImporter extends BaseImporter {
         console.log(`Kaufland Import Finished. Total successfully imported: ${totalSaved}`);
 
         return totalSaved;
+    }
+
+    public async importOrders(): Promise<{ success: boolean, count: number, error?: string }> {
+        const clientKey = process.env.KAUFLAND_CLIENT_KEY || '';
+        const secretKey = process.env.KAUFLAND_SECRET_KEY || '';
+        if (!clientKey || !secretKey) {
+            return { success: false, count: 0, error: "Missing Kaufland credentials" };
+        }
+
+        console.log(`[KauflandImporter] Fetching Kaufland orders...`);
+
+        let offset = 0;
+        const limit = 50;
+        let keepFetching = true;
+        let totalProcessed = 0;
+
+        try {
+            while (keepFetching) {
+                if (BaseImporter.stopImport) break;
+
+                const timestamp = Math.floor(Date.now() / 1000).toString();
+                const listUrl = `https://sellerapi.kaufland.com/v2/orders?limit=${limit}&offset=${offset}`;
+                const stringToSign = `GET\n${listUrl}\n\n${timestamp}`;
+                const signature = crypto.createHmac('sha256', secretKey).update(stringToSign).digest('hex');
+
+                const response: any = await axios.get(listUrl, {
+                    headers: {
+                        'Shop-Client-Key': clientKey,
+                        'Shop-Timestamp': timestamp,
+                        'Shop-Signature': signature,
+                        'User-Agent': 'MultiMarketplaceApp/1.0',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const orders = response.data.data || [];
+
+                for (const order of orders) {
+                    try {
+                        const parsedOrder: ParsedOrder = {
+                            order_number: order.id_order,
+                            marketplace: 'kaufland',
+                            customer: {
+                                email: order.billing_address?.email || order.buyer?.email || '',
+                                first_name: order.billing_address?.first_name || '',
+                                last_name: order.billing_address?.last_name || '',
+                                phone: order.billing_address?.phone || ''
+                            },
+                            billing_address: {
+                                first_name: order.billing_address?.first_name || '',
+                                last_name: order.billing_address?.last_name || '',
+                                company: order.billing_address?.company_name || '',
+                                street: order.billing_address?.street || '',
+                                house_number: order.billing_address?.house_number || '',
+                                zip: order.billing_address?.postcode || '',
+                                city: order.billing_address?.city || '',
+                                country_code: order.billing_address?.country || ''
+                            },
+                            shipping_address: {
+                                first_name: order.shipping_address?.first_name || '',
+                                last_name: order.shipping_address?.last_name || '',
+                                company: order.shipping_address?.company_name || '',
+                                street: order.shipping_address?.street || '',
+                                house_number: order.shipping_address?.house_number || '',
+                                zip: order.shipping_address?.postcode || '',
+                                city: order.shipping_address?.city || '',
+                                country_code: order.shipping_address?.country || ''
+                            },
+                            state: order.status === 'sent' ? 'shipped' : order.status === 'cancelled' ? 'cancelled' : order.status === 'open' ? 'paid' : 'pending',
+                            total_price: parseFloat(order.order_amount || '0') / 100, // Often in cents, sometimes euros. Standard fallback.
+                            currency: order.currency || 'EUR',
+                            items: (order.order_units || []).map((unit: any) => ({
+                                title: unit.product?.title || 'Kaufland Item',
+                                sku: unit.id_offer || unit.ean || 'UNKNOWN',
+                                quantity: 1, // Kaufland lists units individually
+                                unit_price: parseFloat(unit.price || '0') / 100
+                            }))
+                        };
+
+                        await OrderSyncService.upsertOrder(parsedOrder);
+                        totalProcessed++;
+                    } catch (e: any) {
+                        console.error(`[KauflandImporter] Error syncing order ${order.id_order}:`, e.message);
+                    }
+                }
+
+                if (orders.length < limit) {
+                    keepFetching = false;
+                } else {
+                    offset += limit;
+                }
+            }
+            return { success: true, count: totalProcessed };
+        } catch (error: any) {
+            console.error("Kaufland Order Import Error:", error.response?.data || error.message);
+            return { success: false, count: totalProcessed, error: error.message };
+        }
     }
 }

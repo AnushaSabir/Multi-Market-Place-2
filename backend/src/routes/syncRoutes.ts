@@ -135,6 +135,49 @@ router.post('/cron', async (req, res) => {
 });
 
 /**
+ * cron trigger for order sync across all marketplaces
+ */
+router.post('/cron/orders', async (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
+
+    // Basic security check
+    if (process.env.CRON_SECRET && authHeader !== expectedSecret) {
+        console.warn("[Cron] Unauthorized order sync trigger attempt.");
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    console.log("[Cron] Starting automated order synchronization for all marketplaces...");
+
+    const importers = [
+        new OttoImporter(),
+        new EbayImporter(),
+        new KauflandImporter(),
+        new ShopifyImporter()
+    ];
+
+    const results: any = {};
+
+    for (const importer of importers) {
+        try {
+            console.log(`[Cron] Triggering order sync for ${importer.marketplace}...`);
+            const result = await importer.importOrders();
+            results[importer.marketplace] = {
+                success: result.success,
+                count: result.count,
+                error: result.error
+            };
+        } catch (e: any) {
+            console.error(`[Cron] Critical order sync failure for ${importer.marketplace}:`, e.message);
+            results[importer.marketplace] = { success: false, error: e.message };
+        }
+    }
+
+    console.log("[Cron] Batch order sync finished:", JSON.stringify(results));
+    res.json({ message: "Cron order sync finished", results });
+});
+
+/**
  * monthly cron trigger for auto-pushing Otto products to eBay and Kaufland
  */
 router.post('/cron-monthly-push', async (req, res) => {

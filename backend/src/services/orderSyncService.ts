@@ -1,5 +1,18 @@
 import { supabase } from '../database/supabaseClient';
 
+export interface ParsedOrder {
+    order_number: string;
+    marketplace: string;
+    customer: { email?: string, first_name?: string, last_name?: string, phone?: string };
+    billing_address?: { first_name?: string, last_name?: string, company?: string, street?: string, house_number?: string, zip?: string, city?: string, country_code?: string };
+    shipping_address?: { first_name?: string, last_name?: string, company?: string, street?: string, house_number?: string, zip?: string, city?: string, country_code?: string };
+    state: string; 
+    total_price: number;
+    currency: string;
+    items: Array<{ title: string, sku: string, quantity: number, unit_price: number }>;
+}
+
+
 export class OrderSyncService {
     
     /**
@@ -167,6 +180,97 @@ export class OrderSyncService {
                     unit_price: item.price || 0
                 });
             }
+        }
+    }
+
+    /**
+     * Universal method to upsert an order from any marketplace
+     */
+    static async upsertOrder(order: ParsedOrder) {
+        console.log(`[OrderSync] Upserting Order ${order.order_number} from ${order.marketplace}`);
+        
+        try {
+            // 1. Customer
+            let customerId = null;
+            if (order.customer.email) {
+                const { data: existingCust } = await supabase.from('customers').select('id').eq('email', order.customer.email).single();
+                if (existingCust) {
+                    customerId = existingCust.id;
+                } else {
+                    const { data: newCust, error } = await supabase.from('customers').insert(order.customer).select('id').single();
+                    if (!error && newCust) customerId = newCust.id;
+                }
+            }
+
+            // 2. Addresses
+            let invoiceAddrId = null;
+            let deliveryAddrId = null;
+
+            if (customerId && order.billing_address && order.billing_address.street) {
+                const { data: invAddr } = await supabase.from('addresses').insert({
+                    customer_id: customerId,
+                    address_type: 'invoice',
+                    ...order.billing_address
+                }).select('id').single();
+                if (invAddr) invoiceAddrId = invAddr.id;
+            }
+
+            if (customerId && order.shipping_address && order.shipping_address.street) {
+                const { data: delAddr } = await supabase.from('addresses').insert({
+                    customer_id: customerId,
+                    address_type: 'delivery',
+                    ...order.shipping_address
+                }).select('id').single();
+                if (delAddr) deliveryAddrId = delAddr.id;
+            } else if (invoiceAddrId) {
+                deliveryAddrId = invoiceAddrId; // Fallback
+            }
+
+            // 3. Order
+            const { data: existingOrder } = await supabase
+                .from('orders')
+                .select('id')
+                .eq('order_number', order.order_number)
+                .eq('marketplace', order.marketplace)
+                .single();
+
+            if (existingOrder) {
+                // Update state if needed
+                await supabase.from('orders').update({ state: order.state }).eq('id', existingOrder.id);
+                return { success: true, message: 'Updated existing order' };
+            }
+
+            const { data: newOrder, error: orderErr } = await supabase.from('orders').insert({
+                order_number: order.order_number,
+                marketplace: order.marketplace,
+                customer_id: customerId,
+                invoice_address_id: invoiceAddrId,
+                delivery_address_id: deliveryAddrId,
+                state: order.state,
+                total_price: order.total_price,
+                currency: order.currency
+            }).select('id').single();
+
+            if (orderErr || !newOrder) throw new Error(orderErr?.message || 'Failed to create order');
+
+            // 4. Items
+            for (const item of order.items) {
+                let internalProductId = null;
+                if (item.sku) {
+                    const { data: prod } = await supabase.from('products').select('id').eq('sku', item.sku).single();
+                    if (prod) internalProductId = prod.id;
+                }
+                await supabase.from('order_items').insert({
+                    order_id: newOrder.id,
+                    product_id: internalProductId,
+                    ...item
+                });
+            }
+
+            return { success: true };
+        } catch (error: any) {
+            console.error(`[OrderSync] Upsert Error: ${error.message}`);
+            return { success: false, error: error.message };
         }
     }
 }

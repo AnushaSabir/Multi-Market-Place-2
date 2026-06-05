@@ -1,6 +1,7 @@
 import { BaseImporter, ImportedProduct } from './baseImporter';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { OrderSyncService } from '../orderSyncService';
 dotenv.config();
 
 export class ShopifyImporter extends BaseImporter {
@@ -68,5 +69,58 @@ export class ShopifyImporter extends BaseImporter {
             throw new Error("Zero products found on Shopify. Verify your 'Shop Domain' and 'Access Token'.");
         }
         return totalProcessed;
+    }
+
+    public async importOrders(): Promise<{ success: boolean, count: number, error?: string }> {
+        const shopDomain = process.env.SHOPIFY_SHOP_DOMAIN;
+        const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
+        
+        if (!shopDomain || !accessToken) {
+            return { success: false, count: 0, error: "Missing Shopify credentials" };
+        }
+
+        console.log(`[ShopifyImporter] Fetching Shopify orders from ${shopDomain}...`);
+
+        let totalProcessed = 0;
+        let url = `https://${shopDomain}/admin/api/2024-01/orders.json?status=any&limit=250`;
+        let pageCount = 1;
+
+        try {
+            while (url) {
+                if (BaseImporter.stopImport) break;
+
+                console.log(`[ShopifyImporter] Fetching orders page ${pageCount}...`);
+                const response = await axios.get(url, {
+                    headers: {
+                        'X-Shopify-Access-Token': accessToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const orders = response.data.orders || [];
+
+                for (const order of orders) {
+                    try {
+                        await OrderSyncService.handleShopifyOrder(order);
+                        totalProcessed++;
+                    } catch (e: any) {
+                        console.error(`[ShopifyImporter] Error syncing order ${order.id}:`, e.message);
+                    }
+                }
+
+                pageCount++;
+                const linkHeader = response.headers['link'];
+                if (linkHeader && linkHeader.includes('rel="next"')) {
+                    const match = linkHeader.match(/<([^>]+)>;\s*rel="next"/);
+                    url = match ? match[1] : "";
+                } else {
+                    url = "";
+                }
+            }
+            return { success: true, count: totalProcessed };
+        } catch (error: any) {
+            console.error("Shopify Order Import Error:", error.response?.data || error.message);
+            return { success: false, count: totalProcessed, error: error.message };
+        }
     }
 }

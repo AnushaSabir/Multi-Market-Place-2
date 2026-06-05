@@ -1,5 +1,7 @@
 import { BaseImporter, ImportedProduct } from './baseImporter';
 import axios from 'axios';
+import { TokenManger } from '../tokenService';
+import { OrderSyncService, ParsedOrder } from '../orderSyncService';
 
 export class EbayImporter extends BaseImporter {
     marketplace: 'ebay' = 'ebay';
@@ -89,5 +91,75 @@ export class EbayImporter extends BaseImporter {
 
         console.log(`eBay Import Finished. Total successfully imported: ${totalSaved}`);
         return totalSaved;
+    }
+
+    public async importOrders(): Promise<{ success: boolean, count: number, error?: string }> {
+        const accessToken = await TokenManger.getAccessToken(this.marketplace); // Reusing the base method to get auth token
+        if (!accessToken) {
+            return { success: false, count: 0, error: "Missing eBay credentials or token" };
+        }
+
+        console.log(`[EbayImporter] Fetching eBay orders...`);
+
+        let totalProcessed = 0;
+        let url: string | null = `https://api.ebay.com/sell/fulfillment/v1/order?limit=100`;
+
+        try {
+            while (url) {
+                if (BaseImporter.stopImport) break;
+
+                const response: any = await axios.get(url, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const orders = response.data.orders || [];
+
+                for (const order of orders) {
+                    try {
+                        const parsedOrder: ParsedOrder = {
+                            order_number: order.orderId,
+                            marketplace: 'ebay',
+                            customer: {
+                                email: order.buyer?.buyerRegistrationAddress?.email || `${order.buyer?.username || 'unknown'}@ebay.com`,
+                                first_name: order.buyer?.buyerRegistrationAddress?.fullName?.split(' ')[0] || 'eBay',
+                                last_name: order.buyer?.buyerRegistrationAddress?.fullName?.split(' ').slice(1).join(' ') || 'User'
+                            },
+                            shipping_address: {
+                                first_name: order.fulfillmentStartInstructions?.[0]?.shippingStep?.shipTo?.fullName?.split(' ')[0] || '',
+                                last_name: order.fulfillmentStartInstructions?.[0]?.shippingStep?.shipTo?.fullName?.split(' ').slice(1).join(' ') || '',
+                                street: order.fulfillmentStartInstructions?.[0]?.shippingStep?.shipTo?.contactAddress?.addressLine1 || '',
+                                house_number: order.fulfillmentStartInstructions?.[0]?.shippingStep?.shipTo?.contactAddress?.addressLine2 || '',
+                                zip: order.fulfillmentStartInstructions?.[0]?.shippingStep?.shipTo?.contactAddress?.postalCode || '',
+                                city: order.fulfillmentStartInstructions?.[0]?.shippingStep?.shipTo?.contactAddress?.city || '',
+                                country_code: order.fulfillmentStartInstructions?.[0]?.shippingStep?.shipTo?.contactAddress?.countryCode || ''
+                            },
+                            state: order.orderFulfillmentStatus === 'FULFILLED' ? 'shipped' : order.orderPaymentStatus === 'PAID' ? 'paid' : 'pending',
+                            total_price: parseFloat(order.pricingSummary?.total?.value || '0'),
+                            currency: order.pricingSummary?.total?.currency || 'EUR',
+                            items: (order.lineItems || []).map((item: any) => ({
+                                title: item.title,
+                                sku: item.sku,
+                                quantity: item.quantity,
+                                unit_price: parseFloat(item.lineItemCost?.value || '0')
+                            }))
+                        };
+
+                        await OrderSyncService.upsertOrder(parsedOrder);
+                        totalProcessed++;
+                    } catch (e: any) {
+                        console.error(`[EbayImporter] Error syncing order ${order.orderId}:`, e.message);
+                    }
+                }
+
+                url = response.data.next ? response.data.next : null;
+            }
+            return { success: true, count: totalProcessed };
+        } catch (error: any) {
+            console.error("eBay Order Import Error:", error.response?.data || error.message);
+            return { success: false, count: totalProcessed, error: error.message };
+        }
     }
 }

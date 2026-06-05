@@ -1,5 +1,7 @@
 import { BaseImporter, ImportedProduct } from './baseImporter';
 import axios from 'axios';
+import { TokenManger } from '../tokenService';
+import { OrderSyncService, ParsedOrder } from '../orderSyncService';
 
 export class OttoImporter extends BaseImporter {
     marketplace: 'otto' = 'otto';
@@ -92,5 +94,103 @@ export class OttoImporter extends BaseImporter {
 
         console.log(`Total Otto products imported: ${totalProcessed}`);
         return totalProcessed;
+    }
+
+    public async importOrders(): Promise<{ success: boolean, count: number, error?: string }> {
+        const accessToken = await TokenManger.getAccessToken(this.marketplace); // Reusing the base method to get auth token
+        if (!accessToken) {
+            return { success: false, count: 0, error: "Missing Otto credentials or token" };
+        }
+
+        console.log(`[OttoImporter] Fetching Otto orders...`);
+
+        let totalProcessed = 0;
+        const isSandbox = process.env.OTTO_ENV === 'sandbox';
+        const baseUrl = isSandbox ? 'https://sandbox.api.otto.market' : 'https://api.otto.market';
+        let url: string | null = `${baseUrl}/v4/orders?limit=100`; // Assuming v4/orders endpoint
+        let pageCount = 1;
+
+        try {
+            while (url) {
+                if (BaseImporter.stopImport) break;
+
+                console.log(`[OttoImporter] Fetching orders page ${pageCount}...`);
+                const response: any = await axios.get(url, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const orders = response.data.resources || response.data || [];
+
+                for (const order of orders) {
+                    try {
+                        const parsedOrder: ParsedOrder = {
+                            order_number: order.orderNumber || order.salesOrderId,
+                            marketplace: 'otto',
+                            customer: {
+                                email: order.customer?.email || order.deliveryAddress?.email || '',
+                                first_name: order.deliveryAddress?.firstName || order.invoiceAddress?.firstName || '',
+                                last_name: order.deliveryAddress?.lastName || order.invoiceAddress?.lastName || '',
+                                phone: order.deliveryAddress?.phoneNumber || ''
+                            },
+                            billing_address: {
+                                first_name: order.invoiceAddress?.firstName || '',
+                                last_name: order.invoiceAddress?.lastName || '',
+                                company: order.invoiceAddress?.companyName || '',
+                                street: order.invoiceAddress?.street || '',
+                                house_number: order.invoiceAddress?.houseNumber || '',
+                                zip: order.invoiceAddress?.zipCode || '',
+                                city: order.invoiceAddress?.city || '',
+                                country_code: order.invoiceAddress?.countryCode || ''
+                            },
+                            shipping_address: {
+                                first_name: order.deliveryAddress?.firstName || '',
+                                last_name: order.deliveryAddress?.lastName || '',
+                                company: order.deliveryAddress?.companyName || '',
+                                street: order.deliveryAddress?.street || '',
+                                house_number: order.deliveryAddress?.houseNumber || '',
+                                zip: order.deliveryAddress?.zipCode || '',
+                                city: order.deliveryAddress?.city || '',
+                                country_code: order.deliveryAddress?.countryCode || ''
+                            },
+                            state: order.orderLifecycleStatus === 'SENT' ? 'shipped' : order.orderLifecycleStatus === 'CANCELLED' ? 'cancelled' : 'pending',
+                            total_price: parseFloat(order.amount?.amount || order.totalAmount || '0'),
+                            currency: order.amount?.currency || 'EUR',
+                            items: (order.positionItems || order.lineItems || []).map((item: any) => ({
+                                title: item.productTitle || item.title || 'Otto Item',
+                                sku: item.partnerSku || item.sku || 'UNKNOWN',
+                                quantity: item.quantity || 1,
+                                unit_price: parseFloat(item.itemPrice?.amount || item.price || '0')
+                            }))
+                        };
+
+                        await OrderSyncService.upsertOrder(parsedOrder);
+                        totalProcessed++;
+                    } catch (e: any) {
+                        console.error(`[OttoImporter] Error syncing order ${order.orderNumber}:`, e.message);
+                    }
+                }
+
+                pageCount++;
+                const links: any = response.data.links || response.data._links;
+                const nextLink: any = Array.isArray(links) ? links.find((l: any) => l.rel === 'next') : (links?.next || null);
+
+                if (nextLink && nextLink.href) {
+                    let href = nextLink.href;
+                    if (!href.startsWith('http')) {
+                        href = href.startsWith('/') ? `${baseUrl}${href}` : `${baseUrl}/${href}`;
+                    }
+                    url = href;
+                } else {
+                    url = null;
+                }
+            }
+            return { success: true, count: totalProcessed };
+        } catch (error: any) {
+            console.error("Otto Order Import Error:", error.response?.data || error.message);
+            return { success: false, count: totalProcessed, error: error.message };
+        }
     }
 }
