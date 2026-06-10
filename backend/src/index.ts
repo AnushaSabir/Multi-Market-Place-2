@@ -58,7 +58,7 @@ app.use('/api/products', authenticateAPI, productRoutes); // POST/PUT
 app.use('/api/products', authenticateAPI, productGetRoutes); // GET
 app.use('/api/products', authenticateAPI, stockRoutes); // Stock updates and movements
 app.use('/api/products', authenticateAPI, productMergeRoutes); // Product merge (/merge)
-app.use('/api/sync', authenticateAPI, syncRoutes);
+app.use('/api/sync', syncRoutes);
 app.use('/api/import', authenticateAPI, importRoutes);
 app.use('/api/ai', authenticateAPI, aiRoutes);
 app.use('/api/settings', authenticateAPI, settingsRoutes);
