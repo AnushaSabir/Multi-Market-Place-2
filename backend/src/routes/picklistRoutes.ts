@@ -21,16 +21,41 @@ router.get('/', async (req, res) => {
 
         if (error) throw new Error(error.message);
 
-        // Enhance data for Picklist (calculate if multi-item 'double order')
+        // Enhance data for Picklist (calculate if multi-item 'double order' and add shipping provider)
         const enhancedOrders = orders.map((order: any) => {
             const totalQuantity = order.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
             const isSingleItem = order.items.length === 1 && totalQuantity === 1;
+            
+            let totalWeight = 0;
+            let isKleinpaket = true; 
+            
+            if (order.items && order.items.length > 0) {
+                for (const item of order.items) {
+                    const weight = (item.product?.weight && item.product.weight > 0) ? item.product.weight : 0.5;
+                    totalWeight += (weight * item.quantity);
+                    
+                    if (item.product?.dhl_versandart === 'Paket') {
+                        isKleinpaket = false;
+                    }
+                }
+            } else {
+                isKleinpaket = true;
+            }
+            
+            if (totalWeight > 1) {
+                isKleinpaket = false;
+            }
+
+            const calculatedProvider = isKleinpaket ? 300000000031621 : 300000000031622;
+            const finalProvider = (!order.shipping_provider || String(order.shipping_provider).trim() === '') ? calculatedProvider : order.shipping_provider;
             
             return {
                 ...order,
                 is_single_item: isSingleItem,
                 total_quantity: totalQuantity,
-                customer_name: order.customer ? `${order.customer.first_name} ${order.customer.last_name}` : 'Unknown'
+                customer_name: order.customer ? `${order.customer.first_name} ${order.customer.last_name}` : 'Unknown',
+                shipping_provider: finalProvider,
+                shipping_weight: totalWeight
             };
         });
 
