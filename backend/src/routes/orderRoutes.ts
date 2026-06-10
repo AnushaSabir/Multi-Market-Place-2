@@ -47,9 +47,11 @@ router.get('/', async (req, res) => {
             // For normal DHL, we use a different ID (e.g. 300000000031622) so it falls into the "DHL" category in the app
             const calculatedProvider = isKleinpaket ? 300000000031621 : 300000000031622;
 
+            const finalProvider = (!order.shipping_provider || String(order.shipping_provider).trim() === '') ? calculatedProvider : order.shipping_provider;
+
             return {
                 ...order,
-                shipping_provider: order.shipping_provider || calculatedProvider,
+                shipping_provider: finalProvider,
                 shipping_weight: totalWeight
             };
         });
