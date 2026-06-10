@@ -56,7 +56,7 @@ router.get('/', async (req, res) => {
             };
         });
 
-        res.json({ success: true, data: processedOrders });
+        res.json({ success: true, test_version: '1.0.3', data: processedOrders });
     } catch (e: any) {
         res.status(500).json({ success: false, error: e.message });
     }
