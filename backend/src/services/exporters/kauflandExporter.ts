@@ -99,38 +99,101 @@ export class KauflandExporter extends BaseExporter {
                 return { success: false, error: "Secret Key missing" };
             }
 
+            // 1. Push Product Data (Images, Title, Description) if EAN is available
+            if (updates.ean && (updates.title || updates.description || (updates.images && updates.images.length > 0))) {
+                const productDataBody = {
+                    attributes: {
+                        ...(updates.title ? { title: [updates.title] } : {}),
+                        ...(updates.description ? { description: [updates.description] } : {}),
+                        ...((updates.images && updates.images.length > 0) ? { picture: updates.images } : {}),
+                        manufacturer: ["VIVITAR"]
+                    }
+                };
+                
+                const pdTimestamp = Math.floor(Date.now() / 1000).toString();
+                const pdUrl = `https://sellerapi.kaufland.com/v2/product-data/${updates.ean}`;
+                const pdMethod = 'PUT';
+                const pdBodyStr = JSON.stringify(productDataBody);
+                const pdStringToSign = `${pdMethod}\n${pdUrl}\n${pdBodyStr}\n${pdTimestamp}`;
+                const pdSignature = crypto.createHmac('sha256', secretKey).update(pdStringToSign).digest('hex');
+
+                try {
+                    await axios.put(pdUrl, pdBodyStr, {
+                        headers: {
+                            'Shop-Client-Key': accessToken,
+                            'Shop-Timestamp': pdTimestamp,
+                            'Shop-Signature': pdSignature,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    console.log(`[Kaufland] Product data updated for EAN: ${updates.ean}`);
+                } catch (pdError: any) {
+                    console.warn(`[Kaufland] Product data update warning for EAN: ${updates.ean}. Details:`, pdError.response?.data || pdError.message);
+                }
+            }
+
             const body: any = {};
             if (updates.price) body.listing_price = Math.round(updates.price * 100);
             if (updates.quantity !== undefined) body.amount = updates.quantity;
 
             if (Object.keys(body).length > 0) {
-                const timestamp = Math.floor(Date.now() / 1000).toString();
-                // Storefront is required even for PATCH
-                const url = `https://sellerapi.kaufland.com/v2/units/${externalId}?storefront=de`;
-                const method = 'PATCH';
-
-                // Stability: Stringify first, then use that string for both signature and request
-                const finalBodyStr = JSON.stringify(body);
-
-                // Signature logic: method\nfullUrl\nbody\ntimestamp
-                const stringToSign = `${method}\n${url}\n${finalBodyStr}\n${timestamp}`;
-                const signature = crypto.createHmac('sha256', secretKey).update(stringToSign).digest('hex');
-
-                console.log(`[Kaufland] PATCH URL: ${url}`);
-                console.log(`[Kaufland] PATCH Body: ${finalBodyStr}`);
-                console.log(`[Kaufland] Sig Base: ${stringToSign.replace(/\n/g, '\\n')}`);
-
-                const response = await axios.patch(url, finalBodyStr, {
-                    headers: {
-                        'Shop-Client-Key': accessToken,
-                        'Shop-Timestamp': timestamp,
-                        'Shop-Signature': signature,
-                        'Content-Type': 'application/json',
-                        'User-Agent': 'EpicTec/1.0',
-                        'Accept': 'application/json'
+                // 2. Fetch all units for this EAN to ensure we update the active one as well
+                let unitIdsToUpdate = [externalId];
+                
+                if (updates.ean) {
+                    try {
+                        const getTimestamp = Math.floor(Date.now() / 1000).toString();
+                        const getUrl = `https://sellerapi.kaufland.com/v2/units?ean=${updates.ean}&storefront=de`;
+                        const getMethod = 'GET';
+                        const getStringToSign = `${getMethod}\n${getUrl}\n\n${getTimestamp}`;
+                        const getSignature = crypto.createHmac('sha256', secretKey).update(getStringToSign).digest('hex');
+                        
+                        const getRes = await axios.get(getUrl, {
+                            headers: {
+                                'Shop-Client-Key': accessToken,
+                                'Shop-Timestamp': getTimestamp,
+                                'Shop-Signature': getSignature,
+                                'Accept': 'application/json'
+                            }
+                        });
+                        
+                        if (getRes.data && getRes.data.data && Array.isArray(getRes.data.data)) {
+                            // Collect all unit IDs for this EAN to update them all
+                            const allIds = getRes.data.data.map((u: any) => u.id_unit.toString());
+                            if (allIds.length > 0) {
+                                unitIdsToUpdate = Array.from(new Set([...unitIdsToUpdate, ...allIds]));
+                            }
+                        }
+                    } catch (getError: any) {
+                        console.warn(`[Kaufland] Failed to fetch all units for EAN ${updates.ean}:`, getError.message);
                     }
-                });
-                console.log(`[Kaufland] API Response for ${externalId}:`, JSON.stringify(response.data));
+                }
+                
+                // 3. Update all collected units
+                for (const uid of unitIdsToUpdate) {
+                    try {
+                        const timestamp = Math.floor(Date.now() / 1000).toString();
+                        const url = `https://sellerapi.kaufland.com/v2/units/${uid}?storefront=de`;
+                        const method = 'PATCH';
+                        const finalBodyStr = JSON.stringify(body);
+                        const stringToSign = `${method}\n${url}\n${finalBodyStr}\n${timestamp}`;
+                        const signature = crypto.createHmac('sha256', secretKey).update(stringToSign).digest('hex');
+
+                        await axios.patch(url, finalBodyStr, {
+                            headers: {
+                                'Shop-Client-Key': accessToken,
+                                'Shop-Timestamp': timestamp,
+                                'Shop-Signature': signature,
+                                'Content-Type': 'application/json',
+                                'User-Agent': 'EpicTec/1.0',
+                                'Accept': 'application/json'
+                            }
+                        });
+                        console.log(`[Kaufland] Successfully patched unit ${uid}`);
+                    } catch (patchErr: any) {
+                        console.warn(`[Kaufland] Failed to patch unit ${uid}:`, patchErr.response?.data || patchErr.message);
+                    }
+                }
             }
 
             return { success: true };

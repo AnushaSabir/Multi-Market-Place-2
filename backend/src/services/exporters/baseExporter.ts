@@ -84,7 +84,7 @@ export abstract class BaseExporter {
         }
     }
 
-    async updateProduct(productId: string, updates: { price?: number; quantity?: number; title?: string; description?: string; sku?: string }): Promise<ExportResult> {
+    async updateProduct(productId: string, updates: { price?: number; quantity?: number; title?: string; description?: string; sku?: string; ean?: string; images?: string[] }): Promise<ExportResult> {
         try {
             await this.logSync('update', 'pending');
 
@@ -111,7 +111,9 @@ export abstract class BaseExporter {
             // 2. Call API
             const result = await this.updateListingOnApi(token || 'mock_token', mapping.external_id, {
                 ...updates,
-                sku: updates.sku || productSku
+                sku: updates.sku || productSku,
+                ean: (mapping.products as any)?.ean,
+                images: updates.images || (mapping.products as any)?.images
             }, fullCreds);
 
             // 3. Update local sync status
