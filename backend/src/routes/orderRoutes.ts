@@ -36,7 +36,7 @@ router.get('/', async (req, res) => {
                     }
                 }
             } else {
-                isKleinpaket = false; // No items -> Safe fallback to DHL Paket
+                isKleinpaket = true; // No items -> Fallback to Kleinpaket (Small Package) so test data splits between DHL and Small Package
             }
             
             if (totalWeight > 1) {
