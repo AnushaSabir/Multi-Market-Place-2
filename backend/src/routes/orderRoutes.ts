@@ -14,12 +14,47 @@ router.get('/', async (req, res) => {
             .select(`
                 *,
                 customer:customers(first_name, last_name, email),
-                items:order_items(title, quantity, unit_price, sku)
+                items:order_items(title, quantity, unit_price, sku, product:products(weight, dhl_versandart))
             `)
             .order('created_at', { ascending: false });
 
         if (error) throw new Error(error.message);
-        res.json({ success: true, data: orders });
+
+        // Process orders to calculate shipping_provider based on weight to mimic Billbee
+        const processedOrders = orders.map(order => {
+            let totalWeight = 0;
+            let isKleinpaket = true; 
+            
+            if (order.items && order.items.length > 0) {
+                for (const item of order.items) {
+                    // Default to 0.5kg if weight is missing or 0
+                    const weight = (item.product?.weight && item.product.weight > 0) ? item.product.weight : 0.5;
+                    totalWeight += (weight * item.quantity);
+                    
+                    if (item.product?.dhl_versandart === 'Paket') {
+                        isKleinpaket = false;
+                    }
+                }
+            } else {
+                isKleinpaket = false; // No items -> Safe fallback to DHL Paket
+            }
+            
+            if (totalWeight > 1) {
+                isKleinpaket = false;
+            }
+
+            // Billbee ID for DHL Kleinpaket is 300000000031621.
+            // For normal DHL, we use a different ID (e.g. 300000000031622) so it falls into the "DHL" category in the app
+            const calculatedProvider = isKleinpaket ? 300000000031621 : 300000000031622;
+
+            return {
+                ...order,
+                shipping_provider: order.shipping_provider || calculatedProvider,
+                shipping_weight: totalWeight
+            };
+        });
+
+        res.json({ success: true, data: processedOrders });
     } catch (e: any) {
         res.status(500).json({ success: false, error: e.message });
     }
