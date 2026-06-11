@@ -127,9 +127,27 @@ export class KauflandImporter extends BaseImporter {
 
                 const units = response.data.data || [];
                 
+                // Stop importing if units are older than 7 days to match Billbee daily view
+                const cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - 7);
+                let reachedOldOrders = false;
+
+                const recentUnits = units.filter((unit: any) => {
+                    const unitDate = new Date(unit.ts_created_iso);
+                    if (unitDate < cutoffDate) {
+                        reachedOldOrders = true;
+                        return false;
+                    }
+                    return true;
+                });
+
+                if (reachedOldOrders) {
+                    keepFetching = false;
+                }
+                
                 // Group units by id_order to construct complete orders
                 const ordersMap = new Map<string, any>();
-                for (const unit of units) {
+                for (const unit of recentUnits) {
                     const orderId = unit.id_order;
                     if (!ordersMap.has(orderId)) {
                         ordersMap.set(orderId, {
@@ -181,7 +199,7 @@ export class KauflandImporter extends BaseImporter {
                                 city: order.shipping_address?.city || '',
                                 country_code: order.shipping_address?.country || ''
                             },
-                            state: order.status === 'sent' ? 'shipped' : order.status === 'cancelled' ? 'cancelled' : (order.status === 'open' || order.status === 'need_to_be_sent') ? 'paid' : 'pending',
+                            state: order.status === 'sent' ? 'shipped' : order.status === 'cancelled' ? 'cancelled' : (order.status === 'open' || order.status === 'need_to_be_sent' || order.status === 'received') ? 'paid' : 'pending',
                             total_price: order.order_amount / 100, // Converts cents to standard format
                             currency: order.currency,
                             items: order.order_units.map((unit: any) => ({
