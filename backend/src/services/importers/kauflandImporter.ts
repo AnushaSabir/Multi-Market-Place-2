@@ -111,7 +111,7 @@ export class KauflandImporter extends BaseImporter {
                 if (BaseImporter.stopImport) break;
 
                 const timestamp = Math.floor(Date.now() / 1000).toString();
-                const listUrl = `https://sellerapi.kaufland.com/v2/orders?limit=${limit}&offset=${offset}&sort=ts_created:desc`;
+                const listUrl = `https://sellerapi.kaufland.com/v2/order-units?limit=${limit}&offset=${offset}&sort=ts_created:desc&embedded=buyer,billing_address,shipping_address,product`;
                 const stringToSign = `GET\n${listUrl}\n\n${timestamp}`;
                 const signature = crypto.createHmac('sha256', secretKey).update(stringToSign).digest('hex');
 
@@ -125,7 +125,30 @@ export class KauflandImporter extends BaseImporter {
                     }
                 });
 
-                const orders = response.data.data || [];
+                const units = response.data.data || [];
+                
+                // Group units by id_order to construct complete orders
+                const ordersMap = new Map<string, any>();
+                for (const unit of units) {
+                    const orderId = unit.id_order;
+                    if (!ordersMap.has(orderId)) {
+                        ordersMap.set(orderId, {
+                            id_order: orderId,
+                            status: unit.status,
+                            currency: unit.currency || 'EUR',
+                            buyer: unit.buyer,
+                            billing_address: unit.billing_address,
+                            shipping_address: unit.shipping_address,
+                            order_amount: 0,
+                            order_units: []
+                        });
+                    }
+                    const order = ordersMap.get(orderId);
+                    order.order_amount += parseFloat(unit.price || '0');
+                    order.order_units.push(unit);
+                }
+
+                const orders = Array.from(ordersMap.values());
 
                 for (const order of orders) {
                     try {
@@ -159,11 +182,11 @@ export class KauflandImporter extends BaseImporter {
                                 country_code: order.shipping_address?.country || ''
                             },
                             state: order.status === 'sent' ? 'shipped' : order.status === 'cancelled' ? 'cancelled' : (order.status === 'open' || order.status === 'need_to_be_sent') ? 'paid' : 'pending',
-                            total_price: parseFloat(order.order_amount || '0') / 100, // Often in cents, sometimes euros. Standard fallback.
-                            currency: order.currency || 'EUR',
-                            items: (order.order_units || []).map((unit: any) => ({
+                            total_price: order.order_amount / 100, // Converts cents to standard format
+                            currency: order.currency,
+                            items: order.order_units.map((unit: any) => ({
                                 title: unit.product?.title || 'Kaufland Item',
-                                sku: unit.id_offer || unit.ean || 'UNKNOWN',
+                                sku: unit.product?.v_number || unit.product?.eans?.[0] || unit.id_offer || unit.ean || 'UNKNOWN',
                                 quantity: 1, // Kaufland lists units individually
                                 unit_price: parseFloat(unit.price || '0') / 100
                             }))
@@ -176,7 +199,7 @@ export class KauflandImporter extends BaseImporter {
                     }
                 }
 
-                if (orders.length < limit) {
+                if (units.length < limit) {
                     keepFetching = false;
                 } else {
                     offset += limit;
