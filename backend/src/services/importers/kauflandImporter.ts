@@ -158,7 +158,7 @@ export class KauflandImporter extends BaseImporter {
                                 city: order.shipping_address?.city || '',
                                 country_code: order.shipping_address?.country || ''
                             },
-                            state: order.status === 'sent' ? 'shipped' : order.status === 'cancelled' ? 'cancelled' : order.status === 'open' ? 'paid' : 'pending',
+                            state: order.status === 'sent' ? 'shipped' : order.status === 'cancelled' ? 'cancelled' : (order.status === 'open' || order.status === 'need_to_be_sent') ? 'paid' : 'pending',
                             total_price: parseFloat(order.order_amount || '0') / 100, // Often in cents, sometimes euros. Standard fallback.
                             currency: order.currency || 'EUR',
                             items: (order.order_units || []).map((unit: any) => ({
