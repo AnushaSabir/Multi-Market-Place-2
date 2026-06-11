@@ -256,14 +256,33 @@ export class OrderSyncService {
             // 4. Items
             for (const item of order.items) {
                 let internalProductId = null;
+                let finalSku = item.sku;
+                let finalTitle = item.title;
+
                 if (item.sku) {
-                    const { data: prod } = await supabase.from('products').select('id').eq('sku', item.sku).single();
-                    if (prod) internalProductId = prod.id;
+                    // Try SKU first
+                    let { data: prod } = await supabase.from('products').select('id, sku').eq('sku', item.sku).single();
+                    
+                    // If not found by SKU, try EAN
+                    if (!prod) {
+                        const { data: prodByEan } = await supabase.from('products').select('id, sku').eq('ean', item.sku).single();
+                        if (prodByEan) prod = prodByEan;
+                    }
+
+                    if (prod) {
+                        internalProductId = prod.id;
+                        // Override long title/EAN with the short SKU (which Billbee uses as product name)
+                        finalSku = prod.sku;
+                        finalTitle = prod.sku; 
+                    }
                 }
+                
                 await supabase.from('order_items').insert({
                     order_id: newOrder.id,
                     product_id: internalProductId,
-                    ...item
+                    ...item,
+                    sku: finalSku,
+                    title: finalTitle
                 });
             }
 
