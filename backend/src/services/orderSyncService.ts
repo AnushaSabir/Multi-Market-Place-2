@@ -261,29 +261,32 @@ export class OrderSyncService {
 
                 if (item.sku) {
                     // Try SKU first
-                    let { data: prod } = await supabase.from('products').select('id, sku').eq('sku', item.sku).single();
+                    let { data: prod } = await supabase.from('products').select('id, sku, title').eq('sku', item.sku).single();
                     
                     // If not found by SKU, try EAN
                     if (!prod) {
-                        const { data: prodByEan } = await supabase.from('products').select('id, sku').eq('ean', item.sku).single();
+                        const { data: prodByEan } = await supabase.from('products').select('id, sku, title').eq('ean', item.sku).single();
                         if (prodByEan) prod = prodByEan;
                     }
 
                     if (prod) {
                         internalProductId = prod.id;
                         // Override long title/EAN with the short SKU (which Billbee uses as product name)
-                        finalSku = prod.sku;
-                        finalTitle = prod.sku; 
+                        finalSku = prod.sku || item.sku || 'UNKNOWN';
+                        finalTitle = prod.sku || prod.title || item.title || 'UNKNOWN'; 
                     }
                 }
                 
-                await supabase.from('order_items').insert({
+                const { error: insertErr } = await supabase.from('order_items').insert({
                     order_id: newOrder.id,
                     product_id: internalProductId,
                     ...item,
                     sku: finalSku,
                     title: finalTitle
                 });
+                if (insertErr) {
+                    console.error('FAILED TO INSERT ITEM:', item.sku, finalSku, insertErr);
+                }
             }
 
             return { success: true };
