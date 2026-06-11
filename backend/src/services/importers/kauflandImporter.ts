@@ -111,7 +111,7 @@ export class KauflandImporter extends BaseImporter {
                 if (BaseImporter.stopImport) break;
 
                 const timestamp = Math.floor(Date.now() / 1000).toString();
-                const listUrl = `https://sellerapi.kaufland.com/v2/orders?limit=${limit}&offset=${offset}`;
+                const listUrl = `https://sellerapi.kaufland.com/v2/orders?limit=${limit}&offset=${offset}&sort=ts_created:desc`;
                 const stringToSign = `GET\n${listUrl}\n\n${timestamp}`;
                 const signature = crypto.createHmac('sha256', secretKey).update(stringToSign).digest('hex');
 
@@ -161,7 +161,7 @@ export class KauflandImporter extends BaseImporter {
                             state: order.status === 'sent' ? 'shipped' : order.status === 'cancelled' ? 'cancelled' : (order.status === 'open' || order.status === 'need_to_be_sent') ? 'paid' : 'pending',
                             total_price: parseFloat(order.order_amount || '0') / 100, // Often in cents, sometimes euros. Standard fallback.
                             currency: order.currency || 'EUR',
-                            items: (order.units || order.order_units || []).map((unit: any) => ({
+                            items: (order.order_units || []).map((unit: any) => ({
                                 title: unit.product?.title || 'Kaufland Item',
                                 sku: unit.id_offer || unit.ean || 'UNKNOWN',
                                 quantity: 1, // Kaufland lists units individually
