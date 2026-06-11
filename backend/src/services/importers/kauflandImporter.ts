@@ -203,8 +203,8 @@ export class KauflandImporter extends BaseImporter {
                             total_price: order.order_amount / 100, // Converts cents to standard format
                             currency: order.currency,
                             items: order.order_units.map((unit: any) => ({
-                                title: unit.product?.title || 'Kaufland Item',
-                                sku: unit.product?.v_number || unit.product?.eans?.[0] || unit.id_offer || unit.ean || 'UNKNOWN',
+                                title: unit.id_offer || unit.product?.title || 'Kaufland Item',
+                                sku: unit.id_offer || unit.product?.v_number || unit.product?.eans?.[0] || unit.ean || 'UNKNOWN',
                                 quantity: 1, // Kaufland lists units individually
                                 unit_price: parseFloat(unit.price || '0') / 100
                             }))
