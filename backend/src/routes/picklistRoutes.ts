@@ -46,7 +46,7 @@ router.get('/', async (req, res) => {
                 isKleinpaket = false;
             }
 
-            const calculatedProvider = isKleinpaket ? 300000000031621 : 300000000031622;
+            const calculatedProvider = isKleinpaket ? 300000000031622 : 300000000031621;
             const finalProvider = (!order.shipping_provider || String(order.shipping_provider).trim() === '') ? calculatedProvider : order.shipping_provider;
             
             return {

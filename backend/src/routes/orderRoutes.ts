@@ -43,9 +43,9 @@ router.get('/', async (req, res) => {
                 isKleinpaket = false;
             }
 
-            // Billbee ID for DHL Kleinpaket is 300000000031621.
-            // For normal DHL, we use a different ID (e.g. 300000000031622) so it falls into the "DHL" category in the app
-            const calculatedProvider = isKleinpaket ? 300000000031621 : 300000000031622;
+            // Billbee ID for DHL Paket is 300000000031621.
+            // For Kleinpaket, we use 300000000031622 so it falls into the "Small Package" category in the app
+            const calculatedProvider = isKleinpaket ? 300000000031622 : 300000000031621;
 
             const finalProvider = (!order.shipping_provider || String(order.shipping_provider).trim() === '') ? calculatedProvider : order.shipping_provider;
 
