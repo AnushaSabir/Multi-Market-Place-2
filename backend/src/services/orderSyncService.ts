@@ -273,7 +273,8 @@ export class OrderSyncService {
                         internalProductId = prod.id;
                         // Override long title/EAN with the short SKU (which Billbee uses as product name)
                         finalSku = prod.sku || item.sku || 'UNKNOWN';
-                        finalTitle = prod.sku || prod.title || item.title || 'UNKNOWN'; 
+                        const isNumericSku = prod.sku && /^\d+$/.test(prod.sku);
+                        finalTitle = (!isNumericSku && prod.sku) ? prod.sku : (prod.title || item.title || 'UNKNOWN'); 
                     }
                 }
                 

@@ -127,9 +127,9 @@ export class KauflandImporter extends BaseImporter {
 
                 const units = response.data.data || [];
                 
-                // Stop importing if units are older than 7 days to match Billbee daily view
+                // Stop importing if units are older than 30 days to ensure we get all pending orders that Billbee shows
                 const cutoffDate = new Date();
-                cutoffDate.setDate(cutoffDate.getDate() - 7);
+                cutoffDate.setDate(cutoffDate.getDate() - 30);
                 let reachedOldOrders = false;
 
                 const recentUnits = units.filter((unit: any) => {
