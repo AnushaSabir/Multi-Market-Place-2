@@ -31,12 +31,12 @@ router.get('/', async (req, res) => {
             
             if (order.items && order.items.length > 0) {
                 for (const item of order.items) {
+                    // Fallback to 0.5kg if weight is missing or 0
                     const weight = (item.product?.weight && item.product.weight > 0) ? item.product.weight : 0.5;
                     totalWeight += (weight * item.quantity);
                     
-                    if (item.product?.dhl_versandart === 'Paket') {
-                        isKleinpaket = false;
-                    }
+                    // We completely ignore dhl_versandart here because the user wants it to be fully automated
+                    // based on weight, without having to manually configure each product in the admin panel.
                 }
             } else {
                 isKleinpaket = true;

@@ -40,12 +40,8 @@ export class DhlService {
         let versandart = 'V01PAK'; // Default DHL Paket (V01PAK for Germany)
 
         for (const item of order.items) {
-            const w = item.product?.weight || 0.5; // Default 0.5kg if missing
-            totalWeight += (w * item.quantity);
-            // If any product requires Paket, use Paket. Otherwise if all are Kleinpaket, use Kleinpaket (V62WP for Warenpost)
-            if (item.product?.dhl_versandart === 'Paket') {
-                versandart = 'V01PAK';
-            }
+            const weight = (item.product?.weight && item.product.weight > 0) ? item.product.weight : 0.5;
+            totalWeight += (weight * item.quantity);
         }
         if (totalWeight === 0) totalWeight = 1.0; // Minimum 1kg fallback
 

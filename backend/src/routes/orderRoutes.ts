@@ -27,16 +27,12 @@ router.get('/', async (req, res) => {
             
             if (order.items && order.items.length > 0) {
                 for (const item of order.items) {
-                    // Default to 0.5kg if weight is missing or 0 so it defaults to small package for single items, and normal DHL for multiple items
+                    // Fallback to 0.5kg if weight is missing or 0
                     const weight = (item.product?.weight && item.product.weight > 0) ? item.product.weight : 0.5;
                     totalWeight += (weight * item.quantity);
-                    
-                    if (item.product?.dhl_versandart === 'Paket') {
-                        isKleinpaket = false;
-                    }
                 }
             } else {
-                isKleinpaket = true; // No items -> Fallback to Kleinpaket (Small Package) so test data splits between DHL and Small Package
+                isKleinpaket = true;
             }
             
             if (totalWeight > 1) {
