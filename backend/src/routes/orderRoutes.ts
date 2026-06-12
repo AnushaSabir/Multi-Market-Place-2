@@ -48,8 +48,17 @@ router.get('/', async (req, res) => {
             const calculatedProvider = isKleinpaket ? 300000000031621 : 300000000031622;
             const finalProvider = (!order.shipping_provider || String(order.shipping_provider).trim() === '') ? calculatedProvider : order.shipping_provider;
 
+            const sanitizedItems = order.items ? order.items.map((item: any) => {
+                let sku = item.sku;
+                if (sku && /^\d+$/.test(sku)) {
+                    sku = ''; // hide purely numeric SKUs
+                }
+                return { ...item, sku };
+            }) : [];
+
             return {
                 ...order,
+                items: sanitizedItems,
                 shipping_provider: finalProvider,
                 shipping_weight: totalWeight
             };
