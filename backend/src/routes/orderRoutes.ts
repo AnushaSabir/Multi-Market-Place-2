@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
             .select(`
                 *,
                 customer:customers(first_name, last_name, email),
-                items:order_items(title, quantity, unit_price, sku, product:products(weight, dhl_versandart))
+                items:order_items(*, product:products(*))
             `)
             .order('created_at', { ascending: false });
 

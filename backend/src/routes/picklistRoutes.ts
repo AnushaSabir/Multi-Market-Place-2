@@ -14,9 +14,8 @@ router.get('/', async (req, res) => {
                 customer:customers(*),
                 invoice_address:addresses!invoice_address_id(*),
                 delivery_address:addresses!delivery_address_id(*),
-                items:order_items(*, product:products(weight, dhl_versandart))
-            `)
-            .eq('state', 'paid')
+                items:order_items(*, product:products(*))
+            `).eq('state', 'paid')
             .order('created_at', { ascending: false });
 
         if (error) throw new Error(error.message);
