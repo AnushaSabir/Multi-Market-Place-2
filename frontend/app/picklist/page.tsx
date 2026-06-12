@@ -141,7 +141,6 @@ export default function PicklistPage() {
                                                 {order.items.map((item: any, idx: number) => (
                                                     <div key={idx} className="flex items-center text-sm">
                                                         <Badge variant="outline" className="mr-2">{item.quantity}x</Badge>
-                                                        <span className="font-mono text-xs text-muted-foreground mr-2">{item.sku}</span>
                                                         <span className="truncate max-w-[200px]">{item.title}</span>
                                                     </div>
                                                 ))}

@@ -35,14 +35,17 @@ router.get('/', async (req, res) => {
                 isKleinpaket = true;
             }
             
+            // Automatically determine if it's a Big order (DHL) or Small order
+            // Since product weights are 0, we use price as a proxy for "Bara order" vs "Chota order"
+            if (order.total_price > 20) {
+                isKleinpaket = false; // DHL
+            }
             if (totalWeight > 1) {
-                isKleinpaket = false;
+                isKleinpaket = false; // DHL
             }
 
-            // Billbee ID for DHL Paket is 300000000031621.
-            // For Kleinpaket, we use 300000000031622 so it falls into the "Small Package" category in the app
-            const calculatedProvider = isKleinpaket ? 300000000031622 : 300000000031621;
-
+            // 31622 is DHL, 31621 is Small Package
+            const calculatedProvider = isKleinpaket ? 300000000031621 : 300000000031622;
             const finalProvider = (!order.shipping_provider || String(order.shipping_provider).trim() === '') ? calculatedProvider : order.shipping_provider;
 
             return {
