@@ -28,9 +28,13 @@ router.get('/', async (req, res) => {
             const sanitizedItems = order.items ? order.items.map((item: any) => {
                 let sku = item.sku;
                 if (sku && /^\d+$/.test(sku)) {
-                    sku = ''; // hide purely numeric SKUs
+                    sku = item.title || item.product?.title || sku;
                 }
-                return { ...item, sku };
+                return {
+                    ...item,
+                    sku,
+                    display_name: item.title || sku || item.product?.title || 'Unknown Item'
+                };
             }) : [];
 
             return {
