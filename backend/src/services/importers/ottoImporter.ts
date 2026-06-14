@@ -129,6 +129,7 @@ export class OttoImporter extends BaseImporter {
                         const parsedOrder: ParsedOrder = {
                             order_number: order.orderNumber || order.salesOrderId,
                             marketplace: 'otto',
+                            created_at: order.orderDate || order.createdAt || order.createdDate,
                             customer: {
                                 email: order.customer?.email || order.deliveryAddress?.email || '',
                                 first_name: order.deliveryAddress?.firstName || order.invoiceAddress?.firstName || '',

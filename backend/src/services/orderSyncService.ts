@@ -3,6 +3,7 @@ import { supabase } from '../database/supabaseClient';
 export interface ParsedOrder {
     order_number: string;
     marketplace: string;
+    created_at?: string;
     customer: { email?: string, first_name?: string, last_name?: string, phone?: string };
     billing_address?: { first_name?: string, last_name?: string, company?: string, street?: string, house_number?: string, zip?: string, city?: string, country_code?: string };
     shipping_address?: { first_name?: string, last_name?: string, company?: string, street?: string, house_number?: string, zip?: string, city?: string, country_code?: string };
@@ -153,6 +154,7 @@ export class OrderSyncService {
 
             // 3. Create Order
             const orderNumber = payload.name || String(payload.id); // e.g. #1001
+            const orderCreatedAt = payload.created_at || payload.processed_at || new Date().toISOString();
             
             // Check if exists
             const { data: existingOrder } = await supabase
@@ -172,6 +174,7 @@ export class OrderSyncService {
                     state: payload.financial_status === 'paid' ? 'paid' : 'pending',
                     total_price: parseFloat(payload.total_price || '0'),
                     currency: payload.currency || 'EUR',
+                    created_at: orderCreatedAt,
                     updated_at: new Date().toISOString()
                 }).eq('id', existingOrder.id);
 
@@ -196,7 +199,8 @@ export class OrderSyncService {
                     delivery_address_id: deliveryAddrId,
                     state: payload.financial_status === 'paid' ? 'paid' : 'pending',
                     total_price: parseFloat(payload.total_price || '0'),
-                    currency: payload.currency || 'EUR'
+                    currency: payload.currency || 'EUR',
+                    created_at: orderCreatedAt
                 }).select('id').single();
 
             if (orderErr || !newOrder) {
@@ -321,6 +325,7 @@ export class OrderSyncService {
                     state: order.state,
                     total_price: order.total_price,
                     currency: order.currency,
+                    created_at: order.created_at || new Date().toISOString(),
                     updated_at: new Date().toISOString()
                 };
 
@@ -347,7 +352,8 @@ export class OrderSyncService {
                 delivery_address_id: deliveryAddrId,
                 state: order.state,
                 total_price: order.total_price,
-                currency: order.currency
+                currency: order.currency,
+                created_at: order.created_at || new Date().toISOString()
             }).select('id').single();
 
             if (orderErr || !newOrder) throw new Error(orderErr?.message || 'Failed to create order');

@@ -102,7 +102,10 @@ export class EbayImporter extends BaseImporter {
         console.log(`[EbayImporter] Fetching eBay orders...`);
 
         let totalProcessed = 0;
-        let url: string | null = `https://api.ebay.com/sell/fulfillment/v1/order?limit=100`;
+        const since = new Date();
+        since.setDate(since.getDate() - 1);
+        const filter = encodeURIComponent(`creationdate:[${since.toISOString()}..]`);
+        let url: string | null = `https://api.ebay.com/sell/fulfillment/v1/order?limit=100&filter=${filter}`;
 
         try {
             while (url) {
@@ -122,6 +125,7 @@ export class EbayImporter extends BaseImporter {
                         const parsedOrder: ParsedOrder = {
                             order_number: order.orderId,
                             marketplace: 'ebay',
+                            created_at: order.creationDate || order.lastModifiedDate,
                             customer: {
                                 email: order.buyer?.buyerRegistrationAddress?.email || `${order.buyer?.username || 'unknown'}@ebay.com`,
                                 first_name: order.buyer?.buyerRegistrationAddress?.fullName?.split(' ')[0] || 'eBay',

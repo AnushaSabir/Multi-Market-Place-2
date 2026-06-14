@@ -173,6 +173,7 @@ export class KauflandImporter extends BaseImporter {
                         const parsedOrder: ParsedOrder = {
                             order_number: order.id_order,
                             marketplace: 'kaufland',
+                            created_at: order.order_units[0]?.ts_created_iso,
                             customer: {
                                 email: order.billing_address?.email || order.buyer?.email || '',
                                 first_name: order.billing_address?.first_name || '',
