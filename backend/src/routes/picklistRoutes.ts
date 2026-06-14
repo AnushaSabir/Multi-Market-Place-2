@@ -44,7 +44,7 @@ function getStartOfTodayInTimeZone(timeZone: string) {
 // Fetch today's orders ready for picking (state = 'paid')
 router.get('/', async (req, res) => {
     try {
-        const showAll = req.query.all === 'true';
+        const filterToday = req.query.today === 'true';
         const startOfDay = getStartOfTodayInTimeZone('Europe/Berlin');
 
         let query = supabase
@@ -58,7 +58,7 @@ router.get('/', async (req, res) => {
             `).eq('state', 'paid')
             .order('created_at', { ascending: false });
 
-        if (!showAll) {
+        if (filterToday) {
             query = query.gte('created_at', startOfDay.toISOString());
         }
 
@@ -95,7 +95,7 @@ router.get('/', async (req, res) => {
 
         res.json({
             success: true,
-            date_filter: showAll ? 'all' : startOfDay.toISOString(),
+            date_filter: filterToday ? startOfDay.toISOString() : 'ready_to_pick',
             data: enhancedOrders
         });
     } catch (error: any) {

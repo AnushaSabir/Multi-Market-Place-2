@@ -39,13 +39,13 @@ export function classifyOrderShipping(items: ShippingItem[] = [], existingProvid
         ? Number(existingProvider)
         : null;
 
-    let isSmallPackage = totalQuantity <= 1 && totalWeight <= 1;
+    let isSmallPackage = totalWeight <= 1;
 
-    if (explicitSmallPackage && totalWeight <= 1 && totalQuantity <= 1) {
+    if (explicitSmallPackage) {
         isSmallPackage = true;
     }
 
-    if (explicitDhl || totalQuantity > 1 || totalWeight > 1) {
+    if (explicitDhl || totalWeight > 1) {
         isSmallPackage = false;
     }
 
