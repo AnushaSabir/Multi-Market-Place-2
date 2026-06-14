@@ -3,6 +3,7 @@ import { supabase } from '../database/supabaseClient';
 import { DhlService } from '../services/dhlService';
 import { InvoiceService } from '../services/invoiceService';
 import { CancellationService } from '../services/cancellationService';
+import { classifyOrderShipping } from '../services/shippingClassifier';
 
 const router = express.Router();
 
@@ -20,33 +21,9 @@ router.get('/', async (req, res) => {
 
         if (error) throw new Error(error.message);
 
-        // Process orders to calculate shipping_provider based on weight to mimic Billbee
+        // Process orders to calculate the same DHL vs Small Package split used by picklist.
         const processedOrders = orders.map(order => {
-            let totalWeight = 0;
-            let isKleinpaket = true; 
-            
-            if (order.items && order.items.length > 0) {
-                for (const item of order.items) {
-                    // Fallback to 0.5kg if weight is missing or 0
-                    const weight = (item.product?.weight && item.product.weight > 0) ? item.product.weight : 0.5;
-                    totalWeight += (weight * item.quantity);
-                }
-            } else {
-                isKleinpaket = true;
-            }
-            
-            // Automatically determine if it's a Big order (DHL) or Small order
-            // Since product weights are 0, we use price as a proxy for "Bara order" vs "Chota order"
-            if (order.total_price > 20) {
-                isKleinpaket = false; // DHL
-            }
-            if (totalWeight > 1) {
-                isKleinpaket = false; // DHL
-            }
-
-            // 31622 is DHL, 31621 is Small Package
-            const calculatedProvider = isKleinpaket ? 300000000031621 : 300000000031622;
-            const finalProvider = (!order.shipping_provider || String(order.shipping_provider).trim() === '') ? calculatedProvider : order.shipping_provider;
+            const shipping = classifyOrderShipping(order.items || [], order.shipping_provider);
 
             const sanitizedItems = order.items ? order.items.map((item: any) => {
                 let sku = item.sku;
@@ -59,8 +36,7 @@ router.get('/', async (req, res) => {
             return {
                 ...order,
                 items: sanitizedItems,
-                shipping_provider: finalProvider,
-                shipping_weight: totalWeight
+                ...shipping
             };
         });
 

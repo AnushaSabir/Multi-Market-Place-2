@@ -94,7 +94,7 @@ router.post('/batch', async (req, res) => {
  * Usually called by Vercel Cron or similar
  * Requires CRON_SECRET for security
  */
-router.post('/cron', async (req, res) => {
+router.all('/cron', async (req, res) => {
     const authHeader = req.headers['authorization'];
     const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
 
@@ -137,7 +137,7 @@ router.post('/cron', async (req, res) => {
 /**
  * cron trigger for order sync across all marketplaces
  */
-router.post('/cron/orders', async (req, res) => {
+router.all('/cron/orders', async (req, res) => {
     const authHeader = req.headers['authorization'];
     const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
 
@@ -180,7 +180,7 @@ router.post('/cron/orders', async (req, res) => {
 /**
  * monthly cron trigger for auto-pushing Otto products to eBay and Kaufland
  */
-router.post('/cron-monthly-push', async (req, res) => {
+router.all('/cron-monthly-push', async (req, res) => {
     const authHeader = req.headers['authorization'];
     const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
 

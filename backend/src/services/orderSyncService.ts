@@ -14,6 +14,70 @@ export interface ParsedOrder {
 
 
 export class OrderSyncService {
+    private static async findProductForOrderItem(sku?: string) {
+        if (!sku) return null;
+
+        let { data: prod } = await supabase
+            .from('products')
+            .select('id, sku, title')
+            .eq('sku', sku)
+            .maybeSingle();
+
+        if (!prod) {
+            const { data: prodByEan } = await supabase
+                .from('products')
+                .select('id, sku, title')
+                .eq('ean', sku)
+                .maybeSingle();
+            prod = prodByEan;
+        }
+
+        return prod;
+    }
+
+    private static normalizeOrderItem(item: { title?: string, sku?: string, quantity?: number, unit_price?: number, price?: number }, prod: any) {
+        let finalSku = item.sku || 'UNKNOWN';
+        let finalTitle = item.title || 'UNKNOWN';
+
+        if (prod) {
+            finalSku = prod.sku || finalSku;
+            const isNumericSku = prod.sku && /^\d+$/.test(prod.sku);
+            finalTitle = (!isNumericSku && prod.sku) ? prod.sku : (prod.title || finalTitle);
+        }
+
+        return {
+            product_id: prod?.id || null,
+            title: finalTitle,
+            sku: finalSku,
+            quantity: item.quantity || 1,
+            unit_price: item.unit_price ?? item.price ?? 0
+        };
+    }
+
+    private static async replaceOrderItems(orderId: string, items: Array<{ title?: string, sku?: string, quantity?: number, unit_price?: number, price?: number }>) {
+        if (!items || items.length === 0) return;
+
+        const { error: deleteErr } = await supabase
+            .from('order_items')
+            .delete()
+            .eq('order_id', orderId);
+
+        if (deleteErr) throw new Error(`Failed to refresh order items: ${deleteErr.message}`);
+
+        for (const item of items) {
+            const prod = await this.findProductForOrderItem(item.sku);
+            const normalizedItem = this.normalizeOrderItem(item, prod);
+
+            const { error: insertErr } = await supabase.from('order_items').insert({
+                order_id: orderId,
+                ...normalizedItem
+            });
+
+            if (insertErr) {
+                console.error('FAILED TO INSERT ITEM:', item.sku, normalizedItem.sku, insertErr);
+            }
+        }
+    }
     
     /**
      * Map a Shopify Order Webhook to Billbee Structure and save to DB
@@ -98,9 +162,28 @@ export class OrderSyncService {
                 .eq('marketplace', 'shopify')
                 .single();
 
+            const lineItems = payload.line_items || [];
+
             if (existingOrder) {
-                console.log(`[OrderSync] Shopify order ${orderNumber} already exists. Skipping creation.`);
-                return { success: true, message: 'Already exists' };
+                await supabase.from('orders').update({
+                    customer_id: customerId,
+                    invoice_address_id: invoiceAddrId,
+                    delivery_address_id: deliveryAddrId,
+                    state: payload.financial_status === 'paid' ? 'paid' : 'pending',
+                    total_price: parseFloat(payload.total_price || '0'),
+                    currency: payload.currency || 'EUR',
+                    updated_at: new Date().toISOString()
+                }).eq('id', existingOrder.id);
+
+                await this.replaceOrderItems(existingOrder.id, lineItems.map((item: any) => ({
+                    title: item.title,
+                    sku: item.sku || 'UNKNOWN',
+                    quantity: item.quantity || 1,
+                    unit_price: parseFloat(item.price || '0')
+                })));
+
+                console.log(`[OrderSync] Refreshed existing Shopify order ${orderNumber}.`);
+                return { success: true, message: 'Updated existing order' };
             }
 
             const { data: newOrder, error: orderErr } = await supabase
@@ -121,7 +204,6 @@ export class OrderSyncService {
             }
 
             // 4. Create Order Items
-            const lineItems = payload.line_items || [];
             for (const item of lineItems) {
                 // Find internal product ID by SKU
                 const sku = item.sku;
@@ -232,11 +314,28 @@ export class OrderSyncService {
                 .select('id')
                 .eq('order_number', order.order_number)
                 .eq('marketplace', order.marketplace)
-                .single();
+                .maybeSingle();
 
             if (existingOrder) {
-                // Update state if needed
-                await supabase.from('orders').update({ state: order.state }).eq('id', existingOrder.id);
+                const updatePayload: any = {
+                    state: order.state,
+                    total_price: order.total_price,
+                    currency: order.currency,
+                    updated_at: new Date().toISOString()
+                };
+
+                if (customerId) updatePayload.customer_id = customerId;
+                if (invoiceAddrId) updatePayload.invoice_address_id = invoiceAddrId;
+                if (deliveryAddrId) updatePayload.delivery_address_id = deliveryAddrId;
+
+                const { error: updateErr } = await supabase
+                    .from('orders')
+                    .update(updatePayload)
+                    .eq('id', existingOrder.id);
+
+                if (updateErr) throw new Error(updateErr.message);
+
+                await this.replaceOrderItems(existingOrder.id, order.items);
                 return { success: true, message: 'Updated existing order' };
             }
 
@@ -254,41 +353,7 @@ export class OrderSyncService {
             if (orderErr || !newOrder) throw new Error(orderErr?.message || 'Failed to create order');
 
             // 4. Items
-            for (const item of order.items) {
-                let internalProductId = null;
-                let finalSku = item.sku;
-                let finalTitle = item.title;
-
-                if (item.sku) {
-                    // Try SKU first
-                    let { data: prod } = await supabase.from('products').select('id, sku, title').eq('sku', item.sku).single();
-                    
-                    // If not found by SKU, try EAN
-                    if (!prod) {
-                        const { data: prodByEan } = await supabase.from('products').select('id, sku, title').eq('ean', item.sku).single();
-                        if (prodByEan) prod = prodByEan;
-                    }
-
-                    if (prod) {
-                        internalProductId = prod.id;
-                        // Override long title/EAN with the short SKU (which Billbee uses as product name)
-                        finalSku = prod.sku || item.sku || 'UNKNOWN';
-                        const isNumericSku = prod.sku && /^\d+$/.test(prod.sku);
-                        finalTitle = (!isNumericSku && prod.sku) ? prod.sku : (prod.title || item.title || 'UNKNOWN'); 
-                    }
-                }
-                
-                const { error: insertErr } = await supabase.from('order_items').insert({
-                    order_id: newOrder.id,
-                    product_id: internalProductId,
-                    ...item,
-                    sku: finalSku,
-                    title: finalTitle
-                });
-                if (insertErr) {
-                    console.error('FAILED TO INSERT ITEM:', item.sku, finalSku, insertErr);
-                }
-            }
+            await this.replaceOrderItems(newOrder.id, order.items);
 
             return { success: true };
         } catch (error: any) {
