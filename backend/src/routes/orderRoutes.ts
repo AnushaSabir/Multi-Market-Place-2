@@ -7,10 +7,49 @@ import { classifyOrderShipping } from '../services/shippingClassifier';
 
 const router = express.Router();
 
+function getStartOfTodayInTimeZone(timeZone: string) {
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(now);
+
+    const year = Number(parts.find(part => part.type === 'year')?.value);
+    const month = Number(parts.find(part => part.type === 'month')?.value);
+    const day = Number(parts.find(part => part.type === 'day')?.value);
+    const utcGuess = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
+    const zonedParts = new Intl.DateTimeFormat('en-CA', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    }).formatToParts(utcGuess);
+
+    const zonedAsUtc = Date.UTC(
+        Number(zonedParts.find(part => part.type === 'year')?.value),
+        Number(zonedParts.find(part => part.type === 'month')?.value) - 1,
+        Number(zonedParts.find(part => part.type === 'day')?.value),
+        Number(zonedParts.find(part => part.type === 'hour')?.value),
+        Number(zonedParts.find(part => part.type === 'minute')?.value),
+        Number(zonedParts.find(part => part.type === 'second')?.value)
+    );
+
+    return new Date(utcGuess.getTime() - (zonedAsUtc - utcGuess.getTime()));
+}
+
 // Get all orders (with customer info)
 router.get('/', async (req, res) => {
     try {
-        const { data: orders, error } = await supabase
+        const showAll = req.query.all === 'true';
+        const startOfDay = getStartOfTodayInTimeZone('Europe/Berlin');
+
+        let query = supabase
             .from('orders')
             .select(`
                 *,
@@ -18,6 +57,12 @@ router.get('/', async (req, res) => {
                 items:order_items(*, product:products(*))
             `)
             .order('created_at', { ascending: false });
+
+        if (!showAll) {
+            query = query.gte('created_at', startOfDay.toISOString());
+        }
+
+        const { data: orders, error } = await query;
 
         if (error) throw new Error(error.message);
 
@@ -44,7 +89,12 @@ router.get('/', async (req, res) => {
             };
         });
 
-        res.json({ success: true, test_version: '1.0.3', data: processedOrders });
+        res.json({
+            success: true,
+            test_version: '1.0.4',
+            date_filter: showAll ? 'all' : startOfDay.toISOString(),
+            data: processedOrders
+        });
     } catch (e: any) {
         res.status(500).json({ success: false, error: e.message });
     }
