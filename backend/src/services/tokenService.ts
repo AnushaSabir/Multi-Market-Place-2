@@ -114,9 +114,11 @@ export class TokenManger {
                     ? 'https://sandbox.api.otto.market/v1/token' 
                     : 'https://api.otto.market/v1/token';
 
+                const ottoScope = process.env.OTTO_SCOPES || 'orders shipments products availability';
+
                 const res = await axios.post(tokenUrl, qs.stringify({
                     grant_type: 'client_credentials',
-                    scope: 'products availability'
+                    scope: ottoScope
                 }), {
                     headers: {
                         'Authorization': `Basic ${auth}`,

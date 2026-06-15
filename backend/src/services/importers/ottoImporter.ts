@@ -7,6 +7,25 @@ import { getPicklistCutoffDate, mapOttoOrderState } from '../picklistEligibility
 export class OttoImporter extends BaseImporter {
     marketplace: 'otto' = 'otto';
 
+    private async getWithRetry(url: string, headers: Record<string, string>, retries = 3): Promise<any> {
+        for (let attempt = 0; attempt <= retries; attempt++) {
+            try {
+                return await axios.get(url, { headers });
+            } catch (error: any) {
+                const status = error.response?.status;
+                if (status !== 429 || attempt === retries) throw error;
+
+                const retryAfter = Number(error.response?.headers?.['retry-after']);
+                const delayMs = Number.isFinite(retryAfter) && retryAfter > 0
+                    ? retryAfter * 1000
+                    : (attempt + 1) * 10000;
+
+                console.warn(`[OttoImporter] Rate limited. Retrying in ${Math.round(delayMs / 1000)}s...`);
+                await new Promise(resolve => setTimeout(resolve, delayMs));
+            }
+        }
+    }
+
     protected async fetchProductsFromApi(accessToken: string): Promise<ImportedProduct[] | number> {
         console.log("Fetching all products from Otto API...");
 
@@ -117,11 +136,9 @@ export class OttoImporter extends BaseImporter {
                 if (BaseImporter.stopImport) break;
 
                 console.log(`[OttoImporter] Fetching orders page ${pageCount}...`);
-                const response: any = await axios.get(url, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Accept': 'application/json'
-                    }
+                const response: any = await this.getWithRetry(url, {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Accept': 'application/json'
                 });
 
                 const orders = response.data.resources || response.data || [];
