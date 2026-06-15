@@ -10,6 +10,16 @@ import { BillbeeReadyOrderImporter } from '../services/billbeeReadyOrderImporter
 
 const router = express.Router();
 
+function isAuthorizedCronOrInternal(req: express.Request) {
+    const authHeader = req.headers['authorization'];
+    const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
+    const apiKey = req.headers['x-api-key'] || req.query.apiKey;
+
+    if (process.env.CRON_SECRET && authHeader === expectedSecret) return true;
+    if (process.env.INTERNAL_API_KEY && apiKey === process.env.INTERNAL_API_KEY) return true;
+    return !process.env.CRON_SECRET && !process.env.INTERNAL_API_KEY;
+}
+
 // GET /api/sync/status
 router.get('/status', async (req, res) => {
     const { page = 1, limit = 50 } = req.query;
@@ -96,11 +106,7 @@ router.post('/batch', async (req, res) => {
  * Requires CRON_SECRET for security
  */
 router.all('/cron', async (req, res) => {
-    const authHeader = req.headers['authorization'];
-    const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
-
-    // Basic security check
-    if (process.env.CRON_SECRET && authHeader !== expectedSecret) {
+    if (!isAuthorizedCronOrInternal(req)) {
         console.warn("[Cron] Unauthorized trigger attempt.");
         return res.status(401).json({ error: "Unauthorized" });
     }
@@ -139,11 +145,7 @@ router.all('/cron', async (req, res) => {
  * cron trigger for order sync across all marketplaces
  */
 router.all('/cron/orders', async (req, res) => {
-    const authHeader = req.headers['authorization'];
-    const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
-
-    // Basic security check
-    if (process.env.CRON_SECRET && authHeader !== expectedSecret) {
+    if (!isAuthorizedCronOrInternal(req)) {
         console.warn("[Cron] Unauthorized order sync trigger attempt.");
         return res.status(401).json({ error: "Unauthorized" });
     }
@@ -196,11 +198,7 @@ router.all('/cron/orders', async (req, res) => {
  * monthly cron trigger for auto-pushing Otto products to eBay and Kaufland
  */
 router.all('/cron-monthly-push', async (req, res) => {
-    const authHeader = req.headers['authorization'];
-    const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
-
-    // Basic security check
-    if (process.env.CRON_SECRET && authHeader !== expectedSecret) {
+    if (!isAuthorizedCronOrInternal(req)) {
         console.warn("[Cron] Unauthorized trigger attempt.");
         return res.status(401).json({ error: "Unauthorized" });
     }
