@@ -1,5 +1,7 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 
 dotenv.config();
 
@@ -8,6 +10,7 @@ type ProductRow = {
     quantity: number;
     bucket: 'dhl' | 'small_package' | 'unknown';
     orders: string[];
+    sources: string[];
 };
 
 const BILLBEE_BASE_URL = 'https://api.billbee.io/api/v1';
@@ -42,12 +45,33 @@ function addRow(rows: Map<string, ProductRow>, bucket: ProductRow['bucket'], nam
         name: cleanName,
         quantity,
         bucket,
-        orders: [orderNumber]
+        orders: [orderNumber],
+        sources: []
     });
+}
+
+function addSource(rows: Map<string, ProductRow>, bucket: ProductRow['bucket'], name: string, source?: string) {
+    const key = `${bucket}:${normalizeName(name?.trim() || 'Unknown Item')}`;
+    const row = rows.get(key);
+    if (row && source && !row.sources.includes(source)) {
+        row.sources.push(source);
+    }
 }
 
 function getBillbeeOrderNumber(order: any) {
     return String(order.OrderNumber || order.Id || order.ExternalId || order.ExternalOrderNumber || 'UNKNOWN');
+}
+
+function getBillbeeSource(order: any) {
+    return String(
+        order.ShopName
+        || order.Seller
+        || order.ShopId
+        || order.Marketplace
+        || order.Platform
+        || order.AccountName
+        || 'unknown'
+    );
 }
 
 function getBillbeeItems(order: any) {
@@ -145,10 +169,13 @@ function aggregateBillbee(orders: any[]) {
 
     for (const order of orders) {
         const orderNumber = getBillbeeOrderNumber(order);
+        const source = getBillbeeSource(order);
         const bucket = classifyBillbeeBucket(order);
 
         for (const item of getBillbeeItems(order)) {
-            addRow(rows, bucket, getBillbeeItemName(item), getBillbeeQuantity(item), orderNumber);
+            const name = getBillbeeItemName(item);
+            addRow(rows, bucket, name, getBillbeeQuantity(item), orderNumber);
+            addSource(rows, bucket, name, source);
         }
     }
 
@@ -160,10 +187,13 @@ function aggregateMarketplace(orders: any[]) {
 
     for (const order of orders) {
         const orderNumber = String(order.order_number || order.id || 'UNKNOWN');
+        const source = String(order.marketplace || 'unknown');
         const bucket = order.shipping_bucket || (String(order.dhl_versandart || '').toLowerCase().includes('small') ? 'small_package' : 'dhl');
 
         for (const item of order.items || []) {
-            addRow(rows, bucket, item.display_name || item.sku || item.title, Number(item.quantity || 1), orderNumber);
+            const name = item.display_name || item.sku || item.title;
+            addRow(rows, bucket, name, Number(item.quantity || 1), orderNumber);
+            addSource(rows, bucket, name, source);
         }
     }
 
@@ -196,12 +226,22 @@ function compareRows(billbee: Map<string, ProductRow>, marketplace: Map<string, 
             marketplace: marketplace.get(key)!
         }));
 
+    const report = {
+        generatedAt: new Date().toISOString(),
+        billbee: [...billbee.values()],
+        marketplace: [...marketplace.values()],
+        missingInMarketplace,
+        extraInMarketplace,
+        quantityMismatch
+    };
+
     console.log('\nMissing in Marketplace:');
     console.table(missingInMarketplace.slice(0, 50).map(row => ({
         bucket: row.bucket,
         product: row.name,
         quantity: row.quantity,
-        orders: [...new Set(row.orders)].slice(0, 5).join(', ')
+        orders: [...new Set(row.orders)].slice(0, 5).join(', '),
+        sources: row.sources.join(', ')
     })));
 
     console.log('\nExtra in Marketplace:');
@@ -209,7 +249,8 @@ function compareRows(billbee: Map<string, ProductRow>, marketplace: Map<string, 
         bucket: row.bucket,
         product: row.name,
         quantity: row.quantity,
-        orders: [...new Set(row.orders)].slice(0, 5).join(', ')
+        orders: [...new Set(row.orders)].slice(0, 5).join(', '),
+        sources: row.sources.join(', ')
     })));
 
     console.log('\nQuantity mismatch:');
@@ -217,8 +258,16 @@ function compareRows(billbee: Map<string, ProductRow>, marketplace: Map<string, 
         bucket: billbee.bucket,
         product: billbee.name,
         billbeeQty: billbee.quantity,
-        marketplaceQty: marketplace.quantity
+        marketplaceQty: marketplace.quantity,
+        billbeeSources: billbee.sources.join(', '),
+        marketplaceSources: marketplace.sources.join(', ')
     })));
+
+    const reportsDir = path.resolve(process.cwd(), 'reports');
+    fs.mkdirSync(reportsDir, { recursive: true });
+    const reportPath = path.join(reportsDir, 'billbee-picklist-compare.json');
+    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+    console.log(`\nFull report written to: ${reportPath}`);
 }
 
 async function main() {
