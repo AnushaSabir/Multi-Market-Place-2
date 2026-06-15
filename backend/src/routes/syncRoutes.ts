@@ -6,6 +6,7 @@ import { OttoImporter } from '../services/importers/ottoImporter';
 import { EbayImporter } from '../services/importers/ebayImporter';
 import { KauflandImporter } from '../services/importers/kauflandImporter';
 import { ShopifyImporter } from '../services/importers/shopifyImporter';
+import { BillbeeReadyOrderImporter } from '../services/billbeeReadyOrderImporter';
 
 const router = express.Router();
 
@@ -171,6 +172,20 @@ router.all('/cron/orders', async (req, res) => {
             console.error(`[Cron] Critical order sync failure for ${importer.marketplace}:`, e.message);
             results[importer.marketplace] = { success: false, error: e.message };
         }
+    }
+
+    try {
+        console.log("[Cron] Mirroring Billbee ready orders for picklist validation...");
+        const billbeeResult = await BillbeeReadyOrderImporter.importReadyOrders();
+        results.billbee_ready_orders = {
+            success: billbeeResult.success,
+            count: billbeeResult.count,
+            mirrored: billbeeResult.mirrored,
+            failed: billbeeResult.failed
+        };
+    } catch (e: any) {
+        console.error("[Cron] Billbee ready order mirror failed:", e.message);
+        results.billbee_ready_orders = { success: false, error: e.message };
     }
 
     console.log("[Cron] Batch order sync finished:", JSON.stringify(results));
