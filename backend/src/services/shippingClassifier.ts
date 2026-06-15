@@ -61,6 +61,18 @@ export function classifyOrderShipping(items: ShippingItem[] = [], existingProvid
     let explicitDhl = false;
     let heuristicSmallPackage = false;
     let heuristicDhl = false;
+    let providerSmallPackage = false;
+    let providerDhl = false;
+
+    const providerText = String(existingProvider || '').toLowerCase();
+    if (/small|klein|warenpost|brief|31621/.test(providerText)) {
+        explicitSmallPackage = true;
+        providerSmallPackage = true;
+    }
+    if (/dhl|paket|parcel|31622/.test(providerText) && !/small|klein|warenpost|brief|31621/.test(providerText)) {
+        explicitDhl = true;
+        providerDhl = true;
+    }
 
     for (const item of items) {
         const quantity = Number(item.quantity || 1);
@@ -92,11 +104,13 @@ export function classifyOrderShipping(items: ShippingItem[] = [], existingProvid
 
     let isSmallPackage = totalWeight <= 1;
 
-    if (explicitSmallPackage || heuristicSmallPackage) {
+    if (providerSmallPackage) {
         isSmallPackage = true;
-    }
-
-    if (explicitDhl || heuristicDhl || totalWeight > 1) {
+    } else if (providerDhl) {
+        isSmallPackage = false;
+    } else if (explicitSmallPackage || heuristicSmallPackage) {
+        isSmallPackage = true;
+    } else if (explicitDhl || heuristicDhl || totalWeight > 1) {
         isSmallPackage = false;
     }
 

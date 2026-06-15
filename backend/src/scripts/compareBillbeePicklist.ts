@@ -2,6 +2,7 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import { classifyOrderShipping } from '../services/shippingClassifier';
 
 dotenv.config();
 
@@ -13,7 +14,10 @@ type ProductRow = {
     sources: string[];
 };
 
-const BILLBEE_BASE_URL = 'https://api.billbee.io/api/v1';
+const BILLBEE_BASE_URLS = [
+    process.env.BILLBEE_BASE_URL || 'https://api.billbee.io/api/v1',
+    'https://app.billbee.io/api/v1'
+];
 
 function requiredEnv(name: string) {
     const value = process.env[name];
@@ -63,10 +67,14 @@ function getBillbeeOrderNumber(order: any) {
 }
 
 function getBillbeeSource(order: any) {
+    const shop = order.ShopName || order.Seller || order.Shop || order.ShopInfo;
+    if (typeof shop === 'string') return shop;
+    if (shop?.BillbeeShopName || shop?.Platform) {
+        return [shop.Platform, shop.BillbeeShopName].filter(Boolean).join(' / ');
+    }
+
     return String(
-        order.ShopName
-        || order.Seller
-        || order.ShopId
+        order.ShopId
         || order.Marketplace
         || order.Platform
         || order.AccountName
@@ -96,7 +104,7 @@ function getBillbeeQuantity(item: any) {
     return Number(item.Quantity || item.Amount || item.Qty || 1);
 }
 
-function classifyBillbeeBucket(order: any) {
+function classifyBillbeeBucket(order: any, itemName?: string): ProductRow['bucket'] {
     const text = [
         order.ShippingProviderName,
         order.ShippingProviderProductName,
@@ -110,6 +118,11 @@ function classifyBillbeeBucket(order: any) {
 
     if (/small|klein|warenpost|brief|31621/.test(text)) return 'small_package';
     if (/dhl|paket|parcel|31622/.test(text)) return 'dhl';
+
+    if (itemName) {
+        return classifyOrderShipping([{ title: itemName, sku: itemName }]).shipping_bucket as ProductRow['bucket'];
+    }
+
     return 'unknown';
 }
 
@@ -124,9 +137,31 @@ async function fetchBillbeeOrders() {
     const auth = Buffer.from(`${username}:${password}`).toString('base64');
     const orders: any[] = [];
     let page = 1;
+    let activeBaseUrl = BILLBEE_BASE_URLS[0];
 
     while (page <= 10) {
-        const response = await axios.get(`${BILLBEE_BASE_URL}/orders`, {
+        let response;
+        try {
+            response = await axios.get(`${activeBaseUrl}/orders`, {
+                headers: {
+                    Authorization: `Basic ${auth}`,
+                    'X-Billbee-Api-Key': apiKey,
+                    Accept: 'application/json'
+                },
+                params: {
+                    page,
+                    pageSize: 250,
+                    minOrderDate: minDate.toISOString(),
+                    includePositions: true,
+                    orderStateId: 3
+                }
+            });
+        } catch (error: any) {
+            const fallbackBaseUrl = BILLBEE_BASE_URLS.find(url => url !== activeBaseUrl);
+            if (page === 1 && fallbackBaseUrl && ['ENOTFOUND', 'EAI_AGAIN'].includes(error.code)) {
+                console.warn(`Billbee host unavailable (${activeBaseUrl}); retrying ${fallbackBaseUrl}`);
+                activeBaseUrl = fallbackBaseUrl;
+                response = await axios.get(`${activeBaseUrl}/orders`, {
             headers: {
                 Authorization: `Basic ${auth}`,
                 'X-Billbee-Api-Key': apiKey,
@@ -139,7 +174,11 @@ async function fetchBillbeeOrders() {
                 includePositions: true,
                 orderStateId: 3
             }
-        });
+                });
+            } else {
+                throw error;
+            }
+        }
 
         const pageOrders = response.data?.Data || response.data?.data || [];
         orders.push(...pageOrders);
@@ -170,10 +209,9 @@ function aggregateBillbee(orders: any[]) {
     for (const order of orders) {
         const orderNumber = getBillbeeOrderNumber(order);
         const source = getBillbeeSource(order);
-        const bucket = classifyBillbeeBucket(order);
-
         for (const item of getBillbeeItems(order)) {
             const name = getBillbeeItemName(item);
+            const bucket = classifyBillbeeBucket(order, name);
             addRow(rows, bucket, name, getBillbeeQuantity(item), orderNumber);
             addSource(rows, bucket, name, source);
         }

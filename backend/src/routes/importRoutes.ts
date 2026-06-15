@@ -40,6 +40,23 @@ router.post('/file', upload.single('file'), async (req, res) => {
 import { OttoImporter } from '../services/importers/ottoImporter';
 import { EbayImporter } from '../services/importers/ebayImporter';
 import { KauflandImporter } from '../services/importers/kauflandImporter';
+import { BillbeeReadyOrderImporter } from '../services/billbeeReadyOrderImporter';
+
+// POST /api/import/billbee/orders
+// Temporary bridge for the Billbee replacement test: imports Billbee's ready orders
+// into the marketplace DB so the mobile picklist can be validated against Billbee.
+router.post('/billbee/orders', async (req, res) => {
+    try {
+        const result = await BillbeeReadyOrderImporter.importReadyOrders();
+        if (result.success) {
+            res.json({ message: 'Billbee ready orders imported', count: result.count });
+        } else {
+            res.status(207).json({ message: 'Billbee ready orders partially imported', count: result.count, failed: result.failed, errors: result.errors });
+        }
+    } catch (error: any) {
+        res.status(500).json({ error: 'Billbee ready orders import failed', details: error.response?.data || error.message });
+    }
+});
 
 // POST /api/import/otto
 router.post('/otto', async (req, res) => {

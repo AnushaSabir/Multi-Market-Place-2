@@ -2,6 +2,7 @@ import { BaseImporter, ImportedProduct } from './baseImporter';
 import axios from 'axios';
 import { TokenManger } from '../tokenService';
 import { OrderSyncService, ParsedOrder } from '../orderSyncService';
+import { getPicklistCutoffDate, mapOttoOrderState } from '../picklistEligibility';
 
 export class OttoImporter extends BaseImporter {
     marketplace: 'otto' = 'otto';
@@ -107,7 +108,8 @@ export class OttoImporter extends BaseImporter {
         let totalProcessed = 0;
         const isSandbox = process.env.OTTO_ENV === 'sandbox';
         const baseUrl = isSandbox ? 'https://sandbox.api.otto.market' : 'https://api.otto.market';
-        let url: string | null = `${baseUrl}/v4/orders?limit=100`; // Assuming v4/orders endpoint
+        const fromDate = getPicklistCutoffDate().toISOString();
+        let url: string | null = `${baseUrl}/v4/orders?limit=100&fromDate=${encodeURIComponent(fromDate)}`;
         let pageCount = 1;
 
         try {
@@ -156,7 +158,7 @@ export class OttoImporter extends BaseImporter {
                                 city: order.deliveryAddress?.city || '',
                                 country_code: order.deliveryAddress?.countryCode || ''
                             },
-                            state: order.orderLifecycleStatus === 'SENT' ? 'shipped' : order.orderLifecycleStatus === 'CANCELLED' ? 'cancelled' : 'pending',
+                            state: mapOttoOrderState(order.orderLifecycleStatus || order.status || order.state),
                             total_price: parseFloat(order.amount?.amount || order.totalAmount || '0'),
                             currency: order.amount?.currency || 'EUR',
                             items: (order.positionItems || order.lineItems || []).map((item: any) => ({

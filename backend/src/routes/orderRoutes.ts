@@ -4,6 +4,7 @@ import { DhlService } from '../services/dhlService';
 import { InvoiceService } from '../services/invoiceService';
 import { CancellationService } from '../services/cancellationService';
 import { classifyOrderShipping } from '../services/shippingClassifier';
+import { getPicklistCutoffDate, isPicklistEligibleOrder } from '../services/picklistEligibility';
 
 const router = express.Router();
 
@@ -56,6 +57,7 @@ router.get('/', async (req, res) => {
                 customer:customers(first_name, last_name, email),
                 items:order_items(*, product:products(*))
             `)
+            .gte('created_at', getPicklistCutoffDate().toISOString())
             .order('created_at', { ascending: false });
 
         if (filterToday) {
@@ -67,7 +69,7 @@ router.get('/', async (req, res) => {
         if (error) throw new Error(error.message);
 
         // Process orders to calculate the same DHL vs Small Package split used by picklist.
-        const processedOrders = orders.map(order => {
+        const processedOrders = orders.filter(order => isPicklistEligibleOrder(order)).map(order => {
             const shipping = classifyOrderShipping(order.items || [], order.shipping_provider);
 
             const sanitizedItems = order.items ? order.items.map((item: any) => {
@@ -75,10 +77,11 @@ router.get('/', async (req, res) => {
                 if (sku && /^\d+$/.test(sku)) {
                     sku = item.title || item.product?.title || sku;
                 }
+                const meaningfulSku = sku && sku !== 'UNKNOWN' ? sku : '';
                 return {
                     ...item,
                     sku,
-                    display_name: item.title || sku || item.product?.title || 'Unknown Item'
+                    display_name: meaningfulSku || item.title || item.product?.title || 'Unknown Item'
                 };
             }) : [];
 

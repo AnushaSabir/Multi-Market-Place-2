@@ -1,6 +1,7 @@
 import express from 'express';
 import { supabase } from '../database/supabaseClient';
 import { classifyOrderShipping } from '../services/shippingClassifier';
+import { getPicklistCutoffDate, isPicklistEligibleOrder } from '../services/picklistEligibility';
 
 const router = express.Router();
 
@@ -55,7 +56,8 @@ router.get('/', async (req, res) => {
                 invoice_address:addresses!invoice_address_id(*),
                 delivery_address:addresses!delivery_address_id(*),
                 items:order_items(*, product:products(*))
-            `).eq('state', 'paid')
+            `).in('state', ['paid', 'ready_to_ship', 'ready_to_pick'])
+            .gte('created_at', getPicklistCutoffDate().toISOString())
             .order('created_at', { ascending: false });
 
         if (filterToday) {
@@ -67,7 +69,7 @@ router.get('/', async (req, res) => {
         if (error) throw new Error(error.message);
 
         // Enhance data for Picklist. Incomplete orders without line items are not pickable.
-        const enhancedOrders = orders.filter((order: any) => order.items && order.items.length > 0).map((order: any) => {
+        const enhancedOrders = orders.filter((order: any) => isPicklistEligibleOrder(order)).map((order: any) => {
             const shipping = classifyOrderShipping(order.items, order.shipping_provider);
             const totalQuantity = shipping.total_quantity;
             const isSingleItem = order.items.length === 1 && totalQuantity === 1;
@@ -77,10 +79,11 @@ router.get('/', async (req, res) => {
                 if (sku && /^\d+$/.test(sku)) {
                     sku = item.title || item.product?.title || sku;
                 }
+                const meaningfulSku = sku && sku !== 'UNKNOWN' ? sku : '';
                 return {
                     ...item,
                     sku,
-                    display_name: item.title || sku || item.product?.title || 'Unknown Item'
+                    display_name: meaningfulSku || item.title || item.product?.title || 'Unknown Item'
                 };
             });
 

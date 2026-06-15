@@ -1,4 +1,5 @@
 import { supabase } from '../database/supabaseClient';
+import { mapShopifyOrderState } from './picklistEligibility';
 
 export interface ParsedOrder {
     order_number: string;
@@ -8,6 +9,8 @@ export interface ParsedOrder {
     billing_address?: { first_name?: string, last_name?: string, company?: string, street?: string, house_number?: string, zip?: string, city?: string, country_code?: string };
     shipping_address?: { first_name?: string, last_name?: string, company?: string, street?: string, house_number?: string, zip?: string, city?: string, country_code?: string };
     state: string; 
+    shipping_provider?: string | number | null;
+    shipping_product?: string | null;
     total_price: number;
     currency: string;
     items: Array<{ title: string, sku: string, quantity: number, unit_price: number }>;
@@ -171,7 +174,7 @@ export class OrderSyncService {
                     customer_id: customerId,
                     invoice_address_id: invoiceAddrId,
                     delivery_address_id: deliveryAddrId,
-                    state: payload.financial_status === 'paid' ? 'paid' : 'pending',
+                    state: mapShopifyOrderState(payload),
                     total_price: parseFloat(payload.total_price || '0'),
                     currency: payload.currency || 'EUR',
                     created_at: orderCreatedAt,
@@ -197,7 +200,7 @@ export class OrderSyncService {
                     customer_id: customerId,
                     invoice_address_id: invoiceAddrId,
                     delivery_address_id: deliveryAddrId,
-                    state: payload.financial_status === 'paid' ? 'paid' : 'pending',
+                    state: mapShopifyOrderState(payload),
                     total_price: parseFloat(payload.total_price || '0'),
                     currency: payload.currency || 'EUR',
                     created_at: orderCreatedAt
@@ -332,6 +335,8 @@ export class OrderSyncService {
                 if (customerId) updatePayload.customer_id = customerId;
                 if (invoiceAddrId) updatePayload.invoice_address_id = invoiceAddrId;
                 if (deliveryAddrId) updatePayload.delivery_address_id = deliveryAddrId;
+                if (order.shipping_provider) updatePayload.shipping_provider = String(order.shipping_provider);
+                if (order.shipping_product) updatePayload.shipping_product = order.shipping_product;
 
                 const { error: updateErr } = await supabase
                     .from('orders')
@@ -351,6 +356,8 @@ export class OrderSyncService {
                 invoice_address_id: invoiceAddrId,
                 delivery_address_id: deliveryAddrId,
                 state: order.state,
+                shipping_provider: order.shipping_provider ? String(order.shipping_provider) : null,
+                shipping_product: order.shipping_product || null,
                 total_price: order.total_price,
                 currency: order.currency,
                 created_at: order.created_at || new Date().toISOString()
