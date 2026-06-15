@@ -93,7 +93,7 @@ export abstract class BaseExporter {
                 .from('marketplace_products')
                 .select(`
                     external_id,
-                    products ( sku )
+                    products ( sku, ean, images )
                 `)
                 .eq('product_id', productId)
                 .eq('marketplace', this.marketplace)
@@ -123,8 +123,8 @@ export abstract class BaseExporter {
                     .update({
                         last_synced_at: new Date().toISOString(),
                         sync_status: 'synced',
-                        ...(updates.price ? { price: updates.price } : {}),
-                        ...(updates.quantity ? { quantity: updates.quantity } : {})
+                        ...(updates.price !== undefined ? { price: updates.price } : {}),
+                        ...(updates.quantity !== undefined ? { quantity: updates.quantity } : {})
                     })
                     .eq('product_id', productId)
                     .eq('marketplace', this.marketplace);

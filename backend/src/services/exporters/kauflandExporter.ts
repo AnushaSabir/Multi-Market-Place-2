@@ -100,12 +100,13 @@ export class KauflandExporter extends BaseExporter {
             }
 
             // 1. Push Product Data (Images, Title, Description) if EAN is available
-            if (updates.ean && (updates.title || updates.description || (updates.images && updates.images.length > 0))) {
+            const cleanImages = Array.isArray(updates.images) ? updates.images.filter(Boolean) : [];
+            if (updates.ean && (updates.title || updates.description || cleanImages.length > 0)) {
                 const productDataBody = {
                     attributes: {
                         ...(updates.title ? { title: [updates.title] } : {}),
                         ...(updates.description ? { description: [updates.description] } : {}),
-                        ...((updates.images && updates.images.length > 0) ? { picture: updates.images } : {}),
+                        ...(cleanImages.length > 0 ? { picture: cleanImages } : {}),
                         manufacturer: ["VIVITAR"]
                     }
                 };
@@ -133,7 +134,7 @@ export class KauflandExporter extends BaseExporter {
             }
 
             const body: any = {};
-            if (updates.price) body.listing_price = Math.round(updates.price * 100);
+            if (updates.price !== undefined) body.listing_price = Math.round(updates.price * 100);
             if (updates.quantity !== undefined) body.amount = updates.quantity;
 
             if (Object.keys(body).length > 0) {
@@ -170,6 +171,8 @@ export class KauflandExporter extends BaseExporter {
                 }
                 
                 // 3. Update all collected units
+                const patchErrors: string[] = [];
+                let patchedCount = 0;
                 for (const uid of unitIdsToUpdate) {
                     try {
                         const timestamp = Math.floor(Date.now() / 1000).toString();
@@ -190,9 +193,16 @@ export class KauflandExporter extends BaseExporter {
                             }
                         });
                         console.log(`[Kaufland] Successfully patched unit ${uid}`);
+                        patchedCount++;
                     } catch (patchErr: any) {
+                        const msg = patchErr.response?.data ? JSON.stringify(patchErr.response.data) : patchErr.message;
+                        patchErrors.push(`${uid}: ${msg}`);
                         console.warn(`[Kaufland] Failed to patch unit ${uid}:`, patchErr.response?.data || patchErr.message);
                     }
+                }
+
+                if (patchedCount === 0 && patchErrors.length > 0) {
+                    return { success: false, error: `No Kaufland units were updated. ${patchErrors.join(' | ')}` };
                 }
             }
 
