@@ -43,7 +43,7 @@ app.get('/health', (req, res) => {
             supabase: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
             internalApiKey: Boolean(process.env.INTERNAL_API_KEY),
             billbeeCredentials: Boolean(process.env.BILLBEE_API_KEY && process.env.BILLBEE_USERNAME && process.env.BILLBEE_PASS),
-            billbeeMirrorEnabled: process.env.BILLBEE_MIRROR_PICKLIST !== 'false',
+            billbeeMirrorEnabled: process.env.BILLBEE_MIRROR_PICKLIST === 'true',
             ottoCredentials: Boolean(process.env.OTTO_CLIENT_ID && process.env.OTTO_CLIENT_SECRET)
         }
     });

@@ -48,6 +48,10 @@ function getStartOfTodayInTimeZone(timeZone: string) {
 router.get('/', async (req, res) => {
     try {
         const filterToday = req.query.today === 'true';
+        const stateFilter = typeof req.query.state === 'string' ? req.query.state : undefined;
+        const marketplaceFilter = typeof req.query.marketplace === 'string' ? req.query.marketplace : undefined;
+        const search = typeof req.query.search === 'string' ? req.query.search.trim().toLowerCase() : '';
+        const shippingBucketFilter = typeof req.query.shipping_bucket === 'string' ? req.query.shipping_bucket : undefined;
         const startOfDay = getStartOfTodayInTimeZone('Europe/Berlin');
 
         let query = supabase
@@ -60,6 +64,20 @@ router.get('/', async (req, res) => {
             .gte('created_at', getPicklistCutoffDate().toISOString())
             .order('created_at', { ascending: false });
 
+        if (stateFilter && stateFilter !== 'all') {
+            if (stateFilter === 'active') {
+                query = query.in('state', ['paid', 'ready_to_ship', 'ready_to_pick']);
+            } else if (stateFilter === 'archived') {
+                query = query.in('state', ['picked', 'shipped', 'cancelled', 'pending']);
+            } else {
+                query = query.eq('state', stateFilter);
+            }
+        }
+
+        if (marketplaceFilter && marketplaceFilter !== 'all') {
+            query = query.eq('marketplace', marketplaceFilter);
+        }
+
         if (filterToday) {
             query = query.gte('created_at', startOfDay.toISOString());
         }
@@ -69,7 +87,7 @@ router.get('/', async (req, res) => {
         if (error) throw new Error(error.message);
 
         // Process orders to calculate the same DHL vs Small Package split used by picklist.
-        const processedOrders = orders.filter(order => isPicklistEligibleOrder(order)).map(order => {
+        const processedOrders = orders.map(order => {
             const shipping = classifyOrderShipping(order.items || [], order.shipping_provider);
 
             const sanitizedItems = order.items ? order.items.map((item: any) => {
@@ -90,12 +108,46 @@ router.get('/', async (req, res) => {
                 items: sanitizedItems,
                 ...shipping
             };
+        }).filter((order: any) => {
+            if (stateFilter === 'active' || !stateFilter) {
+                if (!isPicklistEligibleOrder(order)) return false;
+            }
+
+            if (shippingBucketFilter && shippingBucketFilter !== 'all' && order.shipping_bucket !== shippingBucketFilter) {
+                return false;
+            }
+
+            if (!search) return true;
+
+            const searchableText = [
+                order.order_number,
+                order.marketplace,
+                order.state,
+                order.customer?.first_name,
+                order.customer?.last_name,
+                order.customer?.email,
+                ...(order.items || []).flatMap((item: any) => [
+                    item.sku,
+                    item.title,
+                    item.display_name,
+                    item.product?.sku,
+                    item.product?.title
+                ])
+            ].filter(Boolean).join(' ').toLowerCase();
+
+            return searchableText.includes(search);
         });
 
         res.json({
             success: true,
             test_version: '1.0.4',
             date_filter: filterToday ? startOfDay.toISOString() : 'ready_to_pick',
+            filters: {
+                state: stateFilter || 'active',
+                marketplace: marketplaceFilter || 'all',
+                shipping_bucket: shippingBucketFilter || 'all',
+                search
+            },
             data: processedOrders
         });
     } catch (e: any) {

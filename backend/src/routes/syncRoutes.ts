@@ -183,18 +183,25 @@ router.all('/cron/orders', async (req, res) => {
         }
     }
 
-    try {
-        console.log("[Cron] Mirroring Billbee ready orders for picklist validation...");
-        const billbeeResult = await BillbeeReadyOrderImporter.importReadyOrders();
+    if (process.env.BILLBEE_MIRROR_PICKLIST === 'true') {
+        try {
+            console.log("[Cron] Mirroring Billbee ready orders for picklist validation...");
+            const billbeeResult = await BillbeeReadyOrderImporter.importReadyOrders();
+            results.billbee_ready_orders = {
+                success: billbeeResult.success,
+                count: billbeeResult.count,
+                mirrored: billbeeResult.mirrored,
+                failed: billbeeResult.failed
+            };
+        } catch (e: any) {
+            console.error("[Cron] Billbee ready order mirror failed:", e.message);
+            results.billbee_ready_orders = { success: false, error: e.message };
+        }
+    } else {
         results.billbee_ready_orders = {
-            success: billbeeResult.success,
-            count: billbeeResult.count,
-            mirrored: billbeeResult.mirrored,
-            failed: billbeeResult.failed
+            skipped: true,
+            reason: "Set BILLBEE_MIRROR_PICKLIST=true to enable Billbee validation mirror"
         };
-    } catch (e: any) {
-        console.error("[Cron] Billbee ready order mirror failed:", e.message);
-        results.billbee_ready_orders = { success: false, error: e.message };
     }
 
     console.log("[Cron] Batch order sync finished:", JSON.stringify(results));
