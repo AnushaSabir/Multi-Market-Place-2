@@ -5,15 +5,5 @@
             "source": "/api/(.*)",
             "destination": "/api/index.ts"
         }
-    ],
-    "crons": [
-        {
-            "path": "/api/sync/cron",
-            "schedule": "0 0 * * *"
-        },
-        {
-            "path": "/api/sync/cron/orders",
-            "schedule": "*/10 * * * *"
-        }
     ]
 }
