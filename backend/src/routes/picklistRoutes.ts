@@ -106,6 +106,67 @@ router.get('/', async (req, res) => {
     }
 });
 
+// GET /api/picklist/summary
+// Lightweight diagnostics to verify which backend/data the app is reading.
+router.get('/summary', async (req, res) => {
+    try {
+        const { data: orders, error } = await supabase
+            .from('orders')
+            .select(`
+                id,
+                order_number,
+                marketplace,
+                state,
+                shipping_provider,
+                created_at,
+                updated_at,
+                items:order_items(*, product:products(*))
+            `).in('state', ['paid', 'ready_to_ship', 'ready_to_pick'])
+            .gte('created_at', getPicklistCutoffDate().toISOString())
+            .order('created_at', { ascending: false });
+
+        if (error) throw new Error(error.message);
+
+        const eligibleOrders = (orders || []).filter((order: any) => isPicklistEligibleOrder(order));
+        const summary = eligibleOrders.reduce((acc: any, order: any) => {
+            const shipping = classifyOrderShipping(order.items || [], order.shipping_provider);
+            const bucket = shipping.shipping_bucket || 'unknown';
+            const marketplace = order.marketplace || 'unknown';
+
+            acc.buckets[bucket] = (acc.buckets[bucket] || 0) + 1;
+            acc.quantities[bucket] = (acc.quantities[bucket] || 0) + shipping.total_quantity;
+            acc.marketplaces[marketplace] = (acc.marketplaces[marketplace] || 0) + 1;
+            return acc;
+        }, {
+            buckets: {},
+            quantities: {},
+            marketplaces: {}
+        });
+
+        res.json({
+            success: true,
+            commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 'local',
+            generated_at: new Date().toISOString(),
+            cutoff: getPicklistCutoffDate().toISOString(),
+            total_orders: eligibleOrders.length,
+            dhl_orders: summary.buckets.dhl || 0,
+            small_package_orders: summary.buckets.small_package || 0,
+            unknown_orders: summary.buckets.unknown || 0,
+            quantities: summary.quantities,
+            marketplaces: summary.marketplaces,
+            latest_orders: eligibleOrders.slice(0, 10).map((order: any) => ({
+                order_number: order.order_number,
+                marketplace: order.marketplace,
+                state: order.state,
+                created_at: order.created_at,
+                item_count: order.items?.length || 0
+            }))
+        });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // POST /api/picklist/:id/pick
 // Mark order as picked
 router.post('/:id/pick', async (req, res) => {

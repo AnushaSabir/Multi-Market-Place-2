@@ -34,7 +34,19 @@ app.use((req, res, next) => {
 
 // Public Health Check
 app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+    res.status(200).json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 'local',
+        environment: process.env.VERCEL_ENV || process.env.NODE_ENV || 'local',
+        checks: {
+            supabase: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+            internalApiKey: Boolean(process.env.INTERNAL_API_KEY),
+            billbeeCredentials: Boolean(process.env.BILLBEE_API_KEY && process.env.BILLBEE_USERNAME && process.env.BILLBEE_PASS),
+            billbeeMirrorEnabled: process.env.BILLBEE_MIRROR_PICKLIST !== 'false',
+            ottoCredentials: Boolean(process.env.OTTO_CLIENT_ID && process.env.OTTO_CLIENT_SECRET)
+        }
+    });
 });
 
 import productRoutes from './routes/productRoutes';
