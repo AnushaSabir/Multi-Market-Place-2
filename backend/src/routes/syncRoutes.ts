@@ -10,6 +10,13 @@ import { BillbeeReadyOrderImporter } from '../services/billbeeReadyOrderImporter
 
 const router = express.Router();
 
+const orderImporters = {
+    otto: () => new OttoImporter(),
+    ebay: () => new EbayImporter(),
+    kaufland: () => new KauflandImporter(),
+    shopify: () => new ShopifyImporter()
+};
+
 function isAuthorizedCronOrInternal(req: express.Request) {
     const authHeader = req.headers['authorization'];
     const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
@@ -192,6 +199,60 @@ router.all('/cron/orders', async (req, res) => {
 
     console.log("[Cron] Batch order sync finished:", JSON.stringify(results));
     res.json({ message: "Cron order sync finished", results });
+});
+
+/**
+ * small single-source order sync for serverless/external cron jobs
+ */
+router.all('/cron/orders/:source', async (req, res) => {
+    if (!isAuthorizedCronOrInternal(req)) {
+        console.warn("[Cron] Unauthorized single-source order sync trigger attempt.");
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const source = String(req.params.source || '').toLowerCase();
+
+    try {
+        if (source === 'billbee') {
+            console.log("[Cron] Mirroring Billbee ready orders for picklist validation...");
+            const result = await BillbeeReadyOrderImporter.importReadyOrders();
+            return res.json({
+                message: "Billbee ready order mirror finished",
+                source,
+                result: {
+                    success: result.success,
+                    count: result.count,
+                    mirrored: result.mirrored,
+                    failed: result.failed
+                }
+            });
+        }
+
+        const createImporter = orderImporters[source as keyof typeof orderImporters];
+        if (!createImporter) {
+            return res.status(400).json({
+                error: "Unsupported order sync source",
+                supported: [...Object.keys(orderImporters), 'billbee']
+            });
+        }
+
+        const importer = createImporter();
+        console.log(`[Cron] Triggering single-source order sync for ${importer.marketplace}...`);
+        const result = await importer.importOrders();
+
+        res.json({
+            message: "Single-source order sync finished",
+            source,
+            result: {
+                success: result.success,
+                count: result.count,
+                error: result.error
+            }
+        });
+    } catch (e: any) {
+        console.error(`[Cron] Single-source order sync failed for ${source}:`, e.message);
+        res.status(500).json({ source, success: false, error: e.message });
+    }
 });
 
 /**
