@@ -7,6 +7,86 @@ import { getPicklistCutoffDate, mapOttoOrderState } from '../picklistEligibility
 export class OttoImporter extends BaseImporter {
     marketplace: 'otto' = 'otto';
 
+    private extractOrderItems(order: any): any[] {
+        return order.positionItems
+            || order.lineItems
+            || order.orderPositions
+            || order.positions
+            || order.items
+            || [];
+    }
+
+    private mapOrderState(order: any) {
+        const orderStatus = order.orderLifecycleStatus || order.status || order.state;
+        if (orderStatus) return mapOttoOrderState(orderStatus);
+
+        const itemStatuses = this.extractOrderItems(order)
+            .map((item: any) => item.fulfillmentStatus || item.status || item.state)
+            .filter(Boolean);
+
+        if (itemStatuses.length === 0) return 'pending';
+
+        const mappedStatuses = itemStatuses.map((status: string) => mapOttoOrderState(status));
+        if (mappedStatuses.some((status: string) => status === 'paid')) return 'paid';
+        if (mappedStatuses.every((status: string) => status === 'shipped')) return 'shipped';
+        if (mappedStatuses.every((status: string) => status === 'cancelled')) return 'cancelled';
+
+        return 'pending';
+    }
+
+    private parseMoney(value: any): number {
+        if (value == null) return 0;
+        if (typeof value === 'number') return value;
+        if (typeof value === 'string') return parseFloat(value) || 0;
+        return parseFloat(value.amount || value.value || '0') || 0;
+    }
+
+    private mapOrderItem(item: any) {
+        const product = item.product || {};
+        const title = product.productTitle
+            || item.productTitle
+            || item.title
+            || item.name
+            || product.name
+            || 'Otto Item';
+        const sku = product.sku
+            || item.partnerSku
+            || item.sku
+            || product.articleNumber
+            || item.articleNumber
+            || product.ean
+            || item.ean
+            || 'UNKNOWN';
+        const quantity = Number(item.quantity || item.amount || 1) || 1;
+        const unitPrice = this.parseMoney(item.itemValueGrossPrice)
+            || this.parseMoney(item.itemValueReducedGrossPrice)
+            || this.parseMoney(item.itemPrice)
+            || this.parseMoney(item.price);
+
+        return {
+            title,
+            sku,
+            quantity,
+            unit_price: unitPrice
+        };
+    }
+
+    private calculateTotalPrice(order: any, items: Array<{ quantity: number, unit_price: number }>) {
+        const orderTotal = this.parseMoney(order.amount) || this.parseMoney(order.totalAmount);
+        if (orderTotal > 0) return orderTotal;
+
+        return items.reduce((sum, item) => sum + (item.quantity || 1) * (item.unit_price || 0), 0);
+    }
+
+    private getCurrency(order: any) {
+        const items = this.extractOrderItems(order);
+        return order.amount?.currency
+            || order.totalAmount?.currency
+            || items[0]?.itemValueGrossPrice?.currency
+            || items[0]?.itemValueReducedGrossPrice?.currency
+            || 'EUR';
+    }
+
     private async getWithRetry(url: string, headers: Record<string, string>, retries = 3): Promise<any> {
         for (let attempt = 0; attempt <= retries; attempt++) {
             try {
@@ -145,6 +225,8 @@ export class OttoImporter extends BaseImporter {
 
                 for (const order of orders) {
                     try {
+                        const items = this.extractOrderItems(order).map((item: any) => this.mapOrderItem(item));
+
                         const parsedOrder: ParsedOrder = {
                             order_number: order.orderNumber || order.salesOrderId,
                             marketplace: 'otto',
@@ -175,15 +257,10 @@ export class OttoImporter extends BaseImporter {
                                 city: order.deliveryAddress?.city || '',
                                 country_code: order.deliveryAddress?.countryCode || ''
                             },
-                            state: mapOttoOrderState(order.orderLifecycleStatus || order.status || order.state),
-                            total_price: parseFloat(order.amount?.amount || order.totalAmount || '0'),
-                            currency: order.amount?.currency || 'EUR',
-                            items: (order.positionItems || order.lineItems || []).map((item: any) => ({
-                                title: item.productTitle || item.title || 'Otto Item',
-                                sku: item.partnerSku || item.sku || 'UNKNOWN',
-                                quantity: item.quantity || 1,
-                                unit_price: parseFloat(item.itemPrice?.amount || item.price || '0')
-                            }))
+                            state: this.mapOrderState(order),
+                            total_price: this.calculateTotalPrice(order, items),
+                            currency: this.getCurrency(order),
+                            items
                         };
 
                         await OrderSyncService.upsertOrder(parsedOrder);
