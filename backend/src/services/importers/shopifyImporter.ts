@@ -2,7 +2,7 @@ import { BaseImporter, ImportedProduct } from './baseImporter';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { OrderSyncService } from '../orderSyncService';
-import { isShopifyOrderImportable } from '../picklistEligibility';
+import { getPicklistCutoffDate, isShopifyOrderImportable } from '../picklistEligibility';
 dotenv.config();
 
 export class ShopifyImporter extends BaseImporter {
@@ -83,9 +83,7 @@ export class ShopifyImporter extends BaseImporter {
         console.log(`[ShopifyImporter] Fetching Shopify orders from ${shopDomain}...`);
 
         let totalProcessed = 0;
-        const since = new Date();
-        since.setDate(since.getDate() - 1);
-        let url = `https://${shopDomain}/admin/api/2024-01/orders.json?status=open&financial_status=paid&fulfillment_status=unfulfilled&limit=250&created_at_min=${encodeURIComponent(since.toISOString())}`;
+        let url = `https://${shopDomain}/admin/api/2024-01/orders.json?status=open&financial_status=paid&fulfillment_status=unfulfilled&limit=250&created_at_min=${encodeURIComponent(getPicklistCutoffDate().toISOString())}`;
         let pageCount = 1;
 
         try {

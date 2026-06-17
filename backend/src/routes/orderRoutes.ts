@@ -47,7 +47,7 @@ function getStartOfTodayInTimeZone(timeZone: string) {
 // Get all orders (with customer info)
 router.get('/', async (req, res) => {
     try {
-        const filterToday = req.query.today !== 'false';
+        const filterToday = req.query.today === 'true';
         const stateFilter = typeof req.query.state === 'string' ? req.query.state : undefined;
         const marketplaceFilter = typeof req.query.marketplace === 'string' ? req.query.marketplace : undefined;
         const search = typeof req.query.search === 'string' ? req.query.search.trim().toLowerCase() : '';
