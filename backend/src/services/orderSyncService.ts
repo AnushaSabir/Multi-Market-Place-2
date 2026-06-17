@@ -374,4 +374,29 @@ export class OrderSyncService {
             return { success: false, error: error.message };
         }
     }
+
+    static async hideStaleOpenOrders(marketplace: string, openOrderNumbers: Set<string>) {
+        const { data: orders, error } = await supabase
+            .from('orders')
+            .select('id, order_number')
+            .eq('marketplace', marketplace)
+            .in('state', ['paid', 'ready_to_ship', 'ready_to_pick']);
+
+        if (error) throw new Error(`Failed to load active ${marketplace} orders: ${error.message}`);
+
+        const staleIds = (orders || [])
+            .filter((order: any) => !openOrderNumbers.has(String(order.order_number)))
+            .map((order: any) => order.id);
+
+        if (staleIds.length === 0) return 0;
+
+        const { error: updateError } = await supabase
+            .from('orders')
+            .update({ state: 'pending', updated_at: new Date().toISOString() })
+            .in('id', staleIds);
+
+        if (updateError) throw new Error(`Failed to hide stale ${marketplace} orders: ${updateError.message}`);
+
+        return staleIds.length;
+    }
 }

@@ -106,13 +106,14 @@ export class KauflandImporter extends BaseImporter {
         const limit = 50;
         let keepFetching = true;
         let totalProcessed = 0;
+        const openOrderNumbers = new Set<string>();
 
         try {
             while (keepFetching) {
                 if (BaseImporter.stopImport) break;
 
                 const timestamp = Math.floor(Date.now() / 1000).toString();
-                const listUrl = `https://sellerapi.kaufland.com/v2/order-units?limit=${limit}&offset=${offset}&sort=ts_created:desc&embedded=buyer,billing_address,shipping_address,product`;
+                const listUrl = `https://sellerapi.kaufland.com/v2/order-units?limit=${limit}&offset=${offset}&sort=ts_created:desc&status=need_to_be_sent&embedded=buyer,billing_address,shipping_address,product`;
                 const stringToSign = `GET\n${listUrl}\n\n${timestamp}`;
                 const signature = crypto.createHmac('sha256', secretKey).update(stringToSign).digest('hex');
 
@@ -153,6 +154,7 @@ export class KauflandImporter extends BaseImporter {
 
                 for (const order of orders) {
                     try {
+                        openOrderNumbers.add(String(order.id_order));
                         const parsedOrder: ParsedOrder = {
                             order_number: order.id_order,
                             marketplace: 'kaufland',
@@ -207,6 +209,9 @@ export class KauflandImporter extends BaseImporter {
                     offset += limit;
                 }
             }
+
+            const hidden = await OrderSyncService.hideStaleOpenOrders('kaufland', openOrderNumbers);
+            console.log(`[KauflandImporter] Hidden ${hidden} stale Kaufland orders from picklist.`);
             return { success: true, count: totalProcessed };
         } catch (error: any) {
             console.error("Kaufland Order Import Error:", error.response?.data || error.message);
