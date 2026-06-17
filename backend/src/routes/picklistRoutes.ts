@@ -45,7 +45,7 @@ function getStartOfTodayInTimeZone(timeZone: string) {
 // Fetch today's orders ready for picking (state = 'paid')
 router.get('/', async (req, res) => {
     try {
-        const filterToday = req.query.today === 'true';
+        const filterToday = req.query.today !== 'false';
         const startOfDay = getStartOfTodayInTimeZone('Europe/Berlin');
 
         let query = supabase
@@ -98,7 +98,7 @@ router.get('/', async (req, res) => {
 
         res.json({
             success: true,
-            date_filter: filterToday ? startOfDay.toISOString() : 'ready_to_pick',
+            date_filter: filterToday ? startOfDay.toISOString() : getPicklistCutoffDate().toISOString(),
             data: enhancedOrders
         });
     } catch (error: any) {
@@ -110,6 +110,8 @@ router.get('/', async (req, res) => {
 // Lightweight diagnostics to verify which backend/data the app is reading.
 router.get('/summary', async (req, res) => {
     try {
+        const startOfDay = getStartOfTodayInTimeZone('Europe/Berlin');
+
         const { data: orders, error } = await supabase
             .from('orders')
             .select(`
@@ -122,7 +124,7 @@ router.get('/summary', async (req, res) => {
                 updated_at,
                 items:order_items(*, product:products(*))
             `).in('state', ['paid', 'ready_to_ship', 'ready_to_pick'])
-            .gte('created_at', getPicklistCutoffDate().toISOString())
+            .gte('created_at', startOfDay.toISOString())
             .order('created_at', { ascending: false });
 
         if (error) throw new Error(error.message);
@@ -147,7 +149,7 @@ router.get('/summary', async (req, res) => {
             success: true,
             commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 'local',
             generated_at: new Date().toISOString(),
-            cutoff: getPicklistCutoffDate().toISOString(),
+            cutoff: startOfDay.toISOString(),
             total_orders: eligibleOrders.length,
             dhl_orders: summary.buckets.dhl || 0,
             small_package_orders: summary.buckets.small_package || 0,

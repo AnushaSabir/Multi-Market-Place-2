@@ -47,7 +47,7 @@ function getStartOfTodayInTimeZone(timeZone: string) {
 // Get all orders (with customer info)
 router.get('/', async (req, res) => {
     try {
-        const filterToday = req.query.today === 'true';
+        const filterToday = req.query.today !== 'false';
         const stateFilter = typeof req.query.state === 'string' ? req.query.state : undefined;
         const marketplaceFilter = typeof req.query.marketplace === 'string' ? req.query.marketplace : undefined;
         const search = typeof req.query.search === 'string' ? req.query.search.trim().toLowerCase() : '';
@@ -141,7 +141,7 @@ router.get('/', async (req, res) => {
         res.json({
             success: true,
             test_version: '1.0.4',
-            date_filter: filterToday ? startOfDay.toISOString() : 'ready_to_pick',
+            date_filter: filterToday ? startOfDay.toISOString() : getPicklistCutoffDate().toISOString(),
             filters: {
                 state: stateFilter || 'active',
                 marketplace: marketplaceFilter || 'all',

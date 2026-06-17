@@ -8,7 +8,7 @@ type PicklistOrder = {
     items?: any[] | null;
 };
 
-const DEFAULT_LOOKBACK_DAYS = 14;
+const DEFAULT_LOOKBACK_DAYS = 1;
 const NON_PICKABLE_STATES = new Set(['pending', 'cancelled', 'canceled', 'shipped', 'sent', 'fulfilled', 'picked']);
 
 function configuredList(name: string) {
