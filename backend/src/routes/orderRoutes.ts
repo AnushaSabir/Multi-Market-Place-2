@@ -4,7 +4,7 @@ import { DhlService } from '../services/dhlService';
 import { InvoiceService } from '../services/invoiceService';
 import { CancellationService } from '../services/cancellationService';
 import { classifyOrderShipping } from '../services/shippingClassifier';
-import { getPicklistCutoffDate, isPicklistEligibleOrder } from '../services/picklistEligibility';
+import { isPicklistEligibleOrder } from '../services/picklistEligibility';
 
 const router = express.Router();
 
@@ -61,7 +61,6 @@ router.get('/', async (req, res) => {
                 customer:customers(first_name, last_name, email),
                 items:order_items(*, product:products(*))
             `)
-            .gte('created_at', getPicklistCutoffDate().toISOString())
             .order('created_at', { ascending: false });
 
         if (stateFilter && stateFilter !== 'all') {
@@ -141,7 +140,7 @@ router.get('/', async (req, res) => {
         res.json({
             success: true,
             test_version: '1.0.4',
-            date_filter: filterToday ? startOfDay.toISOString() : getPicklistCutoffDate().toISOString(),
+            date_filter: filterToday ? startOfDay.toISOString() : 'all_open_orders',
             filters: {
                 state: stateFilter || 'active',
                 marketplace: marketplaceFilter || 'all',

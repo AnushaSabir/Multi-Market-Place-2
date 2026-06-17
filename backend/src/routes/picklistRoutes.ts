@@ -1,7 +1,7 @@
 import express from 'express';
 import { supabase } from '../database/supabaseClient';
 import { classifyOrderShipping } from '../services/shippingClassifier';
-import { getPicklistCutoffDate, isPicklistEligibleOrder } from '../services/picklistEligibility';
+import { isPicklistEligibleOrder } from '../services/picklistEligibility';
 
 const router = express.Router();
 
@@ -57,7 +57,6 @@ router.get('/', async (req, res) => {
                 delivery_address:addresses!delivery_address_id(*),
                 items:order_items(*, product:products(*))
             `).in('state', ['paid', 'ready_to_ship', 'ready_to_pick'])
-            .gte('created_at', getPicklistCutoffDate().toISOString())
             .order('created_at', { ascending: false });
 
         if (filterToday) {
@@ -98,7 +97,7 @@ router.get('/', async (req, res) => {
 
         res.json({
             success: true,
-            date_filter: filterToday ? startOfDay.toISOString() : getPicklistCutoffDate().toISOString(),
+            date_filter: filterToday ? startOfDay.toISOString() : 'all_open_orders',
             data: enhancedOrders
         });
     } catch (error: any) {
@@ -125,7 +124,6 @@ router.get('/summary', async (req, res) => {
                 updated_at,
                 items:order_items(*, product:products(*))
             `).in('state', ['paid', 'ready_to_ship', 'ready_to_pick'])
-            .gte('created_at', getPicklistCutoffDate().toISOString())
             .order('created_at', { ascending: false });
 
         if (filterToday) {
@@ -156,7 +154,7 @@ router.get('/summary', async (req, res) => {
             success: true,
             commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 'local',
             generated_at: new Date().toISOString(),
-            cutoff: filterToday ? startOfDay.toISOString() : getPicklistCutoffDate().toISOString(),
+            cutoff: filterToday ? startOfDay.toISOString() : 'all_open_orders',
             total_orders: eligibleOrders.length,
             dhl_orders: summary.buckets.dhl || 0,
             small_package_orders: summary.buckets.small_package || 0,

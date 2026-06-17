@@ -46,13 +46,10 @@ export function isConfiguredExcludedOrder(order: PicklistOrder) {
 
 export function isPicklistEligibleOrder(order: PicklistOrder) {
     const state = String(order.state || '').toLowerCase();
-    const createdAt = order.created_at ? new Date(order.created_at) : null;
 
     if (NON_PICKABLE_STATES.has(state)) return false;
     if (isConfiguredExcludedOrder(order)) return false;
     if (!order.items || order.items.length === 0) return false;
-    if (createdAt && createdAt < getPicklistCutoffDate()) return false;
-
     return state === 'paid' || state === 'ready_to_ship' || state === 'ready_to_pick';
 }
 

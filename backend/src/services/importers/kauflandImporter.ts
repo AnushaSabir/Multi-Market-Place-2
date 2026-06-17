@@ -2,7 +2,7 @@ import { BaseImporter, ImportedProduct } from './baseImporter';
 import axios from 'axios';
 import crypto from 'crypto';
 import { OrderSyncService, ParsedOrder } from '../orderSyncService';
-import { getPicklistCutoffDate, mapKauflandOrderState } from '../picklistEligibility';
+import { mapKauflandOrderState } from '../picklistEligibility';
 
 export class KauflandImporter extends BaseImporter {
     marketplace: 'kaufland' = 'kaufland';
@@ -128,26 +128,9 @@ export class KauflandImporter extends BaseImporter {
 
                 const units = response.data.data || [];
                 
-                // Stop importing when units are older than the same ready-picklist window.
-                const cutoffDate = getPicklistCutoffDate();
-                let reachedOldOrders = false;
-
-                const recentUnits = units.filter((unit: any) => {
-                    const unitDate = new Date(unit.ts_created_iso);
-                    if (unitDate < cutoffDate) {
-                        reachedOldOrders = true;
-                        return false;
-                    }
-                    return true;
-                });
-
-                if (reachedOldOrders) {
-                    keepFetching = false;
-                }
-                
                 // Group units by id_order to construct complete orders
                 const ordersMap = new Map<string, any>();
-                for (const unit of recentUnits) {
+                for (const unit of units) {
                     const orderId = unit.id_order;
                     if (!ordersMap.has(orderId)) {
                         ordersMap.set(orderId, {

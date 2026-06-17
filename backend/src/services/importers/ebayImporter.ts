@@ -2,7 +2,6 @@ import { BaseImporter, ImportedProduct } from './baseImporter';
 import axios from 'axios';
 import { TokenManger } from '../tokenService';
 import { OrderSyncService, ParsedOrder } from '../orderSyncService';
-import { getPicklistCutoffDate } from '../picklistEligibility';
 
 export class EbayImporter extends BaseImporter {
     marketplace: 'ebay' = 'ebay';
@@ -103,7 +102,7 @@ export class EbayImporter extends BaseImporter {
         console.log(`[EbayImporter] Fetching eBay orders...`);
 
         let totalProcessed = 0;
-        const filter = encodeURIComponent(`creationdate:[${getPicklistCutoffDate().toISOString()}..]`);
+        const filter = encodeURIComponent('orderfulfillmentstatus:{NOT_STARTED|IN_PROGRESS},orderpaymentstatus:{PAID}');
         let url: string | null = `https://api.ebay.com/sell/fulfillment/v1/order?limit=100&filter=${filter}`;
 
         try {
