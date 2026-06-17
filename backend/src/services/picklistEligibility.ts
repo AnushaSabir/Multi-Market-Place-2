@@ -82,8 +82,8 @@ export function isShopifyOrderImportable(order: any) {
 
 export function mapKauflandOrderState(status?: string | null) {
     const normalized = String(status || '').toLowerCase();
-    if (['sent', 'shipped'].includes(normalized)) return 'shipped';
+    if (['sent', 'shipped', 'sent_and_autopaid'].includes(normalized)) return 'shipped';
     if (['cancelled', 'canceled', 'returned'].includes(normalized)) return 'cancelled';
-    if (['open', 'need_to_be_sent', 'received', 'paid'].includes(normalized)) return 'paid';
+    if (['need_to_be_sent'].includes(normalized)) return 'paid';
     return 'pending';
 }
