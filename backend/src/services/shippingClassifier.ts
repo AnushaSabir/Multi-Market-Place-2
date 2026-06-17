@@ -28,7 +28,12 @@ const DHL_TITLE_PATTERNS = [
     /küche|kueche/i,
     /heizweste/i,
     /projektor\s+topv/i,
-    /onefire\s+lpn\s+mini\s+lampe\s+pink/i
+    /onefire\s+lpn\s+mini\s+lampe\s+pink/i,
+    /babytasche/i,
+    /led\s+wandleuchte/i,
+    /auto\s+jump\s+starter/i,
+    /sage\s+s3gp/i,
+    /neue\s+hula\s+lila/i
 ];
 
 const SMALL_PACKAGE_TITLE_PATTERNS = [

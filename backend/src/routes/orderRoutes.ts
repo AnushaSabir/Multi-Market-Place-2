@@ -44,6 +44,10 @@ function getStartOfTodayInTimeZone(timeZone: string) {
     return new Date(utcGuess.getTime() - (zonedAsUtc - utcGuess.getTime()));
 }
 
+function cleanPicklistName(value?: string | null) {
+    return String(value || '').replace(/\.\d+$/, '').trim();
+}
+
 // Get all orders (with customer info)
 router.get('/', async (req, res) => {
     try {
@@ -94,11 +98,11 @@ router.get('/', async (req, res) => {
                 if (sku && /^\d+$/.test(sku)) {
                     sku = item.title || item.product?.title || sku;
                 }
-                const meaningfulSku = sku && sku !== 'UNKNOWN' ? sku : '';
+                const meaningfulSku = sku && sku !== 'UNKNOWN' ? cleanPicklistName(sku) : '';
                 return {
                     ...item,
-                    sku,
-                    display_name: meaningfulSku || item.title || item.product?.title || 'Unknown Item'
+                    sku: meaningfulSku || sku,
+                    display_name: meaningfulSku || cleanPicklistName(item.title) || cleanPicklistName(item.product?.title) || 'Unknown Item'
                 };
             }) : [];
 
