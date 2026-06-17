@@ -17,6 +17,12 @@ const orderImporters = {
     shopify: () => new ShopifyImporter()
 };
 
+function getIncrementalFromDate(hours: number) {
+    const fromDate = new Date();
+    fromDate.setHours(fromDate.getHours() - hours);
+    return fromDate;
+}
+
 function isAuthorizedCronOrInternal(req: express.Request) {
     const authHeader = req.headers['authorization'];
     const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
@@ -245,11 +251,18 @@ router.all('/cron/orders/:source', async (req, res) => {
 
         const importer = createImporter();
         console.log(`[Cron] Triggering single-source order sync for ${importer.marketplace}...`);
-        const result = await importer.importOrders();
+        const isFullSync = String(req.query.full || '').toLowerCase() === 'true';
+        const result = source === 'otto' && !isFullSync
+            ? await (importer as OttoImporter).importOrders({
+                fromDate: getIncrementalFromDate(Number(process.env.OTTO_CRON_LOOKBACK_HOURS || 6)),
+                maxPages: Number(process.env.OTTO_CRON_MAX_PAGES || 2)
+            })
+            : await importer.importOrders();
 
         res.json({
             message: "Single-source order sync finished",
             source,
+            mode: source === 'otto' && !isFullSync ? 'incremental' : 'full',
             result: {
                 success: result.success,
                 count: result.count,

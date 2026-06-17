@@ -196,7 +196,7 @@ export class OttoImporter extends BaseImporter {
         return totalProcessed;
     }
 
-    public async importOrders(): Promise<{ success: boolean, count: number, error?: string }> {
+    public async importOrders(options: { fromDate?: string | Date, maxPages?: number } = {}): Promise<{ success: boolean, count: number, error?: string }> {
         const accessToken = await TokenManger.getAccessToken(this.marketplace); // Reusing the base method to get auth token
         if (!accessToken) {
             return { success: false, count: 0, error: "Missing Otto credentials or token" };
@@ -207,7 +207,10 @@ export class OttoImporter extends BaseImporter {
         let totalProcessed = 0;
         const isSandbox = process.env.OTTO_ENV === 'sandbox';
         const baseUrl = isSandbox ? 'https://sandbox.api.otto.market' : 'https://api.otto.market';
-        const fromDate = getPicklistCutoffDate().toISOString();
+        const fromDate = options.fromDate
+            ? new Date(options.fromDate).toISOString()
+            : getPicklistCutoffDate().toISOString();
+        const maxPages = Number(options.maxPages || 0);
         let url: string | null = `${baseUrl}/v4/orders?limit=100&fromDate=${encodeURIComponent(fromDate)}`;
         let pageCount = 1;
 
@@ -271,6 +274,11 @@ export class OttoImporter extends BaseImporter {
                 }
 
                 pageCount++;
+                if (maxPages > 0 && pageCount > maxPages) {
+                    console.log(`[OttoImporter] Stopping after ${maxPages} page(s) for incremental sync.`);
+                    break;
+                }
+
                 const links: any = response.data.links || response.data._links;
                 const nextLink: any = Array.isArray(links) ? links.find((l: any) => l.rel === 'next') : (links?.next || null);
 
