@@ -196,7 +196,7 @@ export class OttoImporter extends BaseImporter {
         return totalProcessed;
     }
 
-    public async importOrders(options: { fromDate?: string | Date, maxPages?: number } = {}): Promise<{ success: boolean, count: number, error?: string }> {
+    public async importOrders(options: { fromDate?: string | Date, maxPages?: number, reconcileStale?: boolean } = {}): Promise<{ success: boolean, count: number, error?: string }> {
         const accessToken = await TokenManger.getAccessToken(this.marketplace); // Reusing the base method to get auth token
         if (!accessToken) {
             return { success: false, count: 0, error: "Missing Otto credentials or token" };
@@ -213,6 +213,7 @@ export class OttoImporter extends BaseImporter {
         const maxPages = Number(options.maxPages || 0);
         let url: string | null = `${baseUrl}/v4/orders?limit=100&fromDate=${encodeURIComponent(fromDate)}`;
         let pageCount = 1;
+        const openOrderNumbers = new Set<string>();
 
         try {
             while (url) {
@@ -230,6 +231,7 @@ export class OttoImporter extends BaseImporter {
                     try {
                         const items = this.extractOrderItems(order).map((item: any) => this.mapOrderItem(item));
 
+                        const state = this.mapOrderState(order);
                         const parsedOrder: ParsedOrder = {
                             order_number: order.orderNumber || order.salesOrderId,
                             marketplace: 'otto',
@@ -260,13 +262,16 @@ export class OttoImporter extends BaseImporter {
                                 city: order.deliveryAddress?.city || '',
                                 country_code: order.deliveryAddress?.countryCode || ''
                             },
-                            state: this.mapOrderState(order),
+                            state,
                             total_price: this.calculateTotalPrice(order, items),
                             currency: this.getCurrency(order),
                             items
                         };
 
                         await OrderSyncService.upsertOrder(parsedOrder);
+                        if (['paid', 'ready_to_ship', 'ready_to_pick'].includes(state)) {
+                            openOrderNumbers.add(String(parsedOrder.order_number));
+                        }
                         totalProcessed++;
                     } catch (e: any) {
                         console.error(`[OttoImporter] Error syncing order ${order.orderNumber}:`, e.message);
@@ -291,6 +296,10 @@ export class OttoImporter extends BaseImporter {
                 } else {
                     url = null;
                 }
+            }
+            if (options.reconcileStale) {
+                const hidden = await OrderSyncService.hideStaleOpenOrders('otto', openOrderNumbers);
+                console.log(`[OttoImporter] Hidden ${hidden} stale Otto orders from picklist.`);
             }
             return { success: true, count: totalProcessed };
         } catch (error: any) {
