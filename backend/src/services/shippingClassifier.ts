@@ -33,7 +33,12 @@ const DHL_TITLE_PATTERNS = [
     /led\s+wandleuchte/i,
     /auto\s+jump\s+starter/i,
     /sage\s+s3gp/i,
-    /neue\s+hula\s+lila/i
+    /neue\s+hula\s+lila/i,
+    /staratlas\s+f3f/i,
+    /led\s+deckenleuchte/i,
+    /nackenkissen/i,
+    /insektent[oÃ¶]ter/i,
+    /elektrorasierer|kopfrasierer/i
 ];
 
 const SMALL_PACKAGE_TITLE_PATTERNS = [
@@ -113,10 +118,10 @@ export function classifyOrderShipping(items: ShippingItem[] = [], existingProvid
         isSmallPackage = true;
     } else if (providerDhl) {
         isSmallPackage = false;
-    } else if (explicitSmallPackage || heuristicSmallPackage) {
-        isSmallPackage = true;
     } else if (explicitDhl || heuristicDhl || totalWeight > 1) {
         isSmallPackage = false;
+    } else if (explicitSmallPackage || heuristicSmallPackage) {
+        isSmallPackage = true;
     }
 
     const calculatedProvider = isSmallPackage ? SMALL_PACKAGE_PROVIDER : DHL_PROVIDER;

@@ -2,6 +2,7 @@ import express from 'express';
 import { supabase } from '../database/supabaseClient';
 import { classifyOrderShipping } from '../services/shippingClassifier';
 import { isPicklistEligibleOrder } from '../services/picklistEligibility';
+import { normalizePicklistDisplayName } from '../services/picklistPresentation';
 
 const router = express.Router();
 
@@ -41,10 +42,6 @@ function getStartOfTodayInTimeZone(timeZone: string) {
     return new Date(utcGuess.getTime() - (zonedAsUtc - utcGuess.getTime()));
 }
 
-function cleanPicklistName(value?: string | null) {
-    return String(value || '').replace(/\.\d+$/, '').trim();
-}
-
 // GET /api/picklist
 // Fetch today's orders ready for picking (state = 'paid')
 router.get('/', async (req, res) => {
@@ -82,11 +79,11 @@ router.get('/', async (req, res) => {
                 if (sku && /^\d+$/.test(sku)) {
                     sku = item.title || item.product?.title || sku;
                 }
-                const meaningfulSku = sku && sku !== 'UNKNOWN' ? cleanPicklistName(sku) : '';
+                const meaningfulSku = sku && sku !== 'UNKNOWN' ? normalizePicklistDisplayName(sku) : '';
                 return {
                     ...item,
                     sku: meaningfulSku || sku,
-                    display_name: meaningfulSku || cleanPicklistName(item.title) || cleanPicklistName(item.product?.title) || 'Unknown Item'
+                    display_name: meaningfulSku || normalizePicklistDisplayName(item.title) || normalizePicklistDisplayName(item.product?.title) || 'Unknown Item'
                 };
             });
 
