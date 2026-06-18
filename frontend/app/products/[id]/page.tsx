@@ -35,6 +35,13 @@ import {
 } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
+const SHIPPING_TYPE_OPTIONS = [
+  "DHL Paket",
+  "Small Package",
+  "DHL Warenpost",
+  "Brief",
+]
+
 interface MarketplaceProduct {
   id?: string
   marketplace: string
@@ -323,7 +330,21 @@ export default function ProductDetailPage() {
               </div>
               <div className="space-y-2">
                 <Label>Shipping Type</Label>
-                <Input value={formData.shipping_type || ''} placeholder="e.g. DHL Paket" onChange={e => setFormData({ ...formData, shipping_type: e.target.value })} />
+                <Select
+                  value={formData.shipping_type || undefined}
+                  onValueChange={(value) => setFormData({ ...formData, shipping_type: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select shipping type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SHIPPING_TYPE_OPTIONS.map((shippingType) => (
+                      <SelectItem key={shippingType} value={shippingType}>
+                        {shippingType}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
