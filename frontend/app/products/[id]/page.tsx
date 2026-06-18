@@ -36,10 +36,8 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
 const SHIPPING_TYPE_OPTIONS = [
-  "DHL Paket",
-  "Small Package",
-  "DHL Warenpost",
-  "Brief",
+  "DHL PAKET/DHL PARCEL",
+  "DHL KLEINPAKET/DHL SMALL PARCEL",
 ]
 
 interface MarketplaceProduct {
