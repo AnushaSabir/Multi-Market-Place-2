@@ -37,7 +37,7 @@ const DHL_TITLE_PATTERNS = [
     /staratlas\s+f3f/i,
     /led\s+deckenleuchte/i,
     /nackenkissen/i,
-    /insektent[oÃ¶]ter/i,
+    /insektent[oö]ter|insektentÃ¶ter/i,
     /elektrorasierer|kopfrasierer/i
 ];
 
