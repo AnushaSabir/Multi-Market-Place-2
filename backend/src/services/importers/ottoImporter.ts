@@ -196,7 +196,7 @@ export class OttoImporter extends BaseImporter {
         return totalProcessed;
     }
 
-    public async importOrders(options: { fromDate?: string | Date, maxPages?: number, reconcileStale?: boolean } = {}): Promise<{ success: boolean, count: number, error?: string }> {
+    public async importOrders(options: { fromDate?: string | Date, maxPages?: number, reconcileStale?: boolean, fulfillmentStatuses?: string[] } = {}): Promise<{ success: boolean, count: number, error?: string }> {
         const accessToken = await TokenManger.getAccessToken(this.marketplace); // Reusing the base method to get auth token
         if (!accessToken) {
             return { success: false, count: 0, error: "Missing Otto credentials or token" };
@@ -211,90 +211,94 @@ export class OttoImporter extends BaseImporter {
             ? new Date(options.fromDate).toISOString()
             : getPicklistCutoffDate().toISOString();
         const maxPages = Number(options.maxPages || 0);
-        let url: string | null = `${baseUrl}/v4/orders?limit=100&fromDate=${encodeURIComponent(fromDate)}`;
-        let pageCount = 1;
+        const fulfillmentStatuses = options.fulfillmentStatuses?.length ? options.fulfillmentStatuses : [undefined];
         const openOrderNumbers = new Set<string>();
 
         try {
-            while (url) {
-                if (BaseImporter.stopImport) break;
+            for (const fulfillmentStatus of fulfillmentStatuses) {
+                let url: string | null = `${baseUrl}/v4/orders?limit=100&fromDate=${encodeURIComponent(fromDate)}${fulfillmentStatus ? `&fulfillmentStatus=${encodeURIComponent(fulfillmentStatus)}` : ''}`;
+                let pageCount = 1;
 
-                console.log(`[OttoImporter] Fetching orders page ${pageCount}...`);
-                const response: any = await this.getWithRetry(url, {
-                    'Authorization': `Bearer ${accessToken}`,
-                    'Accept': 'application/json'
-                });
+                while (url) {
+                    if (BaseImporter.stopImport) break;
 
-                const orders = response.data.resources || response.data || [];
+                    console.log(`[OttoImporter] Fetching orders page ${pageCount}${fulfillmentStatus ? ` (${fulfillmentStatus})` : ''}...`);
+                    const response: any = await this.getWithRetry(url, {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Accept': 'application/json'
+                    });
 
-                for (const order of orders) {
-                    try {
-                        const items = this.extractOrderItems(order).map((item: any) => this.mapOrderItem(item));
+                    const orders = response.data.resources || response.data || [];
 
-                        const state = this.mapOrderState(order);
-                        const parsedOrder: ParsedOrder = {
-                            order_number: order.orderNumber || order.salesOrderId,
-                            marketplace: 'otto',
-                            created_at: order.orderDate || order.createdAt || order.createdDate,
-                            customer: {
-                                email: order.customer?.email || order.deliveryAddress?.email || '',
-                                first_name: order.deliveryAddress?.firstName || order.invoiceAddress?.firstName || '',
-                                last_name: order.deliveryAddress?.lastName || order.invoiceAddress?.lastName || '',
-                                phone: order.deliveryAddress?.phoneNumber || ''
-                            },
-                            billing_address: {
-                                first_name: order.invoiceAddress?.firstName || '',
-                                last_name: order.invoiceAddress?.lastName || '',
-                                company: order.invoiceAddress?.companyName || '',
-                                street: order.invoiceAddress?.street || '',
-                                house_number: order.invoiceAddress?.houseNumber || '',
-                                zip: order.invoiceAddress?.zipCode || '',
-                                city: order.invoiceAddress?.city || '',
-                                country_code: order.invoiceAddress?.countryCode || ''
-                            },
-                            shipping_address: {
-                                first_name: order.deliveryAddress?.firstName || '',
-                                last_name: order.deliveryAddress?.lastName || '',
-                                company: order.deliveryAddress?.companyName || '',
-                                street: order.deliveryAddress?.street || '',
-                                house_number: order.deliveryAddress?.houseNumber || '',
-                                zip: order.deliveryAddress?.zipCode || '',
-                                city: order.deliveryAddress?.city || '',
-                                country_code: order.deliveryAddress?.countryCode || ''
-                            },
-                            state,
-                            total_price: this.calculateTotalPrice(order, items),
-                            currency: this.getCurrency(order),
-                            items
-                        };
+                    for (const order of orders) {
+                        try {
+                            const items = this.extractOrderItems(order).map((item: any) => this.mapOrderItem(item));
 
-                        await OrderSyncService.upsertOrder(parsedOrder);
-                        if (['paid', 'ready_to_ship', 'ready_to_pick'].includes(state)) {
-                            openOrderNumbers.add(String(parsedOrder.order_number));
+                            const state = this.mapOrderState(order);
+                            const parsedOrder: ParsedOrder = {
+                                order_number: order.orderNumber || order.salesOrderId,
+                                marketplace: 'otto',
+                                created_at: order.orderDate || order.createdAt || order.createdDate,
+                                customer: {
+                                    email: order.customer?.email || order.deliveryAddress?.email || '',
+                                    first_name: order.deliveryAddress?.firstName || order.invoiceAddress?.firstName || '',
+                                    last_name: order.deliveryAddress?.lastName || order.invoiceAddress?.lastName || '',
+                                    phone: order.deliveryAddress?.phoneNumber || ''
+                                },
+                                billing_address: {
+                                    first_name: order.invoiceAddress?.firstName || '',
+                                    last_name: order.invoiceAddress?.lastName || '',
+                                    company: order.invoiceAddress?.companyName || '',
+                                    street: order.invoiceAddress?.street || '',
+                                    house_number: order.invoiceAddress?.houseNumber || '',
+                                    zip: order.invoiceAddress?.zipCode || '',
+                                    city: order.invoiceAddress?.city || '',
+                                    country_code: order.invoiceAddress?.countryCode || ''
+                                },
+                                shipping_address: {
+                                    first_name: order.deliveryAddress?.firstName || '',
+                                    last_name: order.deliveryAddress?.lastName || '',
+                                    company: order.deliveryAddress?.companyName || '',
+                                    street: order.deliveryAddress?.street || '',
+                                    house_number: order.deliveryAddress?.houseNumber || '',
+                                    zip: order.deliveryAddress?.zipCode || '',
+                                    city: order.deliveryAddress?.city || '',
+                                    country_code: order.deliveryAddress?.countryCode || ''
+                                },
+                                state,
+                                total_price: this.calculateTotalPrice(order, items),
+                                currency: this.getCurrency(order),
+                                items
+                            };
+
+                            await OrderSyncService.upsertOrder(parsedOrder);
+                            if (['paid', 'ready_to_ship', 'ready_to_pick'].includes(state)) {
+                                openOrderNumbers.add(String(parsedOrder.order_number));
+                            }
+                            totalProcessed++;
+                        } catch (e: any) {
+                            console.error(`[OttoImporter] Error syncing order ${order.orderNumber}:`, e.message);
                         }
-                        totalProcessed++;
-                    } catch (e: any) {
-                        console.error(`[OttoImporter] Error syncing order ${order.orderNumber}:`, e.message);
                     }
-                }
 
-                pageCount++;
-                if (maxPages > 0 && pageCount > maxPages) {
-                    console.log(`[OttoImporter] Stopping after ${maxPages} page(s) for incremental sync.`);
-                    break;
-                }
-
-                const links: any = response.data.links || response.data._links;
-                const nextLink: any = Array.isArray(links) ? links.find((l: any) => l.rel === 'next') : (links?.next || null);
-
-                if (nextLink && nextLink.href) {
-                    let href = nextLink.href;
-                    if (!href.startsWith('http')) {
-                        href = href.startsWith('/') ? `${baseUrl}${href}` : `${baseUrl}/${href}`;
+                    pageCount++;
+                    if (maxPages > 0 && pageCount > maxPages) {
+                        console.log(`[OttoImporter] Stopping after ${maxPages} page(s) for incremental sync.`);
+                        break;
                     }
-                    url = href;
-                } else {
-                    url = null;
+
+                    const links: any = response.data.links || response.data._links;
+                    const nextLink: any = Array.isArray(links) ? links.find((l: any) => l.rel === 'next') : (links?.next || null);
+
+                    if (nextLink && nextLink.href) {
+                        let href = nextLink.href;
+                        if (!href.startsWith('http')) {
+                            href = href.startsWith('/') ? `${baseUrl}${href}` : `${baseUrl}/${href}`;
+                        }
+                        url = href;
+                    } else {
+                        url = null;
+                    }
                 }
             }
             if (options.reconcileStale) {

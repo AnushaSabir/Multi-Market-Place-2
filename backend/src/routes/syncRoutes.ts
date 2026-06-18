@@ -254,9 +254,10 @@ router.all('/cron/orders/:source', async (req, res) => {
         const isFullSync = String(req.query.full || '').toLowerCase() === 'true';
         const result = source === 'otto' && !isFullSync
             ? await (importer as OttoImporter).importOrders({
-                fromDate: getIncrementalFromDate(Number(process.env.OTTO_CRON_LOOKBACK_HOURS || 36)),
-                maxPages: Number(process.env.OTTO_CRON_MAX_PAGES || 3),
-                reconcileStale: true
+                fromDate: getIncrementalFromDate(Number(process.env.OTTO_CRON_LOOKBACK_HOURS || 60 * 24)),
+                maxPages: Number(process.env.OTTO_CRON_MAX_PAGES || 5),
+                reconcileStale: true,
+                fulfillmentStatuses: ['PROCESSABLE', 'ANNOUNCED']
             })
             : await importer.importOrders();
 
