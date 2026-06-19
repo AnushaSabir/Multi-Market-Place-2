@@ -113,7 +113,12 @@ export class DhlService {
                 })
                 .eq('id', orderId);
 
-            return { success: true, trackingNumber };
+            return {
+                success: true,
+                trackingNumber,
+                labelDataPdf: base64Label,
+                labelUrl: base64Label ? `data:application/pdf;base64,${base64Label}` : null
+            };
             
         } catch (error: any) {
             console.error("[DHL Error]", error.response?.data || error.message);
