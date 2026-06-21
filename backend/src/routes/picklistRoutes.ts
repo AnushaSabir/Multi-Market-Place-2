@@ -193,4 +193,41 @@ router.post('/:id/pick', async (req, res) => {
     }
 });
 
+// POST /api/picklist/:id/lock
+// Atomically reserve an open order for one scan station before printing.
+router.post('/:id/lock', async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const lockedBy = typeof req.body?.locked_by === 'string' ? req.body.locked_by : null;
+
+        const { data, error } = await supabase
+            .from('orders')
+            .update({ state: 'picked' })
+            .eq('id', orderId)
+            .in('state', ['paid', 'ready_to_ship', 'ready_to_pick'])
+            .select('id, order_number, state')
+            .maybeSingle();
+
+        if (error) throw new Error(error.message);
+
+        if (!data) {
+            return res.status(409).json({
+                success: false,
+                locked: false,
+                message: 'Order is no longer available for picking',
+                locked_by: lockedBy
+            });
+        }
+
+        res.json({
+            success: true,
+            locked: true,
+            order: data,
+            locked_by: lockedBy
+        });
+    } catch (error: any) {
+        res.status(500).json({ success: false, locked: false, error: error.message });
+    }
+});
+
 export default router;
