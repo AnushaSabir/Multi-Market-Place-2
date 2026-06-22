@@ -8,15 +8,54 @@ export class DhlService {
             user: useSandbox ? process.env.DHL_API_USER_SANDBOX : process.env.DHL_API_USER_PROD,
             pass: useSandbox ? process.env.DHL_API_PASS_SANDBOX : process.env.DHL_API_PASS_PROD,
             clientId: useSandbox ? process.env.DHL_CLIENT_ID_SANDBOX : process.env.DHL_CLIENT_ID_PROD,
+            billingNumber: process.env.DHL_BILLING_NUMBER || process.env.DHL_BILLING_NUMBER_PROD || (useSandbox ? '33333333330101' : undefined),
             baseUrl: useSandbox ? 'https://api-sandbox.dhl.com/parcel/de/shipping/v2' : 'https://api-eu.dhl.com/parcel/de/shipping/v2'
         };
+    }
+
+    private static splitStreetAndHouse(street?: string | null, houseNumber?: string | null) {
+        const cleanStreet = (street || '').trim();
+        const cleanHouse = (houseNumber || '').trim();
+
+        if (cleanHouse || !cleanStreet) {
+            return { street: cleanStreet, house: cleanHouse };
+        }
+
+        const match = cleanStreet.match(/^(.+?)\s+(\d+\s*[a-zA-Z]?(?:[-/]\d+\s*[a-zA-Z]?)?)$/);
+        if (!match) {
+            return { street: cleanStreet, house: '' };
+        }
+
+        return { street: match[1].trim(), house: match[2].replace(/\s+/g, '') };
+    }
+
+    private static requiredAddressValue(value: unknown, label: string) {
+        const text = typeof value === 'string' ? value.trim() : '';
+        if (!text) {
+            throw new Error(`Delivery address is missing ${label}`);
+        }
+        return text;
+    }
+
+    private static extractDhlError(error: any) {
+        const data = error.response?.data;
+        const item = data?.items?.[0];
+        const validation = item?.validationMessages?.[0];
+        return validation?.validationMessage
+            || validation?.message
+            || item?.status?.detail
+            || item?.status?.title
+            || data?.detail
+            || data?.title
+            || error.message
+            || 'Failed to generate label';
     }
 
     static async generateLabel(orderId: string) {
         console.log(`[DHL Service] Generating label for Order ID: ${orderId}`);
         const creds = this.getCredentials();
 
-        if (!creds.user || !creds.clientId) {
+        if (!creds.user || !creds.pass || !creds.clientId || !creds.billingNumber) {
             throw new Error("DHL Credentials not fully configured");
         }
 
@@ -47,6 +86,20 @@ export class DhlService {
 
         // Note: For international shipping, different service codes are needed. We assume DE for MVP.
         const addr = order.delivery_address;
+        const splitAddress = this.splitStreetAndHouse(addr.street, addr.house_number);
+        const receiverName = [
+            addr.first_name,
+            addr.last_name
+        ].filter(Boolean).join(' ').trim() || addr.company || order.customer?.first_name || order.customer?.last_name;
+
+        const receiver = {
+            name1: this.requiredAddressValue(receiverName, 'customer name'),
+            addressStreet: this.requiredAddressValue(splitAddress.street, 'street'),
+            addressHouse: this.requiredAddressValue(splitAddress.house, 'house number'),
+            postalCode: this.requiredAddressValue(addr.zip, 'postal code'),
+            city: this.requiredAddressValue(addr.city, 'city'),
+            country: addr.country_code === 'DEU' ? 'DEU' : 'DEU'
+        };
         
         // 3. Prepare DHL API Payload
         const payload = {
@@ -54,7 +107,7 @@ export class DhlService {
             shipments: [
                 {
                     product: versandart,
-                    billingNumber: "33333333330101", // Default Sandbox EKP
+                    billingNumber: creds.billingNumber,
                     refNo: order.order_number,
                     shipper: {
                         name1: "EpicTec Store",
@@ -64,14 +117,7 @@ export class DhlService {
                         city: "Berlin",
                         country: "DEU"
                     },
-                    receiver: {
-                        name1: `${addr.first_name} ${addr.last_name}`,
-                        addressStreet: addr.street,
-                        addressHouse: addr.house_number || "1",
-                        postalCode: addr.zip,
-                        city: addr.city,
-                        country: addr.country_code === 'DE' ? 'DEU' : 'DEU' // Mapping required for countries
-                    },
+                    receiver,
                     details: {
                         dim: { uom: "mm", length: 300, width: 200, height: 150 }, // Default dimensions
                         weight: { uom: "kg", value: totalWeight }
@@ -95,8 +141,8 @@ export class DhlService {
 
             // 4. Extract Tracking Number and PDF Label
             const result = response.data.items?.[0];
-            if (!result || result.sstatus?.title === "Error") {
-                const errMsg = result?.validationMessages?.[0]?.validationMessage || "Unknown DHL Error";
+            if (!result || result.status?.title === "Error") {
+                const errMsg = result?.validationMessages?.[0]?.validationMessage || result?.status?.detail || "Unknown DHL Error";
                 throw new Error(`DHL API Error: ${errMsg}`);
             }
 
@@ -122,7 +168,7 @@ export class DhlService {
             
         } catch (error: any) {
             console.error("[DHL Error]", error.response?.data || error.message);
-            throw new Error(error.response?.data?.detail || error.message || "Failed to generate label");
+            throw new Error(this.extractDhlError(error));
         }
     }
 }
