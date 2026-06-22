@@ -127,9 +127,18 @@ export class OttoImporter extends BaseImporter {
             address.streetAddress
         );
 
+        let firstName = this.firstValue(address.firstName, address.first_name, address.givenName, name.firstName, name.givenName);
+        let lastName = this.firstValue(address.lastName, address.last_name, address.familyName, name.lastName, name.familyName);
+
+        if (!firstName && !lastName && address.recipient) {
+            const parts = String(address.recipient).trim().split(' ');
+            firstName = parts.shift() || '';
+            lastName = parts.join(' ') || '';
+        }
+
         return {
-            first_name: this.firstValue(address.firstName, address.first_name, address.givenName, name.firstName, name.givenName),
-            last_name: this.firstValue(address.lastName, address.last_name, address.familyName, name.lastName, name.familyName),
+            first_name: firstName,
+            last_name: lastName,
             company: this.firstValue(address.companyName, address.company, address.organization),
             street,
             house_number: this.firstValue(address.houseNumber, address.house_number, address.address2, address.addressLine2),
