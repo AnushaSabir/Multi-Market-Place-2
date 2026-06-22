@@ -87,6 +87,68 @@ export class OttoImporter extends BaseImporter {
             || 'EUR';
     }
 
+    private firstValue(...values: any[]) {
+        return values.find(value => value !== undefined && value !== null && String(value).trim() !== '') || '';
+    }
+
+    private extractAddress(order: any, type: 'billing' | 'shipping') {
+        const candidates = type === 'shipping'
+            ? [
+                order.deliveryAddress,
+                order.shippingAddress,
+                order.shipmentAddress,
+                order.shipping?.address,
+                order.delivery?.address,
+                order.receiver,
+                order.recipient,
+                order.customer?.deliveryAddress,
+                order.customer?.shippingAddress,
+                order.addresses?.delivery,
+                order.addresses?.shipping
+            ]
+            : [
+                order.invoiceAddress,
+                order.billingAddress,
+                order.billing?.address,
+                order.invoice?.address,
+                order.customer?.invoiceAddress,
+                order.customer?.billingAddress,
+                order.addresses?.invoice,
+                order.addresses?.billing
+            ];
+
+        const address = candidates.find(Boolean) || {};
+        const name = address.name || address.fullName || address.personName || {};
+        const street = this.firstValue(
+            address.street,
+            address.streetName,
+            address.address1,
+            address.addressLine1,
+            address.streetAddress
+        );
+
+        return {
+            first_name: this.firstValue(address.firstName, address.first_name, address.givenName, name.firstName, name.givenName),
+            last_name: this.firstValue(address.lastName, address.last_name, address.familyName, name.lastName, name.familyName),
+            company: this.firstValue(address.companyName, address.company, address.organization),
+            street,
+            house_number: this.firstValue(address.houseNumber, address.house_number, address.address2, address.addressLine2),
+            zip: this.firstValue(address.zipCode, address.postalCode, address.zip, address.postCode),
+            city: this.firstValue(address.city, address.town),
+            country_code: this.firstValue(address.countryCode, address.country, 'DE')
+        };
+    }
+
+    private extractCustomer(order: any, shippingAddress: any, billingAddress: any) {
+        const customer = order.customer || order.buyer || {};
+        return {
+            email: this.firstValue(customer.email, order.customerEmail, order.email, shippingAddress.email, billingAddress.email),
+            first_name: this.firstValue(customer.firstName, customer.first_name, customer.givenName, shippingAddress.first_name, billingAddress.first_name),
+            last_name: this.firstValue(customer.lastName, customer.last_name, customer.familyName, shippingAddress.last_name, billingAddress.last_name),
+            phone: this.firstValue(customer.phone, customer.phoneNumber, order.phone, shippingAddress.phone, billingAddress.phone)
+        };
+    }
+
     private async getWithRetry(url: string, headers: Record<string, string>, retries = 3): Promise<any> {
         for (let attempt = 0; attempt <= retries; attempt++) {
             try {
@@ -233,38 +295,18 @@ export class OttoImporter extends BaseImporter {
                     for (const order of orders) {
                         try {
                             const items = this.extractOrderItems(order).map((item: any) => this.mapOrderItem(item));
+                            const billingAddress = this.extractAddress(order, 'billing');
+                            const shippingAddress = this.extractAddress(order, 'shipping');
+                            const customer = this.extractCustomer(order, shippingAddress, billingAddress);
 
                             const state = this.mapOrderState(order);
                             const parsedOrder: ParsedOrder = {
                                 order_number: order.orderNumber || order.salesOrderId,
                                 marketplace: 'otto',
                                 created_at: order.orderDate || order.createdAt || order.createdDate,
-                                customer: {
-                                    email: order.customer?.email || order.deliveryAddress?.email || '',
-                                    first_name: order.deliveryAddress?.firstName || order.invoiceAddress?.firstName || '',
-                                    last_name: order.deliveryAddress?.lastName || order.invoiceAddress?.lastName || '',
-                                    phone: order.deliveryAddress?.phoneNumber || ''
-                                },
-                                billing_address: {
-                                    first_name: order.invoiceAddress?.firstName || '',
-                                    last_name: order.invoiceAddress?.lastName || '',
-                                    company: order.invoiceAddress?.companyName || '',
-                                    street: order.invoiceAddress?.street || '',
-                                    house_number: order.invoiceAddress?.houseNumber || '',
-                                    zip: order.invoiceAddress?.zipCode || '',
-                                    city: order.invoiceAddress?.city || '',
-                                    country_code: order.invoiceAddress?.countryCode || ''
-                                },
-                                shipping_address: {
-                                    first_name: order.deliveryAddress?.firstName || '',
-                                    last_name: order.deliveryAddress?.lastName || '',
-                                    company: order.deliveryAddress?.companyName || '',
-                                    street: order.deliveryAddress?.street || '',
-                                    house_number: order.deliveryAddress?.houseNumber || '',
-                                    zip: order.deliveryAddress?.zipCode || '',
-                                    city: order.deliveryAddress?.city || '',
-                                    country_code: order.deliveryAddress?.countryCode || ''
-                                },
+                                customer,
+                                billing_address: billingAddress,
+                                shipping_address: shippingAddress,
                                 state,
                                 total_price: this.calculateTotalPrice(order, items),
                                 currency: this.getCurrency(order),

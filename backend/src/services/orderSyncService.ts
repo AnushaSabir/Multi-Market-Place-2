@@ -18,6 +18,27 @@ export interface ParsedOrder {
 
 
 export class OrderSyncService {
+    private static hasCustomerIdentity(customer?: ParsedOrder['customer']) {
+        return Boolean(customer?.email || customer?.first_name || customer?.last_name || customer?.phone);
+    }
+
+    private static hasAddressData(address?: ParsedOrder['billing_address']) {
+        return Boolean(address?.street || address?.zip || address?.city || address?.first_name || address?.last_name || address?.company);
+    }
+
+    private static async createAddress(customerId: string | null, addressType: 'invoice' | 'delivery', address?: ParsedOrder['billing_address']) {
+        if (!address || !this.hasAddressData(address)) return null;
+
+        const { data, error } = await supabase.from('addresses').insert({
+            customer_id: customerId,
+            address_type: addressType,
+            ...address
+        }).select('id').single();
+
+        if (error) throw new Error(`Failed to create ${addressType} address: ${error.message}`);
+        return data?.id || null;
+    }
+
     private static async findProductForOrderItem(sku?: string) {
         if (!sku) return null;
 
@@ -282,43 +303,34 @@ export class OrderSyncService {
             // 1. Customer
             let customerId = null;
             if (order.customer.email) {
-                const { data: existingCust } = await supabase.from('customers').select('id').eq('email', order.customer.email).single();
+                const { data: existingCust } = await supabase.from('customers').select('id').eq('email', order.customer.email).maybeSingle();
                 if (existingCust) {
                     customerId = existingCust.id;
                 } else {
                     const { data: newCust, error } = await supabase.from('customers').insert(order.customer).select('id').single();
                     if (!error && newCust) customerId = newCust.id;
                 }
+            } else if (this.hasCustomerIdentity(order.customer)) {
+                const { data: newCust, error } = await supabase.from('customers').insert(order.customer).select('id').single();
+                if (error) throw new Error(`Failed to create customer: ${error.message}`);
+                if (newCust) customerId = newCust.id;
             }
 
             // 2. Addresses
             let invoiceAddrId = null;
             let deliveryAddrId = null;
 
-            if (customerId && order.billing_address && order.billing_address.street) {
-                const { data: invAddr } = await supabase.from('addresses').insert({
-                    customer_id: customerId,
-                    address_type: 'invoice',
-                    ...order.billing_address
-                }).select('id').single();
-                if (invAddr) invoiceAddrId = invAddr.id;
-            }
+            invoiceAddrId = await this.createAddress(customerId, 'invoice', order.billing_address);
 
-            if (customerId && order.shipping_address && order.shipping_address.street) {
-                const { data: delAddr } = await supabase.from('addresses').insert({
-                    customer_id: customerId,
-                    address_type: 'delivery',
-                    ...order.shipping_address
-                }).select('id').single();
-                if (delAddr) deliveryAddrId = delAddr.id;
-            } else if (invoiceAddrId) {
+            deliveryAddrId = await this.createAddress(customerId, 'delivery', order.shipping_address);
+            if (!deliveryAddrId && invoiceAddrId) {
                 deliveryAddrId = invoiceAddrId; // Fallback
             }
 
             // 3. Order
             const { data: existingOrder } = await supabase
                 .from('orders')
-                .select('id')
+                .select('id, customer_id, invoice_address_id, delivery_address_id')
                 .eq('order_number', order.order_number)
                 .eq('marketplace', order.marketplace)
                 .maybeSingle();
