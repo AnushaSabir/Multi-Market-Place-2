@@ -42,7 +42,7 @@ export class OttoImporter extends BaseImporter {
     }
 
     private mapOrderItem(item: any) {
-        const product = item.product || {};
+        const product = item.product || item.itemDetails || {};
         const title = product.productTitle
             || item.productTitle
             || item.title

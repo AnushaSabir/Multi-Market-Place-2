@@ -44,7 +44,14 @@ app.get('/health', (req, res) => {
             internalApiKey: Boolean(process.env.INTERNAL_API_KEY),
             billbeeCredentials: Boolean(process.env.BILLBEE_API_KEY && process.env.BILLBEE_USERNAME && process.env.BILLBEE_PASS),
             billbeeMirrorEnabled: process.env.BILLBEE_MIRROR_PICKLIST === 'true',
-            ottoCredentials: Boolean(process.env.OTTO_CLIENT_ID && process.env.OTTO_CLIENT_SECRET)
+            ottoCredentials: Boolean(process.env.OTTO_CLIENT_ID && process.env.OTTO_CLIENT_SECRET),
+            dhlCredentials: {
+                user: Boolean(process.env.DHL_USE_SANDBOX === 'true' ? process.env.DHL_API_USER_SANDBOX : process.env.DHL_API_USER_PROD),
+                pass: Boolean(process.env.DHL_USE_SANDBOX === 'true' ? process.env.DHL_API_PASS_SANDBOX : process.env.DHL_API_PASS_PROD),
+                clientId: Boolean(process.env.DHL_USE_SANDBOX === 'true' ? process.env.DHL_CLIENT_ID_SANDBOX : process.env.DHL_CLIENT_ID_PROD),
+                billingNumber: Boolean(process.env.DHL_BILLING_NUMBER || process.env.DHL_BILLING_NUMBER_PROD),
+                ekp: Boolean(process.env.DHL_EKP)
+            }
         }
     });
 });
