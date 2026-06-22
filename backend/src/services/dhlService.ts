@@ -4,11 +4,16 @@ import { supabase } from '../database/supabaseClient';
 export class DhlService {
     private static getCredentials() {
         const useSandbox = process.env.DHL_USE_SANDBOX === 'true';
+        const billingNumber = process.env.DHL_BILLING_NUMBER
+            || process.env.DHL_BILLING_NUMBER_PROD
+            || (process.env.DHL_EKP ? `${process.env.DHL_EKP}0101` : undefined)
+            || (useSandbox ? '33333333330101' : undefined);
+
         return {
             user: useSandbox ? process.env.DHL_API_USER_SANDBOX : process.env.DHL_API_USER_PROD,
             pass: useSandbox ? process.env.DHL_API_PASS_SANDBOX : process.env.DHL_API_PASS_PROD,
             clientId: useSandbox ? process.env.DHL_CLIENT_ID_SANDBOX : process.env.DHL_CLIENT_ID_PROD,
-            billingNumber: process.env.DHL_BILLING_NUMBER || process.env.DHL_BILLING_NUMBER_PROD || (useSandbox ? '33333333330101' : undefined),
+            billingNumber,
             baseUrl: useSandbox ? 'https://api-sandbox.dhl.com/parcel/de/shipping/v2' : 'https://api-eu.dhl.com/parcel/de/shipping/v2'
         };
     }
