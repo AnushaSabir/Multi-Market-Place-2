@@ -194,7 +194,7 @@ router.post('/:id/dhl-label', async (req, res) => {
 
         res.json(result);
     } catch (error: any) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(400).json({ success: false, error: error.message });
     }
 });
 
@@ -205,7 +205,7 @@ router.post('/:id/invoice', async (req, res) => {
         const result = await InvoiceService.createAndSendInvoice(orderId);
         res.json(result);
     } catch (error: any) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(400).json({ success: false, error: error.message });
     }
 });
 
@@ -219,7 +219,7 @@ router.post('/:id/cancel', async (req, res) => {
         }
         res.json(result);
     } catch (error: any) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(400).json({ success: false, error: error.message });
     }
 });
 
