@@ -57,7 +57,8 @@ export function mapOttoOrderState(status?: string | null) {
     const normalized = String(status || '').toUpperCase();
     if (['SENT', 'SHIPPED', 'FULFILLED'].includes(normalized)) return 'shipped';
     if (['CANCELLED', 'CANCELED', 'CANCELLED_BY_MARKETPLACE', 'CANCELLED_BY_PARTNER', 'RETURNED', 'ANNOUNCED_BY_PARTNER'].includes(normalized)) return 'cancelled';
-    if (['PROCESSABLE', 'ANNOUNCED', 'NEW', 'OPEN', 'ACCEPTED', 'PAID'].includes(normalized)) return 'paid';
+    if (['PROCESSABLE', 'NEW', 'OPEN', 'ACCEPTED', 'PAID'].includes(normalized)) return 'paid';
+    if (normalized === 'ANNOUNCED') return 'pending';
 
     // OTTO's API variants differ between environments. Unknown non-terminal orders should
     // still surface for picking rather than silently disappearing from the warehouse app.
