@@ -6,7 +6,7 @@ export class DhlService {
         const useSandbox = process.env.DHL_USE_SANDBOX === 'true';
         const billingNumber = process.env.DHL_BILLING_NUMBER
             || process.env.DHL_BILLING_NUMBER_PROD
-            || (process.env.DHL_EKP ? `${process.env.DHL_EKP}0101` : undefined)
+            || (process.env.DHL_EKP ? `${process.env.DHL_EKP}0102` : undefined)
             || (useSandbox ? '33333333330101' : undefined);
 
         return {
