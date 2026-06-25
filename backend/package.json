@@ -11,7 +11,7 @@
         "billbee:compare": "ts-node src/scripts/compareBillbeePicklist.ts"
     },
     "engines": {
-        "node": "20.x"
+        "node": "24.x"
     },
     "keywords": [],
     "author": "",
