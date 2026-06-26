@@ -178,6 +178,16 @@ router.get('/:id', async (req, res) => {
 });
 
 // Generate DHL Label
+router.get('/:id/dhl-label/validate', async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const result = await DhlService.validateLabel(orderId);
+        res.status(result.success ? 200 : 400).json(result);
+    } catch (error: any) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+
 router.post('/:id/dhl-label', async (req, res) => {
     try {
         const orderId = req.params.id;

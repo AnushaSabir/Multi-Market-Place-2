@@ -56,8 +56,18 @@ export class DhlService {
             || 'Failed to generate label';
     }
 
-    static async generateLabel(orderId: string) {
-        console.log(`[DHL Service] Generating label for Order ID: ${orderId}`);
+    private static getShipper() {
+        return {
+            name1: process.env.DHL_SHIPPER_NAME || 'EpicTec Store',
+            addressStreet: process.env.DHL_SHIPPER_STREET || 'Musterstr.',
+            addressHouse: process.env.DHL_SHIPPER_HOUSE || '1',
+            postalCode: process.env.DHL_SHIPPER_ZIP || '12345',
+            city: process.env.DHL_SHIPPER_CITY || 'Berlin',
+            country: process.env.DHL_SHIPPER_COUNTRY || 'DEU'
+        };
+    }
+
+    private static async buildShipmentPayload(orderId: string) {
         const creds = this.getCredentials();
 
         if (!creds.user || !creds.pass || !creds.clientId || !creds.billingNumber) {
@@ -97,7 +107,7 @@ export class DhlService {
             addr.last_name
         ].filter(Boolean).join(' ').trim() || addr.company || order.customer?.first_name || order.customer?.last_name;
 
-        const receiver = {
+        const consignee = {
             name1: this.requiredAddressValue(receiverName, 'customer name'),
             addressStreet: this.requiredAddressValue(splitAddress.street, 'street'),
             addressHouse: this.requiredAddressValue(splitAddress.house, 'house number'),
@@ -114,15 +124,8 @@ export class DhlService {
                     product: versandart,
                     billingNumber: creds.billingNumber,
                     refNo: order.order_number,
-                    shipper: {
-                        name1: "EpicTec Store",
-                        addressStreet: "Musterstr.",
-                        addressHouse: "1",
-                        postalCode: "12345",
-                        city: "Berlin",
-                        country: "DEU"
-                    },
-                    receiver,
+                    shipper: this.getShipper(),
+                    consignee,
                     details: {
                         dim: { uom: "mm", length: 300, width: 200, height: 150 }, // Default dimensions
                         weight: { uom: "kg", value: totalWeight }
@@ -130,6 +133,48 @@ export class DhlService {
                 }
             ]
         };
+
+        return { creds, order, payload };
+    }
+
+    static async validateLabel(orderId: string) {
+        console.log(`[DHL Service] Validating label for Order ID: ${orderId}`);
+        const { creds, payload } = await this.buildShipmentPayload(orderId);
+
+        try {
+            const auth = Buffer.from(`${creds.user}:${creds.pass}`).toString('base64');
+            const response = await axios.post(`${creds.baseUrl}/orders?validate=true`, payload, {
+                headers: {
+                    'Authorization': `Basic ${auth}`,
+                    'dhl-api-key': creds.clientId,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                validateStatus: () => true
+            });
+
+            const result = response.data?.items?.[0];
+            return {
+                success: response.status < 400,
+                status: response.status,
+                dhlStatus: response.data?.status,
+                itemStatus: result?.sstatus || result?.status,
+                validationMessages: result?.validationMessages || [],
+                diagnostics: {
+                    billingNumberLength: String(creds.billingNumber || '').length,
+                    billingNumberLast4: String(creds.billingNumber || '').slice(-4),
+                    shipperConfigured: Boolean(process.env.DHL_SHIPPER_NAME && process.env.DHL_SHIPPER_STREET && process.env.DHL_SHIPPER_HOUSE && process.env.DHL_SHIPPER_ZIP && process.env.DHL_SHIPPER_CITY)
+                }
+            };
+        } catch (error: any) {
+            console.error("[DHL Validate Error]", error.response?.data || error.message);
+            throw new Error(this.extractDhlError(error));
+        }
+    }
+
+    static async generateLabel(orderId: string) {
+        console.log(`[DHL Service] Generating label for Order ID: ${orderId}`);
+        const { creds, payload } = await this.buildShipmentPayload(orderId);
 
         try {
             // DHL Auth Header: Basic auth for User/Pass, Client-Id in headers
@@ -146,8 +191,9 @@ export class DhlService {
 
             // 4. Extract Tracking Number and PDF Label
             const result = response.data.items?.[0];
-            if (!result || result.status?.title === "Error") {
-                const errMsg = result?.validationMessages?.[0]?.validationMessage || result?.status?.detail || "Unknown DHL Error";
+            const resultStatus = result?.sstatus || result?.status;
+            if (!result || resultStatus?.status >= 400 || resultStatus?.title === "Error") {
+                const errMsg = result?.validationMessages?.[0]?.validationMessage || resultStatus?.detail || resultStatus?.title || "Unknown DHL Error";
                 throw new Error(`DHL API Error: ${errMsg}`);
             }
 
