@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Printer, Loader2, Package, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -16,17 +17,20 @@ export default function OrdersPage() {
     const [generatingInvoiceId, setGeneratingInvoiceId] = useState<string | null>(null);
     const [cancellingId, setCancellingId] = useState<string | null>(null);
     const [syncing, setSyncing] = useState(false);
+    const [activeTab, setActiveTab] = useState('active');
     const { toast } = useToast();
 
     useEffect(() => {
         fetchOrders();
-    }, []);
+    }, [activeTab]);
 
     const fetchOrders = async () => {
         try {
+            setLoading(true);
             const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
             const token = localStorage.getItem('epic_tech_token') || 'Epic_Tech_2026';
-            const res = await fetch(`${API_URL}/api/orders`, {
+            const stateQuery = activeTab === 'all' ? '' : `?state=${activeTab}`;
+            const res = await fetch(`${API_URL}/api/orders${stateQuery}`, {
                 headers: { 'x-api-key': token }
             });
             const { data } = await res.json();
@@ -155,6 +159,14 @@ export default function OrdersPage() {
                     {syncing ? "Syncing..." : "Sync All Orders"}
                 </Button>
             </div>
+
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-3 max-w-[400px]">
+                    <TabsTrigger value="active">Active Orders</TabsTrigger>
+                    <TabsTrigger value="archived">Archived / Shipped</TabsTrigger>
+                    <TabsTrigger value="all">All Orders</TabsTrigger>
+                </TabsList>
+            </Tabs>
 
             <Card>
                 <CardHeader>
