@@ -116,6 +116,13 @@ export class DhlService {
             country: addr.country_code === 'DEU' ? 'DEU' : 'DEU'
         };
         
+        let safeRefNo = String(order.order_number || '');
+        if (safeRefNo.length < 8) {
+            safeRefNo = safeRefNo.padStart(8, '0');
+        } else if (safeRefNo.length > 35) {
+            safeRefNo = safeRefNo.substring(0, 35);
+        }
+
         // 3. Prepare DHL API Payload
         const payload = {
             profile: "STANDARD_GRUPPENPROFIL",
@@ -123,7 +130,7 @@ export class DhlService {
                 {
                     product: versandart,
                     billingNumber: creds.billingNumber,
-                    refNo: order.order_number,
+                    refNo: safeRefNo,
                     shipper: this.getShipper(),
                     consignee,
                     details: {
