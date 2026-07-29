@@ -181,7 +181,18 @@ export class DhlService {
 
     static async generateLabel(orderId: string) {
         console.log(`[DHL Service] Generating label for Order ID: ${orderId}`);
-        const { creds, payload } = await this.buildShipmentPayload(orderId);
+        const { creds, order, payload } = await this.buildShipmentPayload(orderId);
+
+        if (order.dhl_tracking_number === 'PENDING') {
+            throw new Error("Label generation is currently in progress. Please check back in a few minutes or check your DHL business portal.");
+        }
+        
+        if (order.dhl_tracking_number && order.dhl_tracking_number !== 'PENDING') {
+            throw new Error(`Label already generated. Tracking: ${order.dhl_tracking_number}`);
+        }
+
+        // Lock it to prevent double clicks or timeout retries
+        await supabase.from('orders').update({ dhl_tracking_number: 'PENDING' }).eq('id', orderId);
 
         try {
             // DHL Auth Header: Basic auth for User/Pass, Client-Id in headers
@@ -225,6 +236,8 @@ export class DhlService {
             };
             
         } catch (error: any) {
+            // Revert PENDING state on error
+            await supabase.from('orders').update({ dhl_tracking_number: null }).eq('id', orderId);
             console.error("[DHL Error]", error.response?.data || error.message);
             throw new Error(this.extractDhlError(error));
         }
