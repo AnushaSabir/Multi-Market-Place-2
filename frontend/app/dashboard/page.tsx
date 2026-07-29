@@ -14,6 +14,8 @@ const initialStats = [
   { title: "Sync Errors", value: "0", icon: AlertCircle, color: "text-red-600" },
 ]
 
+const initialRecentMovements: any[] = [];
+
 const initialMarketplaces = [
   { name: "Otto", status: "online", lastSync: "check...", importedCount: 0 },
   { name: "eBay", status: "online", lastSync: "check...", importedCount: 0 },
@@ -23,6 +25,7 @@ const initialMarketplaces = [
 
 export default function DashboardPage() {
   const [stats, setStats] = useState(initialStats)
+  const [recentMovements, setRecentMovements] = useState<any[]>(initialRecentMovements)
   const [marketplaces, setMarketplaces] = useState(initialMarketplaces)
   const [loading, setLoading] = useState(true)
 
@@ -55,6 +58,10 @@ export default function DashboardPage() {
         { name: "Kaufland", status: "online", lastSync: "Just now", importedCount: data.marketplaces.kaufland },
         { name: "Shopify", status: "online", lastSync: "Just now", importedCount: data.marketplaces.shopify },
       ])
+
+      if (data.recentMovements) {
+        setRecentMovements(data.recentMovements)
+      }
 
     } catch (error) {
       console.error("Dashboard Stats Error:", error)
@@ -128,8 +135,8 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-5">
-              {stats.recentMovements && stats.recentMovements.length > 0 ? (
-                stats.recentMovements.map((move: any, i: number) => (
+              {recentMovements && recentMovements.length > 0 ? (
+                recentMovements.map((move: any, i: number) => (
                   <div key={i} className="flex items-start gap-4 pb-4 border-b border-border/50 last:border-0 last:pb-0">
                     <div className="mt-1 p-2 bg-primary/10 text-primary rounded-lg">
                       {move.change < 0 ? <RefreshCw className="h-4 w-4 text-orange-500" /> : <RefreshCw className="h-4 w-4 text-green-500" />}

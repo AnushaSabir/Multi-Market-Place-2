@@ -231,7 +231,7 @@ export default function ProductDetailPage() {
     const mpIndex = updatedMps.findIndex(mp => mp.marketplace === marketplace);
     
     if (mpIndex > -1) {
-      updatedMps[mpIndex] = { ...updatedMps[mpIndex], is_custom_price: !useMaster, price: useMaster ? null : formData.price };
+      updatedMps[mpIndex] = { ...updatedMps[mpIndex], is_custom_price: !useMaster, price: useMaster ? undefined : formData.price };
     } else if (!useMaster) {
       updatedMps.push({ marketplace, sync_status: 'pending', last_synced_at: new Date().toISOString(), external_id: '', is_custom_price: true, price: formData.price });
     }
