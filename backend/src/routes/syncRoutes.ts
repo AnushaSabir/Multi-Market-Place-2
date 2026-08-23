@@ -189,7 +189,7 @@ router.all('/cron/orders', async (req, res) => {
         }
     }
 
-    if (process.env.BILLBEE_MIRROR_PICKLIST === 'true') {
+    if (process.env.BILLBEE_MIRROR_PICKLIST !== 'false') {
         try {
             console.log("[Cron] Mirroring Billbee ready orders for picklist validation...");
             const billbeeResult = await BillbeeReadyOrderImporter.importReadyOrders();
@@ -206,7 +206,7 @@ router.all('/cron/orders', async (req, res) => {
     } else {
         results.billbee_ready_orders = {
             skipped: true,
-            reason: "Set BILLBEE_MIRROR_PICKLIST=true to enable Billbee validation mirror"
+            reason: "BILLBEE_MIRROR_PICKLIST is disabled"
         };
     }
 
