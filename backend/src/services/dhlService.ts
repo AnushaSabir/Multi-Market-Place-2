@@ -58,11 +58,11 @@ export class DhlService {
 
     private static getShipper() {
         return {
-            name1: process.env.DHL_SHIPPER_NAME || 'EpicTec Store',
-            addressStreet: process.env.DHL_SHIPPER_STREET || 'Musterstr.',
-            addressHouse: process.env.DHL_SHIPPER_HOUSE || '1',
-            postalCode: process.env.DHL_SHIPPER_ZIP || '12345',
-            city: process.env.DHL_SHIPPER_CITY || 'Berlin',
+            name1: process.env.DHL_SHIPPER_NAME || 'Firma EpicTec Thayub',
+            addressStreet: process.env.DHL_SHIPPER_STREET || 'Jenneweg',
+            addressHouse: process.env.DHL_SHIPPER_HOUSE || '158',
+            postalCode: process.env.DHL_SHIPPER_ZIP || '66113',
+            city: process.env.DHL_SHIPPER_CITY || 'Saarbrücken',
             country: process.env.DHL_SHIPPER_COUNTRY || 'DEU'
         };
     }
@@ -81,7 +81,7 @@ export class DhlService {
                 *,
                 customer:customers(*),
                 delivery_address:addresses!delivery_address_id(*),
-                items:order_items(quantity, unit_price, product:products(weight, dhl_versandart))
+                items:order_items(quantity, unit_price, sku, product:products(sku, weight, dhl_versandart))
             `)
             .eq('id', orderId)
             .single();
@@ -91,13 +91,19 @@ export class DhlService {
 
         // 2. Calculate Total Weight and Determine Service
         let totalWeight = 0;
-        let versandart = 'V01PAK'; // Default DHL Paket (V01PAK for Germany)
 
-        for (const item of order.items) {
+        for (const item of (order.items || [])) {
             const weight = (item.product?.weight && item.product.weight > 0) ? item.product.weight : 0.5;
-            totalWeight += (weight * item.quantity);
+            totalWeight += (weight * (item.quantity || 1));
         }
-        if (totalWeight === 0) totalWeight = 1.0; // Minimum 1kg fallback
+        if (totalWeight === 0) totalWeight = 0.8; // Standard 0.8kg
+
+        const ekp = process.env.DHL_EKP || (creds.billingNumber ? creds.billingNumber.substring(0, 10) : '6358337079');
+        const isKleinpaket = order.shipping_bucket === 'small_package' || totalWeight <= 1.0;
+        const versandart = isKleinpaket ? 'V62KP' : 'V01PAK';
+        const billingNumber = isKleinpaket
+            ? (process.env.DHL_BILLING_NUMBER_KLEINPAKET || `${ekp}6201`)
+            : (process.env.DHL_BILLING_NUMBER_PAKET || creds.billingNumber || `${ekp}0102`);
 
         // Note: For international shipping, different service codes are needed. We assume DE for MVP.
         const addr = order.delivery_address;
@@ -116,29 +122,39 @@ export class DhlService {
             country: addr.country_code === 'DEU' ? 'DEU' : 'DEU'
         };
         
-        let safeRefNo = String(order.order_number || '');
+        const firstItemSku = order.items?.[0]?.product?.sku || order.items?.[0]?.sku || '';
+        let safeRefNo = firstItemSku ? String(firstItemSku).trim() : String(order.order_number || '');
         if (safeRefNo.length < 8) {
-            safeRefNo = safeRefNo.padStart(8, '0');
+            safeRefNo = safeRefNo.padEnd(8, ' ');
         } else if (safeRefNo.length > 35) {
             safeRefNo = safeRefNo.substring(0, 35);
         }
 
         // 3. Prepare DHL API Payload
+        const shipmentItem: any = {
+            product: versandart,
+            billingNumber: billingNumber,
+            refNo: safeRefNo,
+            shipper: this.getShipper(),
+            consignee,
+            details: {
+                dim: { uom: "mm", length: 300, width: 200, height: 150 }, // Default dimensions
+                weight: { uom: "kg", value: Number(totalWeight.toFixed(2)) }
+            }
+        };
+
+        // For Kleinpaket, include filialRouting service
+        if (isKleinpaket) {
+            shipmentItem.services = {
+                filialrouting: {
+                    active: true
+                }
+            };
+        }
+
         const payload = {
             profile: "STANDARD_GRUPPENPROFIL",
-            shipments: [
-                {
-                    product: versandart,
-                    billingNumber: creds.billingNumber,
-                    refNo: safeRefNo,
-                    shipper: this.getShipper(),
-                    consignee,
-                    details: {
-                        dim: { uom: "mm", length: 300, width: 200, height: 150 }, // Default dimensions
-                        weight: { uom: "kg", value: totalWeight }
-                    }
-                }
-            ]
+            shipments: [shipmentItem]
         };
 
         return { creds, order, payload };
