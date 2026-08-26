@@ -1,8 +1,9 @@
-import express from 'express';
+import express from 'express';
 import { supabase } from '../database/supabaseClient';
 import { DhlService } from '../services/dhlService';
 import { InvoiceService } from '../services/invoiceService';
 import { CancellationService } from '../services/cancellationService';
+import { MarketplaceShipmentService } from '../services/marketplaceShipmentService';
 import { classifyOrderShipping } from '../services/shippingClassifier';
 import { isPicklistEligibleOrder } from '../services/picklistEligibility';
 import { normalizePicklistDisplayName } from '../services/picklistPresentation';
@@ -227,6 +228,29 @@ router.post('/:id/cancel', async (req, res) => {
         if (!result.success) {
             return res.status(400).json(result);
         }
+        res.json(result);
+    } catch (error: any) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+
+// Manually Confirm/Push Tracking to Marketplace
+router.post('/:id/confirm-shipment', async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const trackingNumber = req.body?.trackingNumber;
+
+        let tracking = trackingNumber;
+        if (!tracking) {
+            const { data: order } = await supabase.from('orders').select('dhl_tracking_number').eq('id', orderId).single();
+            tracking = order?.dhl_tracking_number;
+        }
+
+        if (!tracking) {
+            return res.status(400).json({ success: false, error: "Order does not have a tracking number yet" });
+        }
+
+        const result = await MarketplaceShipmentService.confirmShipment(orderId, tracking, 'DHL');
         res.json(result);
     } catch (error: any) {
         res.status(400).json({ success: false, error: error.message });

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { supabase } from '../database/supabaseClient';
+import { MarketplaceShipmentService } from './marketplaceShipmentService';
 
 export class DhlService {
     private static getCredentials() {
@@ -243,6 +244,14 @@ export class DhlService {
                     state: 'shipped' // Automatically mark as shipped
                 })
                 .eq('id', orderId);
+
+            // 6. Automatically transmit tracking number to OTTO, Kaufland, Shopify, eBay
+            try {
+                console.log(`[DHL Service] Dispatching tracking ${trackingNumber} confirmation to marketplace for Order ${orderId}...`);
+                void MarketplaceShipmentService.confirmShipment(orderId, trackingNumber, 'DHL');
+            } catch (syncErr: any) {
+                console.error(`[DHL Service] Background marketplace shipment confirmation error:`, syncErr?.message);
+            }
 
             return {
                 success: true,
