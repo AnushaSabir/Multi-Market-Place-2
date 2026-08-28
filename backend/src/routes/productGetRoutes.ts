@@ -30,6 +30,8 @@ router.get('/', async (req, res) => {
 
     if (search) {
         query = query.or(`title.ilike.%${search}%,sku.ilike.%${search}%,ean.ilike.%${search}%`);
+    } else {
+        query = query.neq('title', 'Unknown eBay Item');
     }
 
     const { sortKey, sortDirection } = req.query;
@@ -45,7 +47,16 @@ router.get('/', async (req, res) => {
     const { data, count, error } = await query;
 
     if (error) return res.status(500).json({ error: error.message });
-    res.json({ data, count, page: Number(page), limit: Number(limit) });
+
+    // Clean up images array so nulls/undefined never reach the frontend
+    const cleanedData = (data || []).map((prod: any) => ({
+        ...prod,
+        images: Array.isArray(prod.images)
+            ? prod.images.filter((img: any) => Boolean(img && typeof img === 'string' && img.trim().startsWith('http')))
+            : []
+    }));
+
+    res.json({ data: cleanedData, count, page: Number(page), limit: Number(limit) });
 });
 
 // GET /api/products/stats - Dashboard Statistics

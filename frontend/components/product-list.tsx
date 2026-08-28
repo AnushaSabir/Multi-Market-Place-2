@@ -614,9 +614,14 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
 
                   <TableCell className="py-2">
                     <div className="h-10 w-10 bg-muted rounded flex items-center justify-center border overflow-hidden">
-                      {product.images && product.images.length > 0 ? (
-                        <img src={product.images[0]} alt="" className="h-full w-full object-cover" />
-                      ) : <ImageIcon className="h-4 w-4 text-muted-foreground" />}
+                      {(() => {
+                        const validImg = product.images?.find((url: any) => Boolean(url && typeof url === 'string' && url.trim().startsWith('http')));
+                        return validImg ? (
+                          <img src={validImg} alt={product.title || ""} className="h-full w-full object-cover" />
+                        ) : (
+                          <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                        );
+                      })()}
                     </div>
                   </TableCell>
 

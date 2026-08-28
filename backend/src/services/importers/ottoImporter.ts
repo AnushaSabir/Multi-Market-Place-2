@@ -222,6 +222,22 @@ export class OttoImporter extends BaseImporter {
 
                 const pageProducts = productsRaw.map((p: any) => {
                     const actualSku = p.sku || p.partnerSku || p.productReference;
+                    
+                    // Robustly extract all valid image URLs from all possible Otto media asset fields
+                    const rawAssets = [
+                        ...(Array.isArray(p.mediaAssets) ? p.mediaAssets : []),
+                        ...(Array.isArray(p.productDescription?.mediaAssets) ? p.productDescription.mediaAssets : []),
+                        ...(Array.isArray(p.productVariations?.[0]?.mediaAssets) ? p.productVariations[0].mediaAssets : []),
+                        ...(Array.isArray(p.images) ? p.images : [])
+                    ];
+
+                    const validImages = rawAssets
+                        .map((m: any) => {
+                            if (typeof m === 'string') return m;
+                            return m?.location || m?.url || m?.href || m?.source || m?.secureLocation || m?.imageUrl || m?.image || null;
+                        })
+                        .filter((url: any) => Boolean(url && typeof url === 'string' && url.trim().startsWith('http')));
+
                     return {
                         title: p.productName || p.productReference || 'Unknown Title',
                         description: p.productDescription?.description || p.description || '',
@@ -229,7 +245,7 @@ export class OttoImporter extends BaseImporter {
                         ean: p.ean || p.gtin || '',
                         price: parseFloat(p.pricing?.standardPrice?.amount || p.price || '0'),
                         quantity: parseInt(p.stock?.quantity || p.quantity || '0'),
-                        images: p.mediaAssets?.map((m: any) => m.location) || [],
+                        images: Array.from(new Set(validImages)),
                         external_id: actualSku, // Ensure external_id is the SKU, not the title
                         marketplace: 'otto'
                     };

@@ -41,6 +41,7 @@ export default async function ProductsPage({ searchParams: searchParamsPromise }
     }
 
     const response = await query
+      .neq('title', 'Unknown eBay Item')
       .order("created_at", { ascending: false })
       .range(0, 49)
 
