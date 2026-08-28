@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calculator, Save } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -16,6 +16,7 @@ export function PricingRulesSettings() {
     const [rules, setRules] = useState<Record<string, { operator: string, value: string }>>({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const { toast } = useToast();
 
     useEffect(() => {
         fetchRules();
@@ -69,13 +70,13 @@ export function PricingRulesSettings() {
             });
 
             if (res.ok) {
-                toast.success("Pricing rules saved successfully!");
+                toast({ title: "Success", description: "Pricing rules saved successfully!" });
             } else {
-                toast.error("Failed to save rules.");
+                toast({ title: "Error", description: "Failed to save rules.", variant: "destructive" });
             }
         } catch (e) {
             console.error("Save error", e);
-            toast.error("An error occurred while saving.");
+            toast({ title: "Error", description: "An error occurred while saving.", variant: "destructive" });
         } finally {
             setSaving(false);
         }
