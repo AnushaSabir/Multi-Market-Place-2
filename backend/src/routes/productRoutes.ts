@@ -70,6 +70,29 @@ router.post('/:id/publish', async (req, res) => {
     }
 });
 
+// DELETE /api/products/cleanup-stubs
+router.delete('/cleanup-stubs', async (req, res) => {
+    try {
+        const { data: stubs, error: fetchErr } = await supabase
+            .from('products')
+            .select('id')
+            .or('title.eq.Unknown eBay Item,title.eq.Unknown Kaufland Item,title.eq.UNKNOWN');
+
+        if (fetchErr) throw fetchErr;
+
+        const stubIds = (stubs || []).map((s: any) => s.id);
+        if (stubIds.length > 0) {
+            await supabase.from('marketplace_products').delete().in('product_id', stubIds);
+            const { error: delErr } = await supabase.from('products').delete().in('id', stubIds);
+            if (delErr) throw delErr;
+        }
+
+        res.json({ message: `Successfully deleted ${stubIds.length} dummy stub products.`, count: stubIds.length });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // PUT /api/products/:id
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
@@ -125,29 +148,6 @@ router.put('/:id', async (req, res) => {
     }
 
     res.json({ message: 'Product updated and sync triggered' });
-});
-
-// DELETE /api/products/cleanup-stubs
-router.delete('/cleanup-stubs', async (req, res) => {
-    try {
-        const { data: stubs, error: fetchErr } = await supabase
-            .from('products')
-            .select('id')
-            .or('title.eq.Unknown eBay Item,title.eq.Unknown Kaufland Item,title.eq.UNKNOWN');
-
-        if (fetchErr) throw fetchErr;
-
-        const stubIds = (stubs || []).map((s: any) => s.id);
-        if (stubIds.length > 0) {
-            await supabase.from('marketplace_products').delete().in('product_id', stubIds);
-            const { error: delErr } = await supabase.from('products').delete().in('id', stubIds);
-            if (delErr) throw delErr;
-        }
-
-        res.json({ message: `Successfully deleted ${stubIds.length} dummy stub products.`, count: stubIds.length });
-    } catch (err: any) {
-        res.status(500).json({ error: err.message });
-    }
 });
 
 // DELETE /api/products/cleanup?marketplace=ebay
