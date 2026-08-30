@@ -67,8 +67,40 @@ interface Product {
     external_id: string
     sync_status?: string
   }[]
-  images?: string[]
+  images?: any
 }
+
+const getProductImageUrl = (images: any): string | null => {
+  if (!images) return null;
+  if (typeof images === 'string') {
+    const trimmed = images.trim();
+    if (trimmed.startsWith('http')) return trimmed;
+    if (trimmed.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        return getProductImageUrl(parsed);
+      } catch (e) {}
+    }
+    if (trimmed.includes(',')) {
+      const first = trimmed.split(',')[0].trim();
+      if (first.startsWith('http')) return first;
+    }
+  }
+  if (Array.isArray(images)) {
+    for (const item of images) {
+      if (typeof item === 'string' && item.trim().startsWith('http')) {
+        return item.trim();
+      }
+      if (item && typeof item === 'object') {
+        const url = item.location || item.url || item.href || item.src || item.source;
+        if (typeof url === 'string' && url.trim().startsWith('http')) {
+          return url.trim();
+        }
+      }
+    }
+  }
+  return null;
+};
 
 const getProductSyncStatus = (product: Product) => {
   if (!product.marketplace_products || product.marketplace_products.length === 0) {
@@ -615,9 +647,9 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
                   <TableCell className="py-2">
                     <div className="h-10 w-10 bg-muted rounded flex items-center justify-center border overflow-hidden">
                       {(() => {
-                        const validImg = product.images?.find((url: any) => Boolean(url && typeof url === 'string' && url.trim().startsWith('http')));
-                        return validImg ? (
-                          <img src={validImg} alt={product.title || ""} className="h-full w-full object-cover" />
+                        const imgUrl = getProductImageUrl(product.images);
+                        return imgUrl ? (
+                          <img src={imgUrl} alt={product.title || ""} className="h-full w-full object-cover" />
                         ) : (
                           <ImageIcon className="h-4 w-4 text-muted-foreground" />
                         );

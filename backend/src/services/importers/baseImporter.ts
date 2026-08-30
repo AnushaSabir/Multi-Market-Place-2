@@ -146,8 +146,17 @@ export abstract class BaseImporter {
             if (item.ean && !currentProd?.ean) {
                 updates.ean = item.ean;
             }
-            if (item.images && item.images.length > 0 && (!currentProd?.images || currentProd.images.length === 0)) {
-                updates.images = item.images;
+            // Check if existing product has valid http images
+            const currentValidImages = Array.isArray(currentProd?.images)
+                ? currentProd.images.filter((img: any) => Boolean(img && typeof img === 'string' && img.trim().startsWith('http')))
+                : (typeof currentProd?.images === 'string' && currentProd.images.trim().startsWith('http') ? [currentProd.images] : []);
+
+            const newValidImages = Array.isArray(item.images)
+                ? item.images.filter((img: any) => Boolean(img && typeof img === 'string' && img.trim().startsWith('http')))
+                : (typeof item.images === 'string' && (item.images as string).trim().startsWith('http') ? [(item.images as string).trim()] : []);
+
+            if (newValidImages.length > 0 && currentValidImages.length === 0) {
+                updates.images = newValidImages;
             }
             
             // If Otto, treat as source of truth for price/stock to sync to others
