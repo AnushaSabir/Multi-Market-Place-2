@@ -214,4 +214,79 @@ router.get('/status', (req, res) => {
     res.json({ isRunning: BaseImporter.isRunning });
 });
 
+import { supabase } from '../database/supabaseClient';
+import crypto from 'crypto';
+import axios from 'axios';
+
+// POST /api/import/enrich-images
+// Walks all Kaufland units (with embedded products) and fills in missing images in DB
+router.post('/enrich-images', async (req, res) => {
+    const clientKey = process.env.KAUFLAND_CLIENT_KEY || '';
+    const secretKey = process.env.KAUFLAND_SECRET_KEY || '';
+    if (!clientKey || !secretKey) {
+        return res.status(500).json({ error: 'Missing Kaufland credentials' });
+    }
+
+    try {
+        let offset = 0;
+        const limit = 50;
+        let updated = 0;
+        let totalChecked = 0;
+
+        while (true) {
+            const timestamp = Math.floor(Date.now() / 1000).toString();
+            const url = `https://sellerapi.kaufland.com/v2/units?limit=${limit}&offset=${offset}&storefront=de&embedded=products`;
+            const sig = crypto.createHmac('sha256', secretKey).update(`GET\n${url}\n\n${timestamp}`).digest('hex');
+
+            const response: any = await axios.get(url, {
+                headers: {
+                    'Shop-Client-Key': clientKey,
+                    'Shop-Timestamp': timestamp,
+                    'Shop-Signature': sig,
+                    'User-Agent': 'MultiMarketplaceApp/1.0',
+                    'Accept': 'application/json'
+                },
+                timeout: 30000
+            });
+
+            const units: any[] = response.data.data || [];
+            if (units.length === 0) break;
+
+            for (const u of units) {
+                const ean = u.ean || u.product?.eans?.[0] || '';
+                const imgUrl = u.product?.main_picture || u.product?.picture || '';
+                if (!ean || !imgUrl) continue;
+
+                totalChecked++;
+
+                const { data: prods } = await supabase
+                    .from('products')
+                    .select('id, images')
+                    .eq('ean', ean);
+
+                for (const prod of prods || []) {
+                    const imgs = prod.images;
+                    const hasValidImg =
+                        (typeof imgs === 'string' && imgs.startsWith('http')) ||
+                        (Array.isArray(imgs) && imgs.some((i: any) => typeof i === 'string' && i.startsWith('http')));
+
+                    if (!hasValidImg) {
+                        await supabase.from('products').update({ images: [imgUrl] }).eq('id', prod.id);
+                        updated++;
+                    }
+                }
+            }
+
+            if (units.length < limit) break;
+            offset += limit;
+            await new Promise(r => setTimeout(r, 300));
+        }
+
+        res.json({ message: 'Image enrichment complete', checked: totalChecked, updated });
+    } catch (err: any) {
+        console.error('[enrich-images] Error:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 export default router;
