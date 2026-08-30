@@ -659,8 +659,8 @@ export function ProductList({ initialProducts }: { initialProducts: Product[] })
 
                   <TableCell className="py-2 align-top">
                     <div className="flex flex-col gap-1">
-                      <span className="font-mono text-xs font-semibold">{product.sku || <span className="text-red-300">No SKU</span>}</span>
-                      <span className="text-[10px] text-muted-foreground">{product.ean || "-"}</span>
+                      <span className="font-mono text-xs font-semibold">{product.sku || product.ean || <span className="text-muted-foreground">EAN-{product.id.slice(0, 6)}</span>}</span>
+                      <span className="text-[10px] text-muted-foreground">{product.ean || product.sku || "-"}</span>
                     </div>
                   </TableCell>
 
