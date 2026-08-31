@@ -1,5 +1,7 @@
 import { BaseExporter, ExportResult } from './baseExporter';
 
+import { BaseExporter, ExportResult } from './baseExporter';
+
 export class KauflandExporter extends BaseExporter {
     marketplace: 'kaufland' = 'kaufland';
 
@@ -15,17 +17,19 @@ export class KauflandExporter extends BaseExporter {
                 return { success: false, error: "EAN is required for Kaufland listing" };
             }
 
-            // 1. Send Product Data (Title, Description, Image, Manufacturer)
+            // 1. Send Product Data (Title, Description, Images, Manufacturer)
+            const cleanImages = Array.isArray(product.images) ? product.images.filter(Boolean) : (typeof product.images === 'string' && product.images.startsWith('http') ? [product.images] : []);
             const productDataBody = {
+                ean: [product.ean],
                 attributes: {
                     title: [product.title || `Product ${product.ean}`],
                     description: [product.description || product.title || `Description for ${product.ean}`],
-                    picture: product.images && product.images.length > 0 ? product.images : [],
-                    manufacturer: [product.brand || "VIVITAR"] // Fixed: Use VIVITAR as default to prevent blocks
+                    picture: cleanImages.length > 0 ? cleanImages : ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80'],
+                    manufacturer: [product.brand || "VIVITAR"]
                 }
             };
             const pdTimestamp = Math.floor(Date.now() / 1000).toString();
-            const pdUrl = `https://sellerapi.kaufland.com/v2/product-data/${product.ean}`;
+            const pdUrl = `https://sellerapi.kaufland.com/v2/product-data?locale=de-DE`;
             const pdMethod = 'PUT';
             const pdBodyStr = JSON.stringify(productDataBody);
             const pdStringToSign = `${pdMethod}\n${pdUrl}\n${pdBodyStr}\n${pdTimestamp}`;
@@ -40,10 +44,9 @@ export class KauflandExporter extends BaseExporter {
                         'Content-Type': 'application/json'
                     }
                 });
-                console.log(`[Kaufland] Product data pushed for EAN: ${product.ean}`);
+                console.log(`[Kaufland] Product data registered for EAN: ${product.ean}`);
             } catch (pdError: any) {
                 console.warn(`[Kaufland] Product data push warning for EAN: ${product.ean}. Details:`, pdError.response?.data || pdError.message);
-                // We continue even if product data fails, as the unit might still be created if the EAN already exists in Kaufland's catalog.
             }
 
             // 2. Create the Unit (Offer)
@@ -51,7 +54,7 @@ export class KauflandExporter extends BaseExporter {
                 ean: product.ean,
                 condition: 'NEW',
                 listing_price: Math.round(product.price * 100),
-                amount: product.quantity || 0,
+                amount: product.quantity > 0 ? product.quantity : 10,
                 id_offer: product.sku,
                 handling_time: 2
             };
@@ -100,9 +103,10 @@ export class KauflandExporter extends BaseExporter {
             }
 
             // 1. Push Product Data (Images, Title, Description) if EAN is available
-            const cleanImages = Array.isArray(updates.images) ? updates.images.filter(Boolean) : [];
+            const cleanImages = Array.isArray(updates.images) ? updates.images.filter(Boolean) : (typeof updates.images === 'string' && updates.images.startsWith('http') ? [updates.images] : []);
             if (updates.ean && (updates.title || updates.description || cleanImages.length > 0)) {
                 const productDataBody = {
+                    ean: [updates.ean],
                     attributes: {
                         ...(updates.title ? { title: [updates.title] } : {}),
                         ...(updates.description ? { description: [updates.description] } : {}),
@@ -112,7 +116,7 @@ export class KauflandExporter extends BaseExporter {
                 };
                 
                 const pdTimestamp = Math.floor(Date.now() / 1000).toString();
-                const pdUrl = `https://sellerapi.kaufland.com/v2/product-data/${updates.ean}`;
+                const pdUrl = `https://sellerapi.kaufland.com/v2/product-data?locale=de-DE`;
                 const pdMethod = 'PUT';
                 const pdBodyStr = JSON.stringify(productDataBody);
                 const pdStringToSign = `${pdMethod}\n${pdUrl}\n${pdBodyStr}\n${pdTimestamp}`;
@@ -135,7 +139,6 @@ export class KauflandExporter extends BaseExporter {
 
             const body: any = {};
             if (updates.price !== undefined) body.listing_price = Math.round(updates.price * 100);
-            if (updates.quantity !== undefined) body.amount = updates.quantity;
 
             if (Object.keys(body).length > 0) {
                 // 2. Fetch all units for this EAN to ensure we update the active one as well
