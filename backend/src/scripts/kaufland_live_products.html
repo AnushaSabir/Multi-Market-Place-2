@@ -1,0 +1,747 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Kaufland Live Products Report - EpicTec</title>
+        <style>
+            @page {
+                size: A4 landscape;
+                margin: 12mm 12mm 12mm 12mm;
+            }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                color: #1e293b;
+                margin: 0;
+                padding: 0;
+                font-size: 11px;
+                background-color: #ffffff;
+            }
+            .header-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px solid #0284c7;
+                padding-bottom: 12px;
+                margin-bottom: 16px;
+            }
+            .brand-logo {
+                font-size: 24px;
+                font-weight: 800;
+                color: #0f172a;
+                letter-spacing: -0.5px;
+            }
+            .brand-logo span {
+                color: #0284c7;
+            }
+            .report-title {
+                text-align: right;
+            }
+            .report-title h1 {
+                margin: 0;
+                font-size: 18px;
+                color: #0f172a;
+                font-weight: 700;
+            }
+            .report-title p {
+                margin: 2px 0 0 0;
+                font-size: 10px;
+                color: #64748b;
+            }
+            .summary-cards {
+                display: flex;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+            .card {
+                flex: 1;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 6px;
+                padding: 10px 14px;
+            }
+            .card-label {
+                font-size: 9px;
+                font-weight: 600;
+                text-transform: uppercase;
+                color: #64748b;
+                letter-spacing: 0.5px;
+            }
+            .card-value {
+                font-size: 16px;
+                font-weight: 700;
+                color: #0f172a;
+                margin-top: 4px;
+            }
+            .card-value.green {
+                color: #16a34a;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 16px;
+            }
+            th {
+                background-color: #0f172a;
+                color: #ffffff;
+                text-align: left;
+                padding: 7px 8px;
+                font-size: 10px;
+                font-weight: 600;
+                letter-spacing: 0.3px;
+            }
+            th.text-center { text-align: center; }
+            th.text-right { text-align: right; }
+            td {
+                padding: 6px 8px;
+                border-bottom: 1px solid #f1f5f9;
+                vertical-align: middle;
+                font-size: 10px;
+            }
+            tr:nth-child(even) {
+                background-color: #f8fafc;
+            }
+            .text-center { text-align: center; }
+            .text-right { text-align: right; }
+            .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 9.5px; }
+            .font-bold { font-weight: 700; }
+            .text-bold { font-weight: 600; color: #0f172a; }
+            .text-muted { color: #64748b; }
+            .text-dark { color: #0f172a; }
+            .title-cell {
+                max-width: 320px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                color: #334155;
+            }
+            .badge {
+                display: inline-block;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 8.5px;
+                font-weight: 700;
+                letter-spacing: 0.3px;
+            }
+            .status-active {
+                background-color: #dcfce7;
+                color: #15803d;
+                border: 1px solid #bbf7d0;
+            }
+            .status-inactive {
+                background-color: #fee2e2;
+                color: #b91c1c;
+                border: 1px solid #fecaca;
+            }
+            .footer {
+                margin-top: 14px;
+                padding-top: 10px;
+                border-top: 1px solid #e2e8f0;
+                display: flex;
+                justify-content: space-between;
+                color: #94a3b8;
+                font-size: 9px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header-container">
+            <div class="brand-logo">Epic<span>Tec</span></div>
+            <div class="report-title">
+                <h1>Kaufland Marketplace Live Catalog Report</h1>
+                <p>Generated on 02 Sept 2026, 18:45 UTC | Storefront: DE</p>
+            </div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="card">
+                <div class="card-label">Marketplace</div>
+                <div class="card-value">Kaufland.de</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Total Live Listings</div>
+                <div class="card-value green">50 Products</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Status Check</div>
+                <div class="card-value green">100% AVAILABLE</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Catalog Synchronization</div>
+                <div class="card-value">Full Title, EAN & HTML Specs</div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 30px;">#</th>
+                    <th style="width: 100px;">Kaufland Unit ID</th>
+                    <th style="width: 130px;">Offer SKU</th>
+                    <th style="width: 105px;">EAN Barcode</th>
+                    <th class="text-right" style="width: 65px;">Price</th>
+                    <th class="text-center" style="width: 80px;">Status</th>
+                    <th>Product Title</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="text-center font-mono">1</td>
+            <td class="font-mono text-bold">389348027033</td>
+            <td class="font-mono text-muted">735654149156</td>
+            <td class="font-mono">735654149156</td>
+            <td class="text-right font-bold text-dark">€69.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">IPL-HaarentfernerHaarentfernungsgerät für Männer Frauen Intimbereich Gesicht Ohr</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">2</td>
+            <td class="font-mono text-bold">389371064012</td>
+            <td class="font-mono text-muted">0735654150282</td>
+            <td class="font-mono">0735654150282</td>
+            <td class="text-right font-bold text-dark">€17.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">3-n-1 Faltbarer MagSafe Ständer mit Schnellladung, höhenverstellbar Ladestation Apple Wireless Ladestation für iPhone 16, Apple Watch & AirPods, Perfektes Geschenk für iPhone-Nutze</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">3</td>
+            <td class="font-mono text-bold">389371064013</td>
+            <td class="font-mono text-muted">0735654150275</td>
+            <td class="font-mono">0735654150275</td>
+            <td class="text-right font-bold text-dark">€29.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Gaming Mauspad mit Kabellosem Ladegerät (5W/7,5W/10W/15W), Automatische Anpassung (Schnellladen, Präzise Steuerung, Komfortable Nutzung für Maus und Tastatur, Kompatibel mit iPhone</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">4</td>
+            <td class="font-mono text-bold">389371064017</td>
+            <td class="font-mono text-muted">0735654150220</td>
+            <td class="font-mono">0735654150220</td>
+            <td class="text-right font-bold text-dark">€14.99</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Tragbarer Sticker Bluetooth-Drucker für Notizen, Fotos und Etiketten Mini-Drucker Kabelloser Inklusivdrucker mit App für iOS & Android ideal für Kinder</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">5</td>
+            <td class="font-mono text-bold">389371064018</td>
+            <td class="font-mono text-muted">735654150213</td>
+            <td class="font-mono">735654150213</td>
+            <td class="text-right font-bold text-dark">€29.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Sofortbildkamera 2,4'' Bildschirm für Kinder mit 32GB Karte & Zubehör Kinderkamera inkl. ZERO INK SOFORTDRUCK 12 MP Dual-Kamera für Kinder, 1080P HD Videokamera, Dual-Objektiv Digi</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">6</td>
+            <td class="font-mono text-bold">389371064019</td>
+            <td class="font-mono text-muted">0735654150206</td>
+            <td class="font-mono">0735654150206</td>
+            <td class="text-right font-bold text-dark">€12.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">25W USB-C mit 2 Meter Kabel, universell kompatibles ultraschnelles Schnelllade-Gerät 96% in 60 Minuten mit Überstrom-, Überhitzungs-, Kurzschlussschutz, kompaktes, tragbares Ladege</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">7</td>
+            <td class="font-mono text-bold">389371064020</td>
+            <td class="font-mono text-muted">735654150190</td>
+            <td class="font-mono">735654150190</td>
+            <td class="text-right font-bold text-dark">€44.97</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Luftbefeuchter Auto Quiet Mode für Baby, 4L Ultraschall Cool Mist Luftbefeuchter 4 l Wassertank, Aroma-Diffusor, dauert bis zu 30H, Auto-Timer Off, BPA frei</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">8</td>
+            <td class="font-mono text-bold">389371064021</td>
+            <td class="font-mono text-muted">0735654150183</td>
+            <td class="font-mono">0735654150183</td>
+            <td class="text-right font-bold text-dark">€18.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Digitalkamera mit 2,4-Zoll-Bildschirm, installierte 32-GB-Karte Kinderkamera Multifunktionale Spielzeugkamera Geschenke für 3-12 Jährige</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">9</td>
+            <td class="font-mono text-bold">389371107899</td>
+            <td class="font-mono text-muted">735654150152</td>
+            <td class="font-mono">735654150152</td>
+            <td class="text-right font-bold text-dark">€34.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Sofortbildkamera 2,4'' Bildschirm für Kinder mit 32GB Karte & Zubehör Kinderkamera inkl. ZERO INK SOFORTDRUCK 12 MP Dual-Kamera für Kinder, 1080P HD Videokamera, Dual-Objektiv Digi</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">10</td>
+            <td class="font-mono text-bold">389371107904</td>
+            <td class="font-mono text-muted">0735654150091</td>
+            <td class="font-mono">0735654150091</td>
+            <td class="text-right font-bold text-dark">€29.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Spielzeug-Flugzeug mit Lichtern, Geräuschen, Sprühfunktion und 12-teiligem Spielzeugauto (regt zum Lernen und zur Aktivität an, bestes Geschenk, Spielzeug für Kinder, Reichhaltige</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">11</td>
+            <td class="font-mono text-bold">389371107906</td>
+            <td class="font-mono text-muted">0735654150077</td>
+            <td class="font-mono">0735654150077</td>
+            <td class="text-right font-bold text-dark">€26.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Spielzeug-Flugzeug mit 12 Stadtautos & Rennstrecke Rennbahn Auto Spielzeug für Kinder (bestes Geschenk für Kinder über Jahre, Fahrzeuge Spielzeugset für Jungen und Mädchen, komfort</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">12</td>
+            <td class="font-mono text-bold">389371107907</td>
+            <td class="font-mono text-muted">735654150060</td>
+            <td class="font-mono">735654150060</td>
+            <td class="text-right font-bold text-dark">€26.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Spielzeug-Flugzeug mit 12 Stadtautos & Rennstrecke Rennbahn Auto Spielzeug für Kinder (bestes Geschenk für Kinder über Jahre, Fahrzeuge Spielzeugset für Jungen und Mädchen, komfort</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">13</td>
+            <td class="font-mono text-bold">389371107909</td>
+            <td class="font-mono text-muted">0735654150039</td>
+            <td class="font-mono">0735654150039</td>
+            <td class="text-right font-bold text-dark">€24.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Luftgebläse Druckluftspray Luftreinigungspistole 51000u/min Kabelloser Reiniger</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">14</td>
+            <td class="font-mono text-bold">389371107912</td>
+            <td class="font-mono text-muted">735654149996</td>
+            <td class="font-mono">735654149996</td>
+            <td class="text-right font-bold text-dark">€74.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Tischkreissäge Tragbare elektrische Minisäge, kompakt DIY-Schneidewerkzeug Schneidemaschine mit einstellbarer Schnitttiefe, Tragbare Tischkreissäge für Schule und Zuhause, multifun</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">15</td>
+            <td class="font-mono text-bold">389371107915</td>
+            <td class="font-mono text-muted">735654149965</td>
+            <td class="font-mono">735654149965</td>
+            <td class="text-right font-bold text-dark">€19.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Lernspielzeug Krabbe Baby Spielzeug, Kinderspielzeug Junge Mädchen (Lern- und Lehrspielzeug für Kinder, das Baby zum Krabbeln anregt, Baby Geschenk Junge Mädchen, bestes Geschenk f</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">16</td>
+            <td class="font-mono text-bold">389371107916</td>
+            <td class="font-mono text-muted">735654149958</td>
+            <td class="font-mono">735654149958</td>
+            <td class="text-right font-bold text-dark">€22.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Lernspielzeug Krabbe Baby Spielzeug, Kinderspielzeug Junge Mädchen (Lern- und Lehrspielzeug für Kinder, das Baby zum Krabbeln anregt, Baby Geschenk Junge Mädchen, bestes Geschenk f</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">17</td>
+            <td class="font-mono text-bold">389371107918</td>
+            <td class="font-mono text-muted">0735654149934</td>
+            <td class="font-mono">0735654149934</td>
+            <td class="text-right font-bold text-dark">€19.99</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Tierhaarentferner effizientere Tierhaarentfernung mit innovativem, dreieckigem Design Teppich, Auto, Möbel, Kleidung, Bettwäsche, (Ideal für die Entfernung von Hunde- und Katzenhaa</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">18</td>
+            <td class="font-mono text-bold">389371107919</td>
+            <td class="font-mono text-muted">0735654149897</td>
+            <td class="font-mono">0735654149897</td>
+            <td class="text-right font-bold text-dark">€19.99</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Tierhaarentferner effizientere Tierhaarentfernung mit innovativem, dreieckigem Design Teppich, Auto, Möbel, Kleidung, Bettwäsche, (Ideal für die Entfernung von Hunde- und Katzenhaa</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">19</td>
+            <td class="font-mono text-bold">389371107920</td>
+            <td class="font-mono text-muted">0735654149866</td>
+            <td class="font-mono">0735654149866</td>
+            <td class="text-right font-bold text-dark">€19.99</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Tierhaarentferner effizientere Tierhaarentfernung mit innovativem, dreieckigem Design Teppich, Auto, Möbel, Kleidung, Bettwäsche, (Ideal für die Entfernung von Hunde- und Katzenhaa</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">20</td>
+            <td class="font-mono text-bold">389371107921</td>
+            <td class="font-mono text-muted">0735654149927</td>
+            <td class="font-mono">0735654149927</td>
+            <td class="text-right font-bold text-dark">€16.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Tierhaarentferner effizientere Tierhaarentfernung mit innovativem, dreieckigem Design Teppich, Auto, Möbel, Kleidung, Bettwäsche, (Ideal für die Entfernung von Hunde- und Katzenhaa</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">21</td>
+            <td class="font-mono text-bold">389371107923</td>
+            <td class="font-mono text-muted">0735654149859</td>
+            <td class="font-mono">0735654149859</td>
+            <td class="text-right font-bold text-dark">€16.99</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Tierhaarentferner effizientere Tierhaarentfernung mit innovativem, dreieckigem Design Teppich, Auto, Möbel, Kleidung, Bettwäsche, (Ideal für die Entfernung von Hunde- und Katzenhaa</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">22</td>
+            <td class="font-mono text-bold">389371107924</td>
+            <td class="font-mono text-muted">0735654149903</td>
+            <td class="font-mono">0735654149903</td>
+            <td class="text-right font-bold text-dark">€9.99</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Tierhaarentferner effizientere Tierhaarentfernung mit innovativem, dreieckigem Design Teppich, Auto, Möbel, Kleidung, Bettwäsche, (Ideal für die Entfernung von Hunde- und Katzenhaa</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">23</td>
+            <td class="font-mono text-bold">389371107925</td>
+            <td class="font-mono text-muted">0735654149873</td>
+            <td class="font-mono">0735654149873</td>
+            <td class="text-right font-bold text-dark">€9.99</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Tierhaarentferner effizientere Tierhaarentfernung mit innovativem, dreieckigem Design Teppich, Auto, Möbel, Kleidung, Bettwäsche, (Ideal für die Entfernung von Hunde- und Katzenhaa</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">24</td>
+            <td class="font-mono text-bold">389371107926</td>
+            <td class="font-mono text-muted">0735654149842</td>
+            <td class="font-mono">0735654149842</td>
+            <td class="text-right font-bold text-dark">€9.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Tierhaarentferner effizientere Tierhaarentfernung mit innovativem, dreieckigem Design Teppich, Auto, Möbel, Kleidung, Bettwäsche, (Ideal für die Entfernung von Hunde- und Katzenhaa</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">25</td>
+            <td class="font-mono text-bold">389371107929</td>
+            <td class="font-mono text-muted">735654149811</td>
+            <td class="font-mono">735654149811</td>
+            <td class="text-right font-bold text-dark">€49.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Akku-Kettensäge mit Brushless-Motoren und mit 2 2000mAh-Akkus kompakt, tragbar, energieeffizient, einfach zu bedienen weniger Lärm, lange Akkulaufzeit, sicher im Gebrauch, bestes D</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">26</td>
+            <td class="font-mono text-bold">389371107930</td>
+            <td class="font-mono text-muted">735654149804</td>
+            <td class="font-mono">735654149804</td>
+            <td class="text-right font-bold text-dark">€14.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Kreativset Aqua Water Doodle Matte, Montessori Spielzeug 80x100cm XL (Inklusive 4 nachfüllbarer Magic Pens, Kindgerecht und sicher, Fördert Kreativität, motorische Fähigkeiten, tra</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">27</td>
+            <td class="font-mono text-bold">389371107932</td>
+            <td class="font-mono text-muted">735654149750</td>
+            <td class="font-mono">735654149750</td>
+            <td class="text-right font-bold text-dark">€49.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Akku-Kettensäge wiederaufladbar 8 Zoll Mini-Kettensäge für Beschneidung kompakte, tragbare und langlebige Mini-Kettensäge, Außergewöhnliche Akkulaufzeit, einfache Wartung, Beschnei</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">28</td>
+            <td class="font-mono text-bold">389371107934</td>
+            <td class="font-mono text-muted">735654149736</td>
+            <td class="font-mono">735654149736</td>
+            <td class="text-right font-bold text-dark">€23.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Akku-Handstaubsauger Kabellos, LED-Licht mit HEPA-Filter & Zwei Aufsätze Reinigungsset für die Innenraumreinigung im Auto, leistungsstarker</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">29</td>
+            <td class="font-mono text-bold">389371107935</td>
+            <td class="font-mono text-muted">0735654149729</td>
+            <td class="font-mono">0735654149729</td>
+            <td class="text-right font-bold text-dark">€12.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Hula-Hoop-Reifen Intelligenter Fitness-Ring, verstellbare Taille (Sichere Anwendung keine Quälerei für die Hüften. Einfache Handhabung, Fortschrittsüberwachung, Energieeffizient),</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">30</td>
+            <td class="font-mono text-bold">389371107937</td>
+            <td class="font-mono text-muted">0735654149705</td>
+            <td class="font-mono">0735654149705</td>
+            <td class="text-right font-bold text-dark">€79.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Schreibtisch Elektrischer Höhenverstellbarer Schreibtisch mit Storage Tasche (Ergonomisch, Elektrisch, Einstellbar, Kratzfest, High-Tech Schneckengetriebe, 100 x 60 cm Tragfähigkei</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">31</td>
+            <td class="font-mono text-bold">389371107942</td>
+            <td class="font-mono text-muted">735654149644</td>
+            <td class="font-mono">735654149644</td>
+            <td class="text-right font-bold text-dark">€49.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Heizdecke wärmende Gewichtsdecke Plüsch 180x130 cm, Abschaltautomatik für warme Winterabende, LEICHT ZU REINIGEN, warm und kuschelig, waschbar bis 30°C, digitale Anzeige, energiesp</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">32</td>
+            <td class="font-mono text-bold">389371107949</td>
+            <td class="font-mono text-muted">0735654149507</td>
+            <td class="font-mono">0735654149507</td>
+            <td class="text-right font-bold text-dark">€29.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">LED Tischleuchte mit 3 Farbtemperaturen -Wiederaufladbar,Touch-Dimmer,IP54 Wasserdicht LED fest integriert, Kaltweiß, Neutralweiß, Warmweiß</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">33</td>
+            <td class="font-mono text-bold">389371107950</td>
+            <td class="font-mono text-muted">0735654149491</td>
+            <td class="font-mono">0735654149491</td>
+            <td class="text-right font-bold text-dark">€19.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">LED Tischleuchte mit 3 Farbtemperaturen -Wiederaufladbar,Touch-Dimmer,IP54 Wasserdicht LED fest integriert, Kaltweiß, Neutralweiß, Warmweiß</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">34</td>
+            <td class="font-mono text-bold">389371107951</td>
+            <td class="font-mono text-muted">0735654149484</td>
+            <td class="font-mono">0735654149484</td>
+            <td class="text-right font-bold text-dark">€29.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">LED Tischleuchte mit 3 Farbtemperaturen -Wiederaufladbar,Touch-Dimmer,IP54 Wasserdicht LED fest integriert, Kaltweiß, Neutralweiß, Warmweiß</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">35</td>
+            <td class="font-mono text-bold">389371107952</td>
+            <td class="font-mono text-muted">0735654149477</td>
+            <td class="font-mono">0735654149477</td>
+            <td class="text-right font-bold text-dark">€17.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">LED Tischleuchte mit 3 Farbtemperaturen -Wiederaufladbar,Touch-Dimmer,IP54 Wasserdicht LED fest integriert, Kaltweiß, Neutralweiß, Warmweiß</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">36</td>
+            <td class="font-mono text-bold">389371107953</td>
+            <td class="font-mono text-muted">735654149460</td>
+            <td class="font-mono">735654149460</td>
+            <td class="text-right font-bold text-dark">€69.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Mini Beamer mit Screen Mirroring, 7000 Lumen Heimkino FULL HD LED-Beamer 1080P px, 1080P Video Beamer mit 240' Display, 90000 Stunden LCD</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">37</td>
+            <td class="font-mono text-bold">389371107962</td>
+            <td class="font-mono text-muted">0735654149323</td>
+            <td class="font-mono">0735654149323</td>
+            <td class="text-right font-bold text-dark">€79.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">30000 Stunden LED Heimkino Beamer, 5W-Stereo-Sound, mit HDMI, USB, TF Mini-Beamer 9000 lm, 1000:1, Native 1080P Full HD px, kompatibel mit iOS/Android, Automatische Trapezkorrektur</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">38</td>
+            <td class="font-mono text-bold">389371107970</td>
+            <td class="font-mono text-muted">735654149194</td>
+            <td class="font-mono">735654149194</td>
+            <td class="text-right font-bold text-dark">€59.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Digitalkamera mit 32G Micro SD Karte, 1080P Kinderkamera 44MP HD Kinderkamera inkl. 44MP HD mit 2,4“ LCD-Bildschirm 16X Digitalzoom und 2 Batterien, Beste Wahl für Anfänger, einfac</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">39</td>
+            <td class="font-mono text-bold">389371107971</td>
+            <td class="font-mono text-muted">0735654149187</td>
+            <td class="font-mono">0735654149187</td>
+            <td class="text-right font-bold text-dark">€39.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Digitalkamera mit 32G Micro SD Karte, 1080P Kinderkamera 44MP HD Kinderkamera inkl. 44MP HD mit 2,4“ LCD-Bildschirm 16X Digitalzoom und 2 Batterien, Beste Wahl für Anfänger, einfac</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">40</td>
+            <td class="font-mono text-bold">389371107973</td>
+            <td class="font-mono text-muted">735654149163</td>
+            <td class="font-mono">735654149163</td>
+            <td class="text-right font-bold text-dark">€24.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">IPL-Haarentferner Pulslicht Epilierer Laser Epilierer für Frauen und Männer schmerzfreie dauerhafte Haarentfernung, für Gesicht, Arme, Beine, Achseln, Bikini, 6 Leistungsstufen</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">41</td>
+            <td class="font-mono text-bold">389371107975</td>
+            <td class="font-mono text-muted">0735654149132</td>
+            <td class="font-mono">0735654149132</td>
+            <td class="text-right font-bold text-dark">€14.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Mag-Safe Ladegerät 3-in-1 kabelloses Ladegerät mit USB C & 15W Adapter Induktions-Ladegerät faltbarer Wechsler für iphone, android, iWatch, airpods, Universelles, schnelles und sic</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">42</td>
+            <td class="font-mono text-bold">389371107977</td>
+            <td class="font-mono text-muted">735654149118</td>
+            <td class="font-mono">735654149118</td>
+            <td class="text-right font-bold text-dark">€27.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">V610 Gaming Tastatur-Maus-Kombination [DE-Layout] Wireless-Tastatur Vollständige Funktionen, Soft Click, ergonomisches Design</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">43</td>
+            <td class="font-mono text-bold">389371107978</td>
+            <td class="font-mono text-muted">735654149101</td>
+            <td class="font-mono">735654149101</td>
+            <td class="text-right font-bold text-dark">€29.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">V610 Gaming Tastatur-Maus-Kombination [DE-Layout] Wireless-Tastatur Vollständige Funktionen, Soft Click, ergonomisches Design</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">44</td>
+            <td class="font-mono text-bold">389371107980</td>
+            <td class="font-mono text-muted">0735654149019</td>
+            <td class="font-mono">0735654149019</td>
+            <td class="text-right font-bold text-dark">€19.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">LED Tischleuchte mit 3 Farbtemperaturen -Wiederaufladbar,Touch-Dimmer,IP54 Wasserdicht LED fest integriert, Aufladbar per USB-C, Kaltweiß, Neutralweiß, Warmweiß, 5700K weißes Licht</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">45</td>
+            <td class="font-mono text-bold">389371107982</td>
+            <td class="font-mono text-muted">0735654149064</td>
+            <td class="font-mono">0735654149064</td>
+            <td class="text-right font-bold text-dark">€16.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Lichterkette Außendekoration Lichter für Garten, Terrasse, IP65 wasserdicht with 8 light modes energy-saving light chain</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">46</td>
+            <td class="font-mono text-bold">389371107983</td>
+            <td class="font-mono text-muted">0735654149057</td>
+            <td class="font-mono">0735654149057</td>
+            <td class="text-right font-bold text-dark">€9.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Lichterkette Innenbereich dekorative Lichter 4,1 m 15 LED USB wiederaufladbar Batterie-Acryl-Blumen LED-Lichterketten für innen, außen</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">47</td>
+            <td class="font-mono text-bold">389371107986</td>
+            <td class="font-mono text-muted">735654148982</td>
+            <td class="font-mono">735654148982</td>
+            <td class="text-right font-bold text-dark">€79.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Tischkreissäge Tragbare elektrische Minisäge, kompakt DIY-Schneidewerkzeug Schneidemaschine mit einstellbarer Schnitttiefe, Tragbare Tischkreissäge für Schule und Zuhause, multifun</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">48</td>
+            <td class="font-mono text-bold">389371107989</td>
+            <td class="font-mono text-muted">735654148951</td>
+            <td class="font-mono">735654148951</td>
+            <td class="text-right font-bold text-dark">€34.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Haartrockner bürstenloser Hochgeschwindigkeitsmotor professioneller einstellbar 1500,00 W, 110000 U/min, Haartrockner mit ionischer Technologie, Intelligenter, tragbarer, schneller</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">49</td>
+            <td class="font-mono text-bold">389371107990</td>
+            <td class="font-mono text-muted">0735654148944</td>
+            <td class="font-mono">0735654148944</td>
+            <td class="text-right font-bold text-dark">€24.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Kreativset Aqua Water Doodle Matte, Montessori Spielzeug 80x100cm XL (Inklusive 4 nachfüllbarer Magic Pens, Kindgerecht und sicher, Fördert Kreativität, motorische Fähigkeiten, tra</td>
+        </tr>
+        
+
+        <tr>
+            <td class="text-center font-mono">50</td>
+            <td class="font-mono text-bold">389371107994</td>
+            <td class="font-mono text-muted">0735654148883</td>
+            <td class="font-mono">0735654148883</td>
+            <td class="text-right font-bold text-dark">€12.98</td>
+            <td class="text-center"><span class="badge status-active">AVAILABLE</span></td>
+            <td class="title-cell">Handyhülle iPhone 15 Pro Hülle mit MagSafe und Integriertem 9H Kameraschutz 15,5 cm (6,1 Zoll), 360° Magnet Ringständer, MagSafe kompatibel, Transparent und Dünn</td>
+        </tr>
+        
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <span>Verified via Kaufland REST API v2 Official Gateway</span>
+            <span>EpicTec Multi-Marketplace Automation Suite</span>
+        </div>
+    </body>
+    </html>
+    
