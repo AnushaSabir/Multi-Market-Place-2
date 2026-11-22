@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { supabase } from '../database/supabaseClient';
 import { MarketplaceShipmentService } from './marketplaceShipmentService';
+import { classifyOrderShipping } from './shippingClassifier';
 
 export class DhlService {
     private static getCredentials() {
@@ -82,7 +83,7 @@ export class DhlService {
                 *,
                 customer:customers(*),
                 delivery_address:addresses!delivery_address_id(*),
-                items:order_items(quantity, unit_price, sku, product:products(sku, weight, dhl_versandart))
+                items:order_items(quantity, unit_price, sku, title, product:products(sku, title, weight, dhl_versandart))
             `)
             .eq('id', orderId)
             .single();
@@ -90,17 +91,13 @@ export class DhlService {
         if (error || !order) throw new Error("Order not found or database error");
         if (!order.delivery_address) throw new Error("Delivery address is missing for this order");
 
-        // 2. Calculate Total Weight and Determine Service
-        let totalWeight = 0;
-
-        for (const item of (order.items || [])) {
-            const weight = (item.product?.weight && item.product.weight > 0) ? item.product.weight : 0.5;
-            totalWeight += (weight * (item.quantity || 1));
-        }
-        if (totalWeight === 0) totalWeight = 0.8; // Standard 0.8kg
+        // Use the same shipment classification and weight calculation as the
+        // picklist, so the label type cannot disagree with what the warehouse sees.
+        const shipping = classifyOrderShipping(order.items || [], order.shipping_provider);
+        const totalWeight = shipping.shipping_weight > 0 ? shipping.shipping_weight : 0.8;
 
         const ekp = process.env.DHL_EKP || (creds.billingNumber ? creds.billingNumber.substring(0, 10) : '6358337079');
-        const isKleinpaket = order.shipping_bucket === 'small_package' || totalWeight <= 1.0;
+        const isKleinpaket = shipping.shipping_bucket === 'small_package' && totalWeight <= 1.0;
         const versandart = isKleinpaket ? 'V62KP' : 'V01PAK';
         const billingNumber = isKleinpaket
             ? (process.env.DHL_BILLING_NUMBER_KLEINPAKET || `${ekp}6201`)

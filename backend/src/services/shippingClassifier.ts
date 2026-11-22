@@ -99,7 +99,9 @@ export function classifyOrderShipping(items: ShippingItem[] = [], existingProvid
             explicitSmallPackage = true;
         }
 
-        if (/dhl|paket|parcel/.test(configuredShipping) && !/small|klein/.test(configuredShipping)) {
+        // `dhl_versandart` is the product's configured shipment type. Respect it
+        // explicitly so the picklist and the label generator make the same choice.
+        if (/dhl|paket|parcel/.test(`${configuredShipping} ${legacyShipping}`) && !/small|klein|warenpost|brief/.test(`${configuredShipping} ${legacyShipping}`)) {
             explicitDhl = true;
         }
 
