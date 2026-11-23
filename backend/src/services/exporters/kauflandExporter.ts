@@ -1,6 +1,5 @@
 import { BaseExporter, ExportResult } from './baseExporter';
 
-import { BaseExporter, ExportResult } from './baseExporter';
 
 export class KauflandExporter extends BaseExporter {
     marketplace: 'kaufland' = 'kaufland';
